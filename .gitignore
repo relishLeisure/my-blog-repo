@@ -17,3 +17,7 @@ Thumbs.db
 .hugo_build.lock
 
 trash/
+
+# AI assistant local config
+.codex/
+.claude/

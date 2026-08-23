@@ -37,27 +37,29 @@ jobs:
         run: |
           for dir in content/posts/*/; do
             year=$(basename "$dir")
-            # Create year index
-            mkdir -p "content/$year"
-            cat > "content/$year/_index.md" << EOF
+            # Create year index if it doesn't exist yet
+            if [ ! -f "content/years/$year/_index.md" ]; then
+              mkdir -p "content/years/$year"
+              cat > "content/years/$year/_index.md" << EOF
           ---
           title: "$year"
           layout: archive
           archiveYear: $year
           ---
           EOF
+            fi
             # Create month indexes
             for post in "$dir"*.md "$dir"*.html; do
               [ -f "$post" ] || continue
               month=$(grep -m1 "^date:" "$post" | grep -oE '[0-9]{4}-[0-9]{2}' | cut -d- -f2)
               if [ -n "$month" ]; then
-                mkdir -p "content/$year/$month"
-                [ -f "content/$year/$month/_index.md" ] || cat > "content/$year/$month/_index.md" << EOF
+                mkdir -p "content/years/$year/$month"
+                [ -f "content/years/$year/$month/_index.md" ] || cat > "content/years/$year/$month/_index.md" << EOF
           ---
           title: "$year/$month"
           layout: archive
           archiveYear: $year
-          archiveMonth: $month
+          archiveMonth: $((10#$month))
           ---
           EOF
               fi
@@ -78,7 +80,7 @@ jobs:
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3.0
         with:
-          publish-dir: ./public
+          publish-dir: ./docs
           production-deploy: false
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: "Deploy from PR #${{ github.event.pull_request.number }}"

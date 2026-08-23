@@ -11,7 +11,8 @@
   {{ $pages = where $pages "Date.Year" (int $year) }}
   {{ end }}
   {{ if $month }}
-  {{ $pages = where $pages "Date.Month" (int $month) }}
+  {{ $monthInt := int (strings.TrimLeft "0" (printf "%v" $month)) }}
+  {{ $pages = where $pages "Date.Month" (time.AsTime (printf "%04d-%02d-01" (int $year) $monthInt)).Month }}
   {{ end }}
   {{ $pages = $pages.ByDate.Reverse }}
 

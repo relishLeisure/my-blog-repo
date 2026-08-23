@@ -1,8 +1,9 @@
 # Hugo Configuration for ezyang's blog
-baseURL = 'https://blog.ezyang.com/'
-languageCode = 'en-us'
-title = "ezyang's blog"
+baseURL = 'https://relishleisure.github.io/'
+languageCode = 'cn-zh'
+title = "Truman's blog"
 theme = 'ashley'
+publishDir = "docs"
 
 # Match WordPress permalink structure: /%year%/%monthnum%/%postname%/
 [permalinks]
@@ -10,7 +11,7 @@ theme = 'ashley'
 
 [params]
   description = "the arc of software bends towards understanding"
-  author = "Edward Z. Yang"
+  author = "Truman."
 
 [markup]
   [markup.goldmark]
