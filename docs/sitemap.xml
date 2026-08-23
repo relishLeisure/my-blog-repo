@@ -2,42 +2,53 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/posts/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/</loc>
     <lastmod>2026-08-23T16:13:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/2026/08/test/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/posts/</loc>
     <lastmod>2026-08-23T16:13:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/2026/08/test/</loc>
     <lastmod>2026-08-23T16:13:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/years/2026/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/test1/</loc>
+    <lastmod>2026-08-23T16:13:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/years/2026/08/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/test2/</loc>
+    <lastmod>2026-08-23T16:13:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/archives/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/</loc>
+    <lastmod>2026-08-23T16:13:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/categories/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/years/2026/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/tags/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/years/2026/08/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/years/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/archives/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://relishleisure.github.io/my-blog-repo/tags/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://relishleisure.github.io/my-blog-repo/years/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>

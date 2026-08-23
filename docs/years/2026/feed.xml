@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
 		<title>2026 on Truman&#39;s blog</title>
-		<link>http://localhost:1313/years/2026/</link>
+		<link>https://relishleisure.github.io/my-blog-repo/years/2026/</link>
 		<description>Recent content in 2026 on Truman&#39;s blog</description>
 		<generator>Hugo</generator>
 		<language>cn-zh</language>
@@ -10,6 +10,6 @@
 		
 		
 		
-			<atom:link href="http://localhost:1313/years/2026/feed.xml" rel="self" type="application/rss+xml" />
+			<atom:link href="https://relishleisure.github.io/my-blog-repo/years/2026/feed.xml" rel="self" type="application/rss+xml" />
 	</channel>
 </rss>

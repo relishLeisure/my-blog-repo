@@ -6,7 +6,7 @@
   <p class="tag-cloud">
     {{- range (where site.RegularPages "Section" "posts").GroupByDate "2006" }}
     {{- if ge .Key "2000" }}
-    <span class="tag-item"><a href="/years/{{ .Key }}/">{{ .Key }}</a>&nbsp;<span class="count">({{ len .Pages }})</span></span>
+    <span class="tag-item"><a href="{{ printf "years/%s/" .Key | relURL }}">{{ .Key }}</a>&nbsp;<span class="count">({{ len .Pages }})</span></span>
     {{- end }}
     {{- end }}
   </p>

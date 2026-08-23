@@ -5,9 +5,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} : {{ .Site.Title }}{{ end }}</title>
-  <link rel="icon" href="/favicon.ico">
+  <link rel="icon" href="{{ "favicon.ico" | relURL }}">
 
-  <link rel="stylesheet" href="/css/style.css" type="text/css" media="screen">
+  <link rel="stylesheet" href="{{ "css/style.css" | relURL }}" type="text/css" media="screen">
   <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet" type="text/css">
 
@@ -22,12 +22,12 @@
 <body class="{{ if .IsPage }}single{{ end }}">
 
 <header>
-  <h1 class="vcard author"><a href="/" title="Home">{{ .Site.Title }}</a></h1>
+  <h1 class="vcard author"><a href="{{ .Site.Home.RelPermalink }}" title="Home">{{ .Site.Title }}</a></h1>
   <p>
     {{ .Site.Params.description }}
     <ul class="pages">
-      <li><a href="/archives/">archives</a></li>
-      <li><a href="/feed.xml">subscribe</a></li>
+      <li><a href="{{ "archives/" | relURL }}">archives</a></li>
+      <li><a href="{{ "feed.xml" | relURL }}">subscribe</a></li>
     </ul>
   </p>
 </header>

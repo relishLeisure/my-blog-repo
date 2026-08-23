@@ -7,12 +7,12 @@
     <footer>
       {{ with .Params.categories }}
       <ul class="small">
-        <li>{{ range $i, $cat := . }}{{ if $i }}, {{ end }}<a href="{{ (print "/categories/" (. | urlize) "/") | relURL }}">{{ . }}</a>{{ end }}</li>
+        <li>{{ range $i, $cat := . }}{{ if $i }}, {{ end }}<a href="{{ (print "categories/" (. | urlize) "/") | relURL }}">{{ . }}</a>{{ end }}</li>
       </ul>
       {{ end }}
       {{ with .Params.tags }}
       <ul class="tags">
-        {{ range . }}<li><a href="{{ (print "/tags/" (. | urlize) "/") | relURL }}">{{ . }}</a></li>{{ end }}
+        {{ range . }}<li><a href="{{ (print "tags/" (. | urlize) "/") | relURL }}">{{ . }}</a></li>{{ end }}
       </ul>
       {{ end }}
     </footer>
