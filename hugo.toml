@@ -1,5 +1,5 @@
 # Hugo Configuration for ezyang's blog
-baseURL = 'https://relishleisure.github.io/'
+baseURL = 'https://relishleisure.github.io/my-blog-repo/'
 languageCode = 'cn-zh'
 title = "Truman's blog"
 theme = 'ashley'
