@@ -10,7 +10,7 @@ publishDir = "docs"
   posts = '/:year/:month/:slug/'
 
 [params]
-  description = "the arc of software bends towards understanding"
+  description = "God helps those who help themselves."
   author = "Truman."
 
 [markup]
