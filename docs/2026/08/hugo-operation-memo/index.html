@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="cn-zh">
+
+<head><script src="/my-blog-repo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=my-blog-repo/livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hugo Operation Memo : Truman&#39;s blog</title>
+  <link rel="icon" href="/my-blog-repo/favicon.ico">
+
+  <link rel="stylesheet" href="/my-blog-repo/css/style.css" type="text/css" media="screen">
+  <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet" type="text/css">
+
+  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="http://localhost:1313/my-blog-repo/feed.xml">
+
+
+<style>
+ 
+pre {
+    margin-left: 0;
+    padding: 1em;
+    background: var(--code-bg);
+    overflow-x: auto;
+    font-family: 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--code-text);
+}
+
+code {
+    font-family: 'Ubuntu Mono', monospace;
+}
+
+ 
+p code, li code {
+    background: var(--code-bg);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+@media screen and (min-width: 640px) {
+    pre {
+        margin-left: 3em;
+    }
+}
+</style>
+<meta name="generator" content="Hugo 0.165.0">
+</head>
+
+<body class="single">
+
+<header>
+  <h1 class="vcard author"><a href="/my-blog-repo/" title="Home">Truman&#39;s blog</a></h1>
+  <p>
+    the arc of software bends towards understanding
+    <ul class="pages">
+      <li><a href="/my-blog-repo/archives/">archives</a></li>
+      <li><a href="/my-blog-repo/feed.xml">subscribe</a></li>
+    </ul>
+  </p>
+</header>
+
+<div class="content wrap">
+  
+<section class="posts">
+  <article class="post">
+    <h2>Hugo Operation Memo</h2>
+    <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr>
+    <h4 id="新建模板文件"  id="新建模板文件">
+  <a class="heading-link" href="/my-blog-repo/2026/08/hugo-operation-memo/#%e6%96%b0%e5%bb%ba%e6%a8%a1%e6%9d%bf%e6%96%87%e4%bb%b6">新建模板文件<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cmd" data-lang="cmd"><span style="display:flex;"><span>hugo new quickstart &lt;template-name&gt;
+</span></span></code></pre></div><p>文件内容</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-markdown" data-lang="markdown"></code></pre></div><h4 id="编译"  id="编译">
+  <a class="heading-link" href="/my-blog-repo/2026/08/hugo-operation-memo/#%e7%bc%96%e8%af%91">编译<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cmd" data-lang="cmd"><span style="display:flex;"><span># 编译指的是把markdown等文件，编译成静态页面
+</span></span><span style="display:flex;"><span>hugo server --gc -D				# server 表示在本地启动服务，gc 表示清理缓存，-D 表示草稿也进行编译
+</span></span></code></pre></div><h3 id="其他文件"  id="其他文件">
+  <a class="heading-link" href="/my-blog-repo/2026/08/hugo-operation-memo/#%e5%85%b6%e4%bb%96%e6%96%87%e4%bb%b6">其他文件<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="jupyter-notebook"  id="jupyter-notebook">
+  <a class="heading-link" href="/my-blog-repo/2026/08/hugo-operation-memo/#jupyter-notebook">Jupyter Notebook<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<h5 id="1-转成markdown之后使用hugo"  id="1-转成markdown之后使用hugo">
+  <a class="heading-link" href="/my-blog-repo/2026/08/hugo-operation-memo/#1-%e8%bd%ac%e6%88%90markdown%e4%b9%8b%e5%90%8e%e4%bd%bf%e7%94%a8hugo">1 转成markdown之后使用hugo<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p>将 <code>.ipynb</code> 转换为 <code>.md</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cmd" data-lang="cmd"><span style="display:flex;"><span>jupyter nbconvert --to markdown your_notebook.ipynb
+</span></span></code></pre></div><h5 id="2-quarto"  id="2-quarto">
+  <a class="heading-link" href="/my-blog-repo/2026/08/hugo-operation-memo/#2-quarto">2 Quarto<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cmd" data-lang="cmd"><span style="display:flex;"><span>jupyter nbconvert --to markdown your_notebook.ipynb
+</span></span></code></pre></div>
+    <footer>
+      
+      <ul class="small">
+        <li><a href="/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/">笔记</a></li>
+      </ul>
+      
+      
+    </footer>
+  </article>
+
+<div class="pagination p">
+    
+    <span class="previous"><a href="/my-blog-repo/2026/08/test/">&laquo; Previous Post</a></span>
+    
+    
+    <span class="next"><a href="/my-blog-repo/2026/08/git-operation-memo/">Next Post &raquo;</a></span>
+    
+  </div>
+</section>
+
+</div>
+
+<footer class="bottom small wrap">
+  <p class="small">&copy; Truman&#39;s blog. Powered by <a href="https://gohugo.io/">Hugo</a>, theme based off of <a href="http://jxnblk.com/ashley/">Ashley</a>.</p>
+</footer>
+
+</body>
+</html>

@@ -1,9 +1,9 @@
 ---
 title: "Git Operation Memo"
 date: 2026-08-24T14:50:02+08:00
-draft: false
+draft: true
 slug: 
-categories: [Git]
+categories: [Git,笔记]
 ---
 
 > 分支相关操作？

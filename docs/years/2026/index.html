@@ -81,6 +81,70 @@ p code, li code {
   
   
   <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/">WSL 测试 RoCE</a> <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr></h2>
+    
+    <div class="summary">
+      <h3 id="wsl-架构-debian-环境-soft-roce-rdma-开发环境"  id="wsl-架构-debian-环境-soft-roce-rdma-开发环境">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#wsl-%e6%9e%b6%e6%9e%84-debian-%e7%8e%af%e5%a2%83-soft-roce-rdma-%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83">WSL 架构 Debian 环境 Soft-RoCE RDMA 开发环境<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="第零步检测-rxe-是否安装"  id="第零步检测-rxe-是否安装">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#%e7%ac%ac%e9%9b%b6%e6%ad%a5%e6%a3%80%e6%b5%8b-rxe-%e6%98%af%e5%90%a6%e5%ae%89%e8%a3%85">第零步：检测 RXE 是否安装<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>zcat /proc/config.gz | grep -i RXE
+</span></span></code></pre></div><h4 id="第一步安装-debian-编译依赖"  id="第一步安装-debian-编译依赖">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#%e7%ac%ac%e4%b8%80%e6%ad%a5%e5%ae%89%e8%a3%85-debian-%e7%bc%96%e8%af%91%e4%be%9d%e8%b5%96">第一步：安装 Debian 编译依赖<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd ~			<span style="color:#75715e"># 先回到 Linux 用户主目录并安装依赖 codeBash  downloadcontent_copy   expand_less</span>
+</span></span><span style="display:flex;"><span>sudo apt update
+</span></span><span style="display:flex;"><span>sudo apt install build-essential flex bison dwarves libssl-dev libelf-dev bc libncurses-dev pkg-config
+</span></span></code></pre></div><p>下载源码</p>
+<p><a href="https://kernel.org/">https://kernel.org/</a>   下载LTS版本</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd ~
+</span></span><span style="display:flex;"><span>truman@pcofcg:~$ pwd
+</span></span><span style="display:flex;"><span>/home/truman
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 1. 从官方下载 Linux Kernel 6.1 系列源码 (这里以 6.1.84 为例)</span>
+</span></span><span style="display:flex;"><span>wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.6.135.tar.xz
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 或者手动  https://kernel.org/   下载LTS版本</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>tar -xf linux-6.6.135.tar.xz
+</span></span><span style="display:flex;"><span>cd linux-6.6.135/
+</span></span></code></pre></div><h4 id="第三步下载-wsl-配置文件并启用-soft-roce"  id="第三步下载-wsl-配置文件并启用-soft-roce">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#%e7%ac%ac%e4%b8%89%e6%ad%a5%e4%b8%8b%e8%bd%bd-wsl-%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e5%b9%b6%e5%90%af%e7%94%a8-soft-roce">第三步：下载 WSL 配置文件并启用 Soft-RoCE<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 1. 下载微软官方内核配置文件</span>
+</span></span><span style="display:flex;"><span>wget https://raw.githubusercontent.com/microsoft/WSL2-Linux-Kernel/linux-msft-wsl-6.6.y/arch/x86/configs/config-wsl -O arch/x86/configs/config-wsl
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 2. 打开图形化内核配置菜单</span>
+</span></span><span style="display:flex;"><span>make menuconfig KCONFIG_CONFIG<span style="color:#f92672">=</span>arch/x86/configs/config-wsl
+</span></span></code></pre></div><p>图形化操作说明</p>
+      
+      <p><a href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/">Read more...</a></p>
+      
+    </div>
+    
+  </article>
+  
+  <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">RDMA 学习笔记</a> <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr></h2>
+    
+    <div class="summary">
+      <h3 id="术语"  id="术语">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e6%9c%af%e8%af%ad">术语<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><strong>NIC</strong> : Network Interface Card, 网络适配器 / 网卡。 <strong>解释：</strong> 连接计算机与网络的硬件组件。在 AI 数据中心，普通 NIC 已无法满足需求，通常需要支持高吞吐和低延迟协议（如 RoCE）的专用高性能网卡。</p>
+<p><strong>SmartNIC / DPU</strong> : Smart Network Interface Card / Data Processing Unit, 智能网卡 / 数据处理器。 <strong>解释：</strong> 带有独立处理器的网卡。它能卸载原本由 CPU 处理的网络、存储和安全任务，让昂贵的计算资源完全服务于 AI 模型。</p>
+<p><strong>RDMA</strong> : Remote Direct Memory Access, 远程直接内存访问。 <strong>解释：</strong> 允许计算机直接访问远程内存的技术，绕过操作系统内核和 CPU 干扰。它是实现多 GPU 集群超低延迟通信的底层基石。</p>
+<p><strong>RoCE</strong> : RDMA over Converged Ethernet, 基于融合以太网的 RDMA。 <strong>解释：</strong> 在标准以太网上运行 RDMA 的协议。它让数据中心能在不更换昂贵专用网络设备的前提下，获得接近无限带宽技术的传输性能。</p>
+<p><strong>NCCL</strong> : NVIDIA Collective Communications Library, 英伟达集合通信库。 <strong>解释：</strong> 专门优化英伟达 GPU 间数据交换的算法库。它定义了多卡如何高效同步数据，是分布式训练的“通信翻译官”。</p>
+      
+      <p><a href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">Read more...</a></p>
+      
+    </div>
+    
+  </article>
+  
+  <article class="post">
     <h2><a class="post-title" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/">《后会无期》———— 每个人的平凡之路</a> <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr></h2>
     
     <div class="summary">
@@ -151,50 +215,6 @@ p code, li code {
 <p>他是理想者还是骗子？为什么取得信任之后，盗走了浩瀚哥的车子？</p>
       
       <p><a href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/">Read more...</a></p>
-      
-    </div>
-    
-  </article>
-  
-  <article class="post">
-    <h2><a class="post-title" href="/my-blog-repo/2026/08/git-operation-memo/">Git Operation Memo</a> <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr></h2>
-    
-    <div class="summary">
-      <blockquote>
-<p>分支相关操作？</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cmd" data-lang="cmd"><span style="display:flex;"><span># 查看分支			-a 查看所有
-</span></span><span style="display:flex;"><span>git branch
-</span></span><span style="display:flex;"><span>git branch -a 	
-</span></span><span style="display:flex;"><span> 
-</span></span><span style="display:flex;"><span># 切换分支
-</span></span><span style="display:flex;"><span>git checkout branch-name
-</span></span><span style="display:flex;"><span>git switch branch-name
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span># 分支改名
-</span></span><span style="display:flex;"><span># 1. 修改当前分支名
-</span></span><span style="display:flex;"><span>git branch -m &lt;new-branch-name&gt;
-</span></span><span style="display:flex;"><span># 2. 修改指定分支名
-</span></span><span style="display:flex;"><span>git branch -m &lt;old-branch-name&gt; &lt;new-branch-name&gt;
-</span></span><span style="display:flex;"><span># 3. 如果旧分支已经推送到远程了，改名后需要把远程的旧分支删掉，再推送新分支：
-</span></span><span style="display:flex;"><span>git push origin --delete &lt;old-branch-name&gt;
-</span></span><span style="display:flex;"><span>git push origin -u &lt;new-branch-name&gt;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span># 分支同步
-</span></span><span style="display:flex;"><span># 1.当前分支从其他分支同步
-</span></span><span style="display:flex;"><span>git fetch origin
-</span></span><span style="display:flex;"><span>git merge origin/&lt;branch-name&gt;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span># 2.当前分支推送到其他分支
-</span></span><span style="display:flex;"><span># 第一次推送当前分支（建立远程关联）
-</span></span><span style="display:flex;"><span>git push -u origin &lt;branch-name&gt;
-</span></span><span style="display:flex;"><span># 之后再次推送，直接输入
-</span></span><span style="display:flex;"><span>git push
-</span></span></code></pre></div><blockquote>
-<p>本地远程仓库不同步？</p>
-      
-      <p><a href="/my-blog-repo/2026/08/git-operation-memo/">Read more...</a></p>
       
     </div>
     
