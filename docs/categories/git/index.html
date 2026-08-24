@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="cn-zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Git : Truman&#39;s blog</title>
+  <link rel="icon" href="/my-blog-repo/favicon.ico">
+
+  <link rel="stylesheet" href="/my-blog-repo/css/style.css" type="text/css" media="screen">
+  <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet" type="text/css">
+
+  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="https://relishleisure.github.io/my-blog-repo/feed.xml">
+
+
+<style>
+ 
+pre {
+    margin-left: 0;
+    padding: 1em;
+    background: var(--code-bg);
+    overflow-x: auto;
+    font-family: 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--code-text);
+}
+
+code {
+    font-family: 'Ubuntu Mono', monospace;
+}
+
+ 
+p code, li code {
+    background: var(--code-bg);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+@media screen and (min-width: 640px) {
+    pre {
+        margin-left: 3em;
+    }
+}
+</style>
+<meta name="generator" content="Hugo 0.165.0">
+</head>
+
+<body class="">
+
+<header>
+  <h1 class="vcard author"><a href="/my-blog-repo/" title="Home">Truman&#39;s blog</a></h1>
+  <p>
+    the arc of software bends towards understanding
+    <ul class="pages">
+      <li><a href="/my-blog-repo/archives/">archives</a></li>
+      <li><a href="/my-blog-repo/feed.xml">subscribe</a></li>
+    </ul>
+  </p>
+</header>
+
+<div class="content wrap">
+  
+<section class="posts">
+  
+  <h2 class="archiveTitle">Git</h2>
+  
+
+  
+  
+  <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/git-operation-memo/">Git Operation Memo</a> <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr></h2>
+    
+    <div class="summary">
+      <blockquote>
+<p>分支相关操作？</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cmd" data-lang="cmd"><span style="display:flex;"><span># 查看分支			-a 查看所有
+</span></span><span style="display:flex;"><span>git branch
+</span></span><span style="display:flex;"><span>git branch -a 	
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span># 切换分支
+</span></span><span style="display:flex;"><span>git checkout branch-name
+</span></span><span style="display:flex;"><span>git switch branch-name
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span># 分支改名
+</span></span><span style="display:flex;"><span># 1. 修改当前分支名
+</span></span><span style="display:flex;"><span>git branch -m &lt;new-branch-name&gt;
+</span></span><span style="display:flex;"><span># 2. 修改指定分支名
+</span></span><span style="display:flex;"><span>git branch -m &lt;old-branch-name&gt; &lt;new-branch-name&gt;
+</span></span><span style="display:flex;"><span># 3. 如果旧分支已经推送到远程了，改名后需要把远程的旧分支删掉，再推送新分支：
+</span></span><span style="display:flex;"><span>git push origin --delete &lt;old-branch-name&gt;
+</span></span><span style="display:flex;"><span>git push origin -u &lt;new-branch-name&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span># 分支同步
+</span></span><span style="display:flex;"><span># 1.当前分支从其他分支同步
+</span></span><span style="display:flex;"><span>git fetch origin
+</span></span><span style="display:flex;"><span>git merge origin/&lt;branch-name&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span># 2.当前分支推送到其他分支
+</span></span><span style="display:flex;"><span># 第一次推送当前分支（建立远程关联）
+</span></span><span style="display:flex;"><span>git push -u origin &lt;branch-name&gt;
+</span></span><span style="display:flex;"><span># 之后再次推送，直接输入
+</span></span><span style="display:flex;"><span>git push
+</span></span></code></pre></div><blockquote>
+<p>本地远程仓库不同步？</p>
+      
+      <p><a href="/my-blog-repo/2026/08/git-operation-memo/">Read more...</a></p>
+      
+    </div>
+    
+  </article>
+  
+
+  
+</section>
+
+</div>
+
+<footer class="bottom small wrap">
+  <p class="small">&copy; Truman&#39;s blog. Powered by <a href="https://gohugo.io/">Hugo</a>, theme based off of <a href="http://jxnblk.com/ashley/">Ashley</a>.</p>
+</footer>
+
+</body>
+</html>

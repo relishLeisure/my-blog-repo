@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
 		<title>Test2 on Truman&#39;s blog</title>
-		<link>https://relishleisure.github.io/my-blog-repo/categories/test2/</link>
+		<link>http://localhost:1313/my-blog-repo/categories/test2/</link>
 		<description>Recent content in Test2 on Truman&#39;s blog</description>
 		<generator>Hugo</generator>
 		<language>cn-zh</language>
@@ -12,13 +12,13 @@
 		
 			<lastBuildDate>Sun, 23 Aug 2026 16:13:02 +0800</lastBuildDate>
 		
-			<atom:link href="https://relishleisure.github.io/my-blog-repo/categories/test2/feed.xml" rel="self" type="application/rss+xml" />
+			<atom:link href="http://localhost:1313/my-blog-repo/categories/test2/feed.xml" rel="self" type="application/rss+xml" />
 			<item>
 				<title>Test</title>
-				<link>https://relishleisure.github.io/my-blog-repo/2026/08/test/</link>
+				<link>http://localhost:1313/my-blog-repo/2026/08/test/</link>
 				<pubDate>Sun, 23 Aug 2026 16:13:02 +0800</pubDate>
-				<guid>https://relishleisure.github.io/my-blog-repo/2026/08/test/</guid>
-				<description>&lt;img src=&#34;https://relishleisure.github.io/my-blog-repo/img/Snipaste_2026-08-23_15-21-48.png&#34; alt=&#34;图片&#34;&gt;&#xD;&#xA;&#xA;&lt;p&gt;图片&lt;/p&gt;</description>
+				<guid>http://localhost:1313/my-blog-repo/2026/08/test/</guid>
+				<description>&lt;img src=&#34;http://localhost:1313/my-blog-repo/img/Snipaste_2026-08-23_15-21-48.png&#34; alt=&#34;图片&#34;&gt;&#xD;&#xA;&#xA;&lt;p&gt;图片&lt;/p&gt;</description>
 			</item>
 	</channel>
 </rss>

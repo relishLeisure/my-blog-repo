@@ -2,33 +2,38 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://relishleisure.github.io/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/</loc>
+    <lastmod>2026-08-24T15:10:02+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
     <loc>https://relishleisure.github.io/my-blog-repo/categories/</loc>
-    <lastmod>2026-08-23T16:13:02+08:00</lastmod>
+    <lastmod>2026-08-24T15:10:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://relishleisure.github.io/my-blog-repo/posts/</loc>
-    <lastmod>2026-08-23T16:13:02+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://relishleisure.github.io/my-blog-repo/2026/08/test/</loc>
-    <lastmod>2026-08-23T16:13:02+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://relishleisure.github.io/my-blog-repo/categories/test1/</loc>
-    <lastmod>2026-08-23T16:13:02+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://relishleisure.github.io/my-blog-repo/categories/test2/</loc>
-    <lastmod>2026-08-23T16:13:02+08:00</lastmod>
+    <lastmod>2026-08-24T15:10:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://relishleisure.github.io/my-blog-repo/</loc>
-    <lastmod>2026-08-23T16:13:02+08:00</lastmod>
+    <lastmod>2026-08-24T15:10:02+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/%E7%94%B5%E5%BD%B1/</loc>
+    <lastmod>2026-08-24T15:10:02+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/git/</loc>
+    <lastmod>2026-08-24T14:50:02+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://relishleisure.github.io/my-blog-repo/2026/08/git-operation-memo/</loc>
+    <lastmod>2026-08-24T14:50:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
