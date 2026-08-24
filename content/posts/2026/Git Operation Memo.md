@@ -26,6 +26,7 @@ git branch -m <old-branch-name> <new-branch-name>
 git push origin --delete <old-branch-name>
 git push origin -u <new-branch-name>
 
+
 # 分支同步
 # 1.当前分支从其他分支同步
 git fetch origin
@@ -34,7 +35,7 @@ git merge origin/<branch-name>
 # 2.当前分支推送到其他分支
 # 第一次推送当前分支（建立远程关联）
 git push -u origin <branch-name>
-# 之后再次推送，直接输入：
+# 之后再次推送，直接输入
 git push
 ```
 
@@ -49,3 +50,9 @@ git push
 
 
 3. 有差别需要修改
+```markdown
+<<<<<<< HEAD
+你当前分支（本地）写的内容
+=======
+远程分支 (origin/archive/template) 传过来的内容
+>>>>>>> origin/archive/template
