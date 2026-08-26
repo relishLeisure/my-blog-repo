@@ -53,7 +53,7 @@ p code, li code {
 <header>
   <h1 class="vcard author"><a href="/my-blog-repo/" title="Home">Truman&#39;s blog</a></h1>
   <p>
-    the arc of software bends towards understanding
+    God helps those who help themselves.
     <ul class="pages">
       <li><a href="/my-blog-repo/archives/">archives</a></li>
       <li><a href="/my-blog-repo/feed.xml">subscribe</a></li>
@@ -65,6 +65,226 @@ p code, li code {
   
 <section class="posts">
   
+  
+  <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/">van_den_Ende DDCN 笔记</a></h2>
+    <abbr class="small postDate" title="2026-08-26">August 26, 2026</abbr>
+    <h3 id="项目地址"  id="项目地址">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e9%a1%b9%e7%9b%ae%e5%9c%b0%e5%9d%80">项目地址<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><strong>对应论文</strong></p>
+<p>Deep Deconvolution for Traffic Analysis With Distributed Acoustic Sensing Data</p>
+<p><strong>文件地址</strong></p>
+<p>D:\study\graduate\code\python\van-den-Ende-DDCN</p>
+<p><strong>doi地址</strong></p>
+<p><a href="https://ieeexplore.ieee.org/document/9966323/">https://ieeexplore.ieee.org/document/9966323/</a></p>
+<p><a href="https://doi.org/10.1109/TITS.2022.3223084">https://doi.org/10.1109/TITS.2022.3223084</a></p>
+<p><strong>数据与代码仓库地址</strong></p>
+<p><a href="doi.org/10.6084/m9.figshare.16653163.">doi.org/10.6084/m9.figshare.16653163</a>    * 用的这个</p>
+<p><a href="https://github.com/Juanx65/DeepDeconvV2.git">https://github.com/Juanx65/DeepDeconvV2.git</a></p>
+<hr>
+<h3 id="项目结构"  id="项目结构">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e9%a1%b9%e7%9b%ae%e7%bb%93%e6%9e%84">项目结构<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<ul>
+<li>
+<p>绘图jupyter notebook</p>
+</li>
+<li>
+<p>模型</p>
+</li>
+<li>
+<p>数据</p>
+</li>
+<li>
+<p>波束成形和对比算法</p>
+</li>
+</ul>
+<h4 id="原理"  id="原理">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e5%8e%9f%e7%90%86">原理<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<ol>
+<li>认为车致信号为脉冲信号，与信道产生卷积</li>
+<li>通过UNet恢复稀疏信号X，波束成形 + Music 滤波</li>
+<li>稀疏信号X与固定的冲激函数进行反卷积，恢复车辆信号</li>
+<li>损失函数 = MSE + X的L1正则</li>
+</ol>
+<h4 id="1-这个仓库是什么"  id="1-这个仓库是什么">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#1-%e8%bf%99%e4%b8%aa%e4%bb%93%e5%ba%93%e6%98%af%e4%bb%80%e4%b9%88">1. 这个仓库是什么<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>这是 van den Ende 等人 DAS 交通监测论文的代码（仓库名 van-den-Ende-DDCN）。DAS = 分布式光纤声学传感：埋在路边的光纤记
+录车辆经过时的应变率信号。论文的核心问题是稀疏反卷积（Deep Deconvolution）：光纤记录到的是“车辆脉冲序列 × 光纤冲激响应</p>
+<ul>
+<li><strong>训练一个 UNet 把观测信号还原成稀疏脉冲，再做波束形成估计车速、恢复车辆轨迹。</strong></li>
+</ul>
+<h4 id="2-项目结构"  id="2-项目结构">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#2-%e9%a1%b9%e7%9b%ae%e7%bb%93%e6%9e%84">2. 项目结构<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<ul>
+<li>
+<p>models.py — 核心：UNet/ResNet 反卷积模型、DataGenerator 数据增强、CallBacks 回调</p>
+</li>
+<li>
+<p>beamforming.py — 多锥度（multitaper）协方差估计 + MUSIC/常规波束形成，在慢度网格上扫描</p>
+</li>
+<li>
+<p>ISTA.py — 经典稀疏反卷积基线：FISTA 迭代软阈值（JAX 实现）</p>
+</li>
+<li>
+<p>utils.py — FFT_roll（慢度时移对齐）、peak_projection（峰值检测）、match_peaks（与人工拾取匹配评估）</p>
+</li>
+<li>
+<p>Fig*.ipynb — 论文全部插图，同时是使用示例：Fig2_impulse_response（冲激响应）、Fig4_architecture（网络结构）、
+FigS1_training_curves（训练曲线）、Fig10/11、Figs6-9（评估）</p>
+</li>
+<li>
+<p>requirements.txt — numpy/scipy/tensorflow&gt;=2.3/jax/numba/spectrum/h5py 等</p>
+</li>
+<li>
+<p>data.tar\data\ — 实际数据目录：DAS_data.h5（1.6 GB 主记录）、kernel.npy（冲激响应）、saved-model.h5（预训练权重）、
+multicars_extract.npy、picks_forward/backward.npy（人工拾取的车辆轨迹）、coords_Teil.npy（光纤几何坐标）、logs/（训
+练 TensorBoard 日志）</p>
+</li>
+</ul>
+<h4 id="3-核心模型与训练方法"  id="3-核心模型与训练方法">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#3-%e6%a0%b8%e5%bf%83%e6%a8%a1%e5%9e%8b%e4%b8%8e%e8%ae%ad%e7%bb%83%e6%96%b9%e6%b3%95">3. 核心模型与训练方法<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>观测模型：y = h ⊛ x + n，其中 h 是已知的冲激响应（kernel.npy，实测自单辆车经过）。</p>
+<ul>
+<li>网络前向（models.py:280）：UNet 输出稀疏脉冲图 x_hat，再用固定卷积 h 得到重建观测 y_hat。训练时只有 y_hat 参与监督，
+这就是“物理约束自监督”反卷积。<strong>（意思是：UNet 输出稀疏信息 x_hat，也就是车致信号，通过固定卷积 h 得到 y_hat; 训练时只有 y_hat 参与监督意思是 损失函数计算 y_hat 和 y）</strong></li>
+<li>损失（models.py:290）：total = ‖y − y_hat‖² + λ·‖x_hat‖₁，即拟合项 + 稀疏项。论文里 λ = 10（代码中叫 rho/lam），训练
+曲线按 rho·l1 绘制以体现贡献占比。<strong>（正则化）</strong></li>
+<li>结构：kernel=(3,5)、激活 swish、正交初始化、Adam lr=5e-4；推理用配置 f0=8, blocks=3, AA=False, bn=False,
+dropout=1.0（dropout 实际是 GaussianNoise，见 models.py:356）。下采样用 MaxBlurPool（抗混叠），上采样双线性 + skip
+连接，最后 relu 输出保证非负脉冲。</li>
+<li>数据：DataGenerator（models.py:17）从长记录里随机截 win 宽窗口，并做时间/通道翻转增强；每个 epoch 重新采样。</li>
+<li>训练流程：约 1000 epoch，ModelCheckpoint 按 val_loss 保存最佳权重 → saved-model.h5，TensorBoard 记录 loss/l2/l1（见
+FigS1_training_curves 与 logs/）。</li>
+</ul>
+<hr>
+<h3 id="我的理解修正版"  id="我的理解修正版">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e6%88%91%e7%9a%84%e7%90%86%e8%a7%a3%e4%bf%ae%e6%ad%a3%e7%89%88">我的理解（修正版）<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<pre tabindex="0"><code>y (观测) → UNet → x_hat (稀疏脉冲图)
+                   │
+                   ├─ 与已知冲激响应 h 卷积 → y_hat (重建观测)
+                   │     损失 = MSE(y, y_hat) + λ·‖x_hat‖₁
+                   │
+                   └─ 推理时只取 x_hat → FFT_roll 慢度对齐 → 波束形成扫描 → 轨迹
+</code></pre><p>三处小修正：</p>
+<ul>
+<li>UNet 输出在代码里叫 <code>x_hat</code>。</li>
+<li><strong>L1 正则加在输出信号 <code>x_hat</code> 上，不是网络权重上</strong>——它不是“参数稀疏化”，而是物理先验“车辆事件在时空上是稀疏的”。模型学的是“去卷积”，因为只有把脉冲放在车辆事件位置，<code>h⊛x̂</code> 才能匹配 <code>y</code>。</li>
+<li><strong>波束形成是对 <code>x_hat</code> 做的</strong>，不是 <code>y_hat</code>。<code>Fig10</code> cell 10 把 UNet 输出 <code>x</code> 存入 <code>&quot;deep&quot;</code> 类别，之后才做 <code>FFT_roll</code> + <code>Beamformer</code>。</li>
+</ul>
+<h4 id="q1你的数据是-1000-hz"  id="q1你的数据是-1000-hz">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#q1%e4%bd%a0%e7%9a%84%e6%95%b0%e6%8d%ae%e6%98%af-1000-hz">Q1：你的数据是 1000 Hz<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>采样率会影响三处，都需要对齐：</p>
+<ul>
+<li><strong>时间窗</strong>：模型推理用 <code>win=1024</code>，50 Hz 时是 20.5 s，足够覆盖一次完整过车（24 通道 × 3.2 m ≈ 77 m，80 km/h 约 3.5 s）。</li>
+<li><strong>冲激响应 <code>h</code></strong>：<code>kernel.npy</code> 有 866 个采样点，50/80 Hz 下约 10–17 s 的物理响应。<strong>【可以改进的地方：将冲激响应换成自己建模的冲激响应。】</strong></li>
+<li><strong>波束形成频带</strong>：论文用 <code>(0.5, 2.0) Hz</code> 频段，车辆 DAS 信号能量集中在这附近；1000 Hz 的奈奎斯特频段大部分是噪声。</li>
+</ul>
+<p><strong>建议：低通滤波 + 降采样到 50–100 Hz</strong>，例如 <code>scipy.signal.decimate(x, 10)</code>（先滤后抽，避免混叠）。这样 <code>win=1024</code> 对应 10–20 s，论文的模型和 pipeline 几乎原样可用。坚持 1000 Hz 需要把窗口放到 ~20000 点、kernel 重采样到 ~17000 点，卷积成本高且没有信息增益。</p>
+<p>另外两点：模型输入是 24 通道（<code>data_shape=(24, 1024, 1)</code>）【24是所有的通道数量】，你的光纤通道数不同需要按自己的 <code>Nch</code> 重训；<code>gauge=3.2 m</code> 是他们的道间距，也要换成你自己的。<code>3.2*24=76.8</code>m.</p>
+<h4 id="q2需要人工标注轨迹吗"  id="q2需要人工标注轨迹吗">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#q2%e9%9c%80%e8%a6%81%e4%ba%ba%e5%b7%a5%e6%a0%87%e6%b3%a8%e8%bd%a8%e8%bf%b9%e5%90%97">Q2：需要人工标注轨迹吗？<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p><strong>训练不需要。</strong> 这个方法是自监督/物理约束的：只需要原始 DAS 记录 <code>y</code> 和已知的 <code>h</code>，损失在观测域比较 <code>y</code> 与 <code>h⊛x̂</code>，全程没有标签参与。</p>
+<p><code>picks_forward.npy</code> / <code>picks_backward.npy</code>（人工拾取的车辆轨迹）<strong>只用于评估</strong>：<code>Fig10/11</code> 里用 <code>match_peaks</code> 把算法检测结果和人工拾取对比，画 ROC 和检测统计。</p>
+<hr>
+<h3 id="复现代码仓库"  id="复现代码仓库">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e5%a4%8d%e7%8e%b0%e4%bb%a3%e7%a0%81%e4%bb%93%e5%ba%93">复现代码仓库<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><strong>激活环境</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cmd" data-lang="cmd"><span style="display:flex;"><span># conda 新环境
+</span></span><span style="display:flex;"><span>conda create -n tf python=3.10 -y
+</span></span><span style="display:flex;"><span>conda activate tf
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span># 安装库
+</span></span><span style="display:flex;"><span>pip list
+</span></span><span style="display:flex;"><span>pip install tensorflow==2.10.0 numpy==1.25.3 scipy jax h5py matplotlib seaborn numba spectrum notebook ipympl	
+</span></span></code></pre></div><p><code>requirements.txt</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>numpy					# 
+</span></span><span style="display:flex;"><span>scipy					
+</span></span><span style="display:flex;"><span>tensorflow==2.10.0		# 
+</span></span><span style="display:flex;"><span>jax						# 
+</span></span><span style="display:flex;"><span>numba
+</span></span><span style="display:flex;"><span>spectrum
+</span></span><span style="display:flex;"><span>seaborn
+</span></span><span style="display:flex;"><span>matplotlib
+</span></span><span style="display:flex;"><span>ipympl
+</span></span><span style="display:flex;"><span>cartopy
+</span></span><span style="display:flex;"><span>osmnx
+</span></span><span style="display:flex;"><span>h5py
+</span></span><span style="display:flex;"><span>notebook
+</span></span></code></pre></div><p><strong>目录链接</strong></p>
+<p>Notebook 写死数据放在 .\data , 实际数据放在 .\data.tar\data</p>
+<p>不建议用目录链接（永久保存在 NTFS 磁盘，重启不掉），实际做法把data.tar文件夹改名</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span>New-Item -ItemType Junction -Path .\data -Target .\data.tar\data
+</span></span></code></pre></div><p><strong>跑通模型</strong></p>
+<p>Fig10_performance_statistics.ipynb</p>
+<hr>
+<h3 id="qa"  id="qa">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#qa"><strong>Q&amp;A</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<blockquote>
+<p>ModuleNotFoundError: No module named &lsquo;beamforming&rsquo;</p>
+<p>jupyter notebook 报错，实际上 beamforming.py 与 ipynb 文件在同一目录下，我在 vscode 中运行 notebook，如何解决</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> sys
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 将当前 Notebook 所在目录加入搜索路径</span>
+</span></span><span style="display:flex;"><span>sys<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;D:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">study</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">graduate</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">code</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">python</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">van-den-Ende-DDCN&#34;</span>)
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 带来的附属问题，jupyter notebook 当前目录是 jupyter notebook 命令启动目录</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># FileNotFoundError: [Errno 2] Unable to synchronously open file (unable to open file: name = &#39;C:\Users\72950\data\DAS_data.h5&#39;)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># r&#34;&#34; 原始字符串，直接写单反斜杠</span>
+</span></span><span style="display:flex;"><span>os<span style="color:#f92672">.</span>chdir(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;D:\study\graduate\code\python\van-den-Ende-DDCN&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 获取当前工作目录绝对路径，加入模块搜索路径</span>
+</span></span><span style="display:flex;"><span>current_dir <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>abspath(<span style="color:#e6db74">&#34;.&#34;</span>)
+</span></span><span style="display:flex;"><span>sys<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>append(current_dir)
+</span></span></code></pre></div><hr>
+<blockquote>
+<p>numpy 版本过高，如何降级？</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>pip install <span style="color:#e6db74">&#34;numpy&lt;1.24.0&#34;</span> <span style="color:#f92672">--</span>force<span style="color:#f92672">-</span>reinstall
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 或者直接指定推荐版本：</span>
+</span></span><span style="display:flex;"><span>pip install numpy<span style="color:#f92672">==</span><span style="color:#ae81ff">1.23.5</span>
+</span></span></code></pre></div><hr>
+<blockquote>
+<p>tensorflow 和 numpy 版本不冲突，但是其他包可能导致 numpy 版本冲突而报错</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>codex: 已解决，tf（tensorflow）环境的依赖冲突处理完成。做了什么
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">-</span> 定位冲突根源：tensorflow 2.10.0 要求 numpy 1.23.x，而 jax 0.6.2/jaxlib 0.6.2（需 numpy≥1.26）和 ml-dtypes 0.6.0（需 numpy≥2.0）把环境搞冲突，甚至导致 import tensorflow 直接报错。
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">-</span> 已卸载 jax、jaxlib、ml-dtypes（环境内无其他包依赖它们）。
+</span></span></code></pre></div><hr>
+<blockquote>
+<p>兼容的版本 <code>requirements.txt</code></p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span># Verified combo on Windows (Python 3.10, conda env: tf)
+</span></span><span style="display:flex;"><span># jax 0.4.30 is the newest version still compatible with numpy 1.23.x
+</span></span><span style="display:flex;"><span># (jax 0.4.31+ requires numpy&gt;=1.24; ml-dtypes 0.6.0 requires numpy&gt;=2.0).
+</span></span><span style="display:flex;"><span># tensorflow 2.10 breaks with numpy&gt;=1.24 (np.bool removal), so keep numpy==1.23.5.
+</span></span><span style="display:flex;"><span>numpy==1.23.5
+</span></span><span style="display:flex;"><span>tensorflow==2.10.0
+</span></span><span style="display:flex;"><span>jax==0.4.30
+</span></span><span style="display:flex;"><span>jaxlib==0.4.30
+</span></span><span style="display:flex;"><span>ml-dtypes==0.4.1
+</span></span><span style="display:flex;"><span>scipy==1.15.3
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span><span style="color:#75715e"># 查看某包的版本</span>
+</span></span><span style="display:flex;"><span>pip show &lt;包名&gt;
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 或</span>
+</span></span><span style="display:flex;"><span>conda list &lt;包名&gt;
+</span></span></code></pre></div><hr>
+
+  </article>
   
   <article class="post">
     <h2><a class="post-title" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">RDMA 学习笔记</a></h2>

@@ -11,12 +11,25 @@ categories: [笔记]
 ## 新建模板文件
 
 ```cmd
-hugo new quickstart <template-name>
+# 命令
+hugo new --kind <template-name> path/<filename>
+# 示例
+E:\github_pages\my-blog-repo>hugo new --kind default posts/2026/thoughts/2608随便写.md
+# 结果
+WARN  deprecated: project config key languageCode was deprecated in Hugo v0.158.0 and will be removed in a future release. Use locale instead.
+Content "E:\\github_pages\\my-blog-repo\\content\\posts\\2026\\thoughts\\2608随便写.md" created
 ```
 
-文件内容
+模板位置：/archetypes/default.md
 
 ```markdown
+---
+title: "{{ replace .File.ContentBaseName "-" " " | title }}"
+date: {{ .Date }}
+draft: true
+slug: "{{ .File.ContentBaseName }}"
+categories: []
+---
 ```
 
 ## 编译
@@ -40,7 +53,9 @@ jupyter nbconvert --to markdown your_notebook.ipynb
 
 ### 2 Quarto
 
+下载下来需要安装
+
 ```cmd
-jupyter nbconvert --to markdown your_notebook.ipynb
+
 ```
 

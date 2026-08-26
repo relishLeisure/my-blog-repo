@@ -10,9 +10,30 @@
 		
 		
 		
-			<lastBuildDate>Mon, 24 Aug 2026 17:38:02 +0800</lastBuildDate>
+			<lastBuildDate>Wed, 26 Aug 2026 19:48:02 +0800</lastBuildDate>
 		
 			<atom:link href="https://relishleisure.github.io/my-blog-repo/categories/feed.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>AI</title>
+				<link>https://relishleisure.github.io/my-blog-repo/categories/ai/</link>
+				<pubDate>Wed, 26 Aug 2026 19:48:02 +0800</pubDate>
+				<guid>https://relishleisure.github.io/my-blog-repo/categories/ai/</guid>
+				<description></description>
+			</item>
+			<item>
+				<title>DAS</title>
+				<link>https://relishleisure.github.io/my-blog-repo/categories/das/</link>
+				<pubDate>Wed, 26 Aug 2026 19:48:02 +0800</pubDate>
+				<guid>https://relishleisure.github.io/my-blog-repo/categories/das/</guid>
+				<description></description>
+			</item>
+			<item>
+				<title>笔记</title>
+				<link>https://relishleisure.github.io/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/</link>
+				<pubDate>Wed, 26 Aug 2026 19:48:02 +0800</pubDate>
+				<guid>https://relishleisure.github.io/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/</guid>
+				<description></description>
+			</item>
 			<item>
 				<title>RDMA</title>
 				<link>https://relishleisure.github.io/my-blog-repo/categories/rdma/</link>
@@ -25,13 +46,6 @@
 				<link>https://relishleisure.github.io/my-blog-repo/categories/%E5%AE%9E%E9%AA%8C/</link>
 				<pubDate>Mon, 24 Aug 2026 17:38:02 +0800</pubDate>
 				<guid>https://relishleisure.github.io/my-blog-repo/categories/%E5%AE%9E%E9%AA%8C/</guid>
-				<description></description>
-			</item>
-			<item>
-				<title>笔记</title>
-				<link>https://relishleisure.github.io/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/</link>
-				<pubDate>Mon, 24 Aug 2026 17:38:02 +0800</pubDate>
-				<guid>https://relishleisure.github.io/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/</guid>
 				<description></description>
 			</item>
 			<item>

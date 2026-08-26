@@ -2,13 +2,38 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/ai/</loc>
+    <lastmod>2026-08-26T19:48:02+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
     <loc>https://relishleisure.github.io/my-blog-repo/categories/</loc>
-    <lastmod>2026-08-24T17:38:02+08:00</lastmod>
+    <lastmod>2026-08-26T19:48:02+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/das/</loc>
+    <lastmod>2026-08-26T19:48:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://relishleisure.github.io/my-blog-repo/posts/</loc>
-    <lastmod>2026-08-24T17:38:02+08:00</lastmod>
+    <lastmod>2026-08-26T19:48:02+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://relishleisure.github.io/my-blog-repo/</loc>
+    <lastmod>2026-08-26T19:48:02+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://relishleisure.github.io/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/</loc>
+    <lastmod>2026-08-26T19:48:02+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/</loc>
+    <lastmod>2026-08-26T19:48:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
@@ -22,22 +47,12 @@
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://relishleisure.github.io/my-blog-repo/</loc>
-    <lastmod>2026-08-24T17:38:02+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
     <loc>https://relishleisure.github.io/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/</loc>
     <lastmod>2026-08-24T17:38:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://relishleisure.github.io/my-blog-repo/categories/%E5%AE%9E%E9%AA%8C/</loc>
-    <lastmod>2026-08-24T17:38:02+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://relishleisure.github.io/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/</loc>
     <lastmod>2026-08-24T17:38:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
