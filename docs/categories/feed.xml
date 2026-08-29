@@ -10,9 +10,44 @@
 		
 		
 		
-			<lastBuildDate>Wed, 26 Aug 2026 19:48:02 +0800</lastBuildDate>
+			<lastBuildDate>Fri, 28 Aug 2026 17:57:29 +0800</lastBuildDate>
 		
 			<atom:link href="https://relishleisure.github.io/my-blog-repo/categories/feed.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>软件</title>
+				<link>https://relishleisure.github.io/my-blog-repo/categories/%E8%BD%AF%E4%BB%B6/</link>
+				<pubDate>Fri, 28 Aug 2026 17:57:29 +0800</pubDate>
+				<guid>https://relishleisure.github.io/my-blog-repo/categories/%E8%BD%AF%E4%BB%B6/</guid>
+				<description></description>
+			</item>
+			<item>
+				<title>CUDA</title>
+				<link>https://relishleisure.github.io/my-blog-repo/categories/cuda/</link>
+				<pubDate>Fri, 28 Aug 2026 16:00:05 +0800</pubDate>
+				<guid>https://relishleisure.github.io/my-blog-repo/categories/cuda/</guid>
+				<description></description>
+			</item>
+			<item>
+				<title>笔记</title>
+				<link>https://relishleisure.github.io/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/</link>
+				<pubDate>Fri, 28 Aug 2026 16:00:05 +0800</pubDate>
+				<guid>https://relishleisure.github.io/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/</guid>
+				<description></description>
+			</item>
+			<item>
+				<title>CANN</title>
+				<link>https://relishleisure.github.io/my-blog-repo/categories/cann/</link>
+				<pubDate>Thu, 27 Aug 2026 20:53:02 +0800</pubDate>
+				<guid>https://relishleisure.github.io/my-blog-repo/categories/cann/</guid>
+				<description></description>
+			</item>
+			<item>
+				<title>实验</title>
+				<link>https://relishleisure.github.io/my-blog-repo/categories/%E5%AE%9E%E9%AA%8C/</link>
+				<pubDate>Thu, 27 Aug 2026 20:53:02 +0800</pubDate>
+				<guid>https://relishleisure.github.io/my-blog-repo/categories/%E5%AE%9E%E9%AA%8C/</guid>
+				<description></description>
+			</item>
 			<item>
 				<title>AI</title>
 				<link>https://relishleisure.github.io/my-blog-repo/categories/ai/</link>
@@ -28,24 +63,10 @@
 				<description></description>
 			</item>
 			<item>
-				<title>笔记</title>
-				<link>https://relishleisure.github.io/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/</link>
-				<pubDate>Wed, 26 Aug 2026 19:48:02 +0800</pubDate>
-				<guid>https://relishleisure.github.io/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/</guid>
-				<description></description>
-			</item>
-			<item>
 				<title>RDMA</title>
 				<link>https://relishleisure.github.io/my-blog-repo/categories/rdma/</link>
 				<pubDate>Mon, 24 Aug 2026 17:38:02 +0800</pubDate>
 				<guid>https://relishleisure.github.io/my-blog-repo/categories/rdma/</guid>
-				<description></description>
-			</item>
-			<item>
-				<title>实验</title>
-				<link>https://relishleisure.github.io/my-blog-repo/categories/%E5%AE%9E%E9%AA%8C/</link>
-				<pubDate>Mon, 24 Aug 2026 17:38:02 +0800</pubDate>
-				<guid>https://relishleisure.github.io/my-blog-repo/categories/%E5%AE%9E%E9%AA%8C/</guid>
 				<description></description>
 			</item>
 			<item>

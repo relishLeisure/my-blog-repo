@@ -239,3 +239,203 @@ conda list <包名>
 ```
 
 ---
+
+# 模型结构
+
+`models.py`
+
+**结构**
+
+```python
+class DataGenerator(keras.utils.Sequence):
+    # 相当于 pytorch 的data_loader
+    ...
+
+# 定义了回调方法，分别记录日志、保存最佳模型
+class CallBacks:
+    @staticmethod
+    def tensorboard(logdir):
+        tensorboard_callback = keras.callbacks.TensorBoard(
+            ...
+        )
+        return tensorboard_callback
+
+    @staticmethod
+    def checkpoint(savefile):
+        checkpoint_callback = keras.callbacks.ModelCheckpoint(
+            ...
+        )
+        return checkpoint_callback
+
+# 模型
+class ResNet(keras.Model):
+
+    def __init__(self, impulse_response, lam=0.0, f0=4, data_shape=(24, 1024, 1), blocks=4, AA=True, bn=False, dropout=0.0):
+        super().__init__()
+        # 初始化模型，指定参数
+        pass
+    
+    # 前向过程
+    def call(self, x):
+        x_hat = self.ResNet(x)
+        y_hat = tf.nn.conv2d(x_hat, self.impulse_response, padding="SAME", strides=1)
+        return x_hat, y_hat
+    
+    # 重写 compile()
+    def compile(self, opt):
+        super().compile()
+        self.opt = opt						# 指定 optimizer 
+        pass
+    
+    # 计算损失函数
+    def compute_loss(self, Y, Y_hat, X):
+        l1 = tf.reduce_mean(tf.abs(X))
+        l2 = tf.reduce_mean(tf.square(Y - Y_hat))
+        total_loss = l2 + self.lam * l1
+        return total_loss, l2, l1
+    
+    # 正向传播：X, Y_hat = self.call(Y) (对应 PyTorch 里的 output = model(data))
+	# 计算损失：total_loss, ... = self.compute_loss(...) (对应 loss = criterion(...))
+	# 反向传播求梯度：grads = tape.gradient(total_loss, RN_vars) (对应 loss.backward())
+	# 更新权重：self.opt.apply_gradients(zip(grads, RN_vars))
+    def train_step(self, Y):
+        if isinstance(data, tuple):
+            Y = Y[0]
+            
+        RN = self.ResNet
+        RN_vars = RN.trainable_variables
+        
+        with tf.GradientTape() as tape:
+            X, Y_hat = self.call(Y)
+            total_loss, l2_loss, l1_loss = self.compute_loss(Y, Y_hat, X)
+            
+        grads = tape.gradient(total_loss, RN_vars)
+        
+        self.opt.apply_gradients(zip(grads, RN_vars))
+        self.compiled_metrics.update_state(Y, Y_hat)
+        return {
+            "loss": total_loss,
+            "l2": l2_loss,
+            "l1": l1_loss,
+        }
+    
+    def test_step(self, Y):
+        if isinstance(data, tuple):
+            Y = Y[0]
+            
+        X, Y_hat = self.call(Y)
+        total_loss, l2_loss, l1_loss = self.compute_loss(Y, Y_hat, X)
+        self.compiled_metrics.update_state(Y, Y_hat)
+        return {
+            "loss": total_loss,
+            "l2": l2_loss,
+            "l1": l1_loss,
+        }
+
+    # 模块
+    def conv_layer(self, x, filters, kernel_size, dilation,
+                   use_bn=False, use_dropout=False, use_bias=True, activ=None):
+        """
+        Convolution layer > batch normalisation > activation > dropout
+        """
+        
+        return x
+    
+    # 模块
+    def residual_block(self, x, f0):
+        ...
+        return x0 + x
+        
+	# 拼接卷积层和
+    def construct(self):
+        """
+        Construct ResNet model
+        """
+        self.ResNet = Model(inputs, x)
+        return self.ResNet
+    
+# 模型
+class UNet(keras.Model):
+    # 同上
+```
+
+**前向过程和损失函数**
+
+```python
+def call(self, x):
+    x_hat = self.ResNet(x) 			# 神经网络预测源信号 X
+    # 将预测结果与已知的物理脉冲响应进行卷积，得到重建信号
+    y_hat = tf.nn.conv2d(x_hat, self.impulse_response, padding="SAME", strides=1) 
+    return x_hat, y_hat
+
+def compute_loss(self, Y, Y_hat, X):
+    l1 = tf.reduce_mean(tf.abs(X)) 				# 强制预测信号稀疏 (大部分为0)
+    l2 = tf.reduce_mean(tf.square(Y - Y_hat)) 	# 保证重建信号与原观测信号一致
+    total_loss = l2 + self.lam * l1
+    return total_loss, l2, l1
+```
+
+**`ResNet` 和 `UNet`** 
+
+在这个代码中，`ResNet` 和 `UNet` 是**分别使用的**
+
+---
+
+# **代码阅读**
+
+`Beamforming.py`
+
+ **它的数据流**
+
+ `输入阵列时间序列数据 X` -> `多窗频域变换 (CMTM)` -> `并行计算通道间的协方差矩阵 (Cxy)` -> `结合空间物理模型 (dt -> A)` -> `使用 MUSIC 或 传统 Beamforming 算法寻找信号到达方向`。
+
+**CMTM多窗频域变换**
+
+标准的 FFT 会产生频谱泄漏和高方差，先用多个正交的 Slepian 窗对信号进行加窗处理，再对多个加窗后的频谱求平均，得到稳定、低方差的协方差矩阵，这对于嘈杂信号（如脑电波、微弱地震波）极其重要。
+
+**多窗法计算协方差矩阵**
+
+**MUSIC算法**
+
+**一维信号 `MUSIC` 算法**
+
+一维时序信号的 MUSIC 算法估计的是：信号中包含的“频率成分“
+
+```markdown
+求一维信号的协方差矩阵————滑动窗口延时构建矩阵
+矩阵求自相关————得到协方差矩阵，怎么求的？
+正交分解，按特征值大小分为信号空间和噪声空间
+通过信号空间与噪声空间正交，确定特征值和特征向量
+噪声空间对应特征值置为0，再恢复信号
+
+```
+
+> 一维阵列采集的二维信号怎么计算协方差矩阵？
+
+```markdown
+频域法
+转为频域  >>  多次快拍(多个短窗口)的频域平均  >> 求外积并平均
+```
+
+**求外积并平均**：在特定频率 f 下，空间协方差矩阵是这样算出来的：
+$$
+R_{xx}(f)=\frac{1}{K}\sum_{k=1}^{K} X_k(f)\,X_k(f)^H
+$$
+
+- Xk(f) 是一个列向量 (M×1)。
+
+
+-   Xk(f)H 是一个行向量 (1×M)。
+-   它们相乘（外积）恰好得到一个 M×M 的复数矩阵。
+-   把 K 个短窗口算出来的矩阵加起来求平均。
+
+**信号到达方向**
+
+MUSIC 或 传统 Beamforming 算法寻找信号到达方向（信号到达方向对应车辆速度）
+
+对一维阵列，根据阵列传感器的间距和角度关系，计算对应的延时量，截取多个快拍，从而计算二维信号的协方差矩阵
+
+**结合空间物理模型**
+
+`结合空间物理模型 (dt -> A)` 就是依据车辆的速度范围，限制搜索的慢度区间
+

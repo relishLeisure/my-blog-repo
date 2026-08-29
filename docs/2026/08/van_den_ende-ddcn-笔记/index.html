@@ -281,6 +281,181 @@ FigS1_training_curves 与 logs/）。</li>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># 或</span>
 </span></span><span style="display:flex;"><span>conda list &lt;包名&gt;
 </span></span></code></pre></div><hr>
+<h3 id="模型结构"  id="模型结构">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e6%a8%a1%e5%9e%8b%e7%bb%93%e6%9e%84">模型结构<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><code>models.py</code></p>
+<p><strong>结构</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DataGenerator</span>(keras<span style="color:#f92672">.</span>utils<span style="color:#f92672">.</span>Sequence):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 相当于 pytorch 的data_loader</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 定义了回调方法，分别记录日志、保存最佳模型</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CallBacks</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@staticmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">tensorboard</span>(logdir):
+</span></span><span style="display:flex;"><span>        tensorboard_callback <span style="color:#f92672">=</span> keras<span style="color:#f92672">.</span>callbacks<span style="color:#f92672">.</span>TensorBoard(
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> tensorboard_callback
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@staticmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">checkpoint</span>(savefile):
+</span></span><span style="display:flex;"><span>        checkpoint_callback <span style="color:#f92672">=</span> keras<span style="color:#f92672">.</span>callbacks<span style="color:#f92672">.</span>ModelCheckpoint(
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> checkpoint_callback
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 模型</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ResNet</span>(keras<span style="color:#f92672">.</span>Model):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__init__</span>(self, impulse_response, lam<span style="color:#f92672">=</span><span style="color:#ae81ff">0.0</span>, f0<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>, data_shape<span style="color:#f92672">=</span>(<span style="color:#ae81ff">24</span>, <span style="color:#ae81ff">1024</span>, <span style="color:#ae81ff">1</span>), blocks<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>, AA<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, bn<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>, dropout<span style="color:#f92672">=</span><span style="color:#ae81ff">0.0</span>):
+</span></span><span style="display:flex;"><span>        super()<span style="color:#f92672">.</span><span style="color:#a6e22e">__init__</span>()
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 初始化模型，指定参数</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 前向过程</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">call</span>(self, x):
+</span></span><span style="display:flex;"><span>        x_hat <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>ResNet(x)
+</span></span><span style="display:flex;"><span>        y_hat <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>nn<span style="color:#f92672">.</span>conv2d(x_hat, self<span style="color:#f92672">.</span>impulse_response, padding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;SAME&#34;</span>, strides<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> x_hat, y_hat
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 重写 compile()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">compile</span>(self, opt):
+</span></span><span style="display:flex;"><span>        super()<span style="color:#f92672">.</span>compile()
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>opt <span style="color:#f92672">=</span> opt						<span style="color:#75715e"># 指定 optimizer </span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 计算损失函数</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">compute_loss</span>(self, Y, Y_hat, X):
+</span></span><span style="display:flex;"><span>        l1 <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reduce_mean(tf<span style="color:#f92672">.</span>abs(X))
+</span></span><span style="display:flex;"><span>        l2 <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reduce_mean(tf<span style="color:#f92672">.</span>square(Y <span style="color:#f92672">-</span> Y_hat))
+</span></span><span style="display:flex;"><span>        total_loss <span style="color:#f92672">=</span> l2 <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>lam <span style="color:#f92672">*</span> l1
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> total_loss, l2, l1
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 正向传播：X, Y_hat = self.call(Y) (对应 PyTorch 里的 output = model(data))</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 计算损失：total_loss, ... = self.compute_loss(...) (对应 loss = criterion(...))</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 反向传播求梯度：grads = tape.gradient(total_loss, RN_vars) (对应 loss.backward())</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 更新权重：self.opt.apply_gradients(zip(grads, RN_vars))</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">train_step</span>(self, Y):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> isinstance(data, tuple):
+</span></span><span style="display:flex;"><span>            Y <span style="color:#f92672">=</span> Y[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        RN <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>ResNet
+</span></span><span style="display:flex;"><span>        RN_vars <span style="color:#f92672">=</span> RN<span style="color:#f92672">.</span>trainable_variables
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> tf<span style="color:#f92672">.</span>GradientTape() <span style="color:#66d9ef">as</span> tape:
+</span></span><span style="display:flex;"><span>            X, Y_hat <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>call(Y)
+</span></span><span style="display:flex;"><span>            total_loss, l2_loss, l1_loss <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>compute_loss(Y, Y_hat, X)
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        grads <span style="color:#f92672">=</span> tape<span style="color:#f92672">.</span>gradient(total_loss, RN_vars)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>opt<span style="color:#f92672">.</span>apply_gradients(zip(grads, RN_vars))
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>compiled_metrics<span style="color:#f92672">.</span>update_state(Y, Y_hat)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;loss&#34;</span>: total_loss,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;l2&#34;</span>: l2_loss,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;l1&#34;</span>: l1_loss,
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_step</span>(self, Y):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> isinstance(data, tuple):
+</span></span><span style="display:flex;"><span>            Y <span style="color:#f92672">=</span> Y[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        X, Y_hat <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>call(Y)
+</span></span><span style="display:flex;"><span>        total_loss, l2_loss, l1_loss <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>compute_loss(Y, Y_hat, X)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>compiled_metrics<span style="color:#f92672">.</span>update_state(Y, Y_hat)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;loss&#34;</span>: total_loss,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;l2&#34;</span>: l2_loss,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;l1&#34;</span>: l1_loss,
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 模块</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">conv_layer</span>(self, x, filters, kernel_size, dilation,
+</span></span><span style="display:flex;"><span>                   use_bn<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>, use_dropout<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>, use_bias<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, activ<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        Convolution layer &gt; batch normalisation &gt; activation &gt; dropout
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> x
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 模块</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">residual_block</span>(self, x, f0):
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> x0 <span style="color:#f92672">+</span> x
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 拼接卷积层和</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">construct</span>(self):
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        Construct ResNet model
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>ResNet <span style="color:#f92672">=</span> Model(inputs, x)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>ResNet
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 模型</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UNet</span>(keras<span style="color:#f92672">.</span>Model):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 同上</span>
+</span></span></code></pre></div><p><strong>前向过程和损失函数</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">call</span>(self, x):
+</span></span><span style="display:flex;"><span>    x_hat <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>ResNet(x) 			<span style="color:#75715e"># 神经网络预测源信号 X</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 将预测结果与已知的物理脉冲响应进行卷积，得到重建信号</span>
+</span></span><span style="display:flex;"><span>    y_hat <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>nn<span style="color:#f92672">.</span>conv2d(x_hat, self<span style="color:#f92672">.</span>impulse_response, padding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;SAME&#34;</span>, strides<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>) 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> x_hat, y_hat
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">compute_loss</span>(self, Y, Y_hat, X):
+</span></span><span style="display:flex;"><span>    l1 <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reduce_mean(tf<span style="color:#f92672">.</span>abs(X)) 				<span style="color:#75715e"># 强制预测信号稀疏 (大部分为0)</span>
+</span></span><span style="display:flex;"><span>    l2 <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reduce_mean(tf<span style="color:#f92672">.</span>square(Y <span style="color:#f92672">-</span> Y_hat)) 	<span style="color:#75715e"># 保证重建信号与原观测信号一致</span>
+</span></span><span style="display:flex;"><span>    total_loss <span style="color:#f92672">=</span> l2 <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>lam <span style="color:#f92672">*</span> l1
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> total_loss, l2, l1
+</span></span></code></pre></div><p><strong><code>ResNet</code> 和 <code>UNet</code></strong></p>
+<p>在这个代码中，<code>ResNet</code> 和 <code>UNet</code> 是<strong>分别使用的</strong></p>
+<hr>
+<h3 id="代码阅读"  id="代码阅读">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e4%bb%a3%e7%a0%81%e9%98%85%e8%af%bb"><strong>代码阅读</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><code>Beamforming.py</code></p>
+<p><strong>它的数据流</strong></p>
+<p><code>输入阵列时间序列数据 X</code> -&gt; <code>多窗频域变换 (CMTM)</code> -&gt; <code>并行计算通道间的协方差矩阵 (Cxy)</code> -&gt; <code>结合空间物理模型 (dt -&gt; A)</code> -&gt; <code>使用 MUSIC 或 传统 Beamforming 算法寻找信号到达方向</code>。</p>
+<p><strong>CMTM多窗频域变换</strong></p>
+<p>标准的 FFT 会产生频谱泄漏和高方差，先用多个正交的 Slepian 窗对信号进行加窗处理，再对多个加窗后的频谱求平均，得到稳定、低方差的协方差矩阵，这对于嘈杂信号（如脑电波、微弱地震波）极其重要。</p>
+<p><strong>多窗法计算协方差矩阵</strong></p>
+<p><strong>MUSIC算法</strong></p>
+<p><strong>一维信号 <code>MUSIC</code> 算法</strong></p>
+<p>一维时序信号的 MUSIC 算法估计的是：信号中包含的“频率成分“</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>求一维信号的协方差矩阵————滑动窗口延时构建矩阵
+</span></span><span style="display:flex;"><span>矩阵求自相关————得到协方差矩阵，怎么求的？
+</span></span><span style="display:flex;"><span>正交分解，按特征值大小分为信号空间和噪声空间
+</span></span><span style="display:flex;"><span>通过信号空间与噪声空间正交，确定特征值和特征向量
+</span></span><span style="display:flex;"><span>噪声空间对应特征值置为0，再恢复信号
+</span></span></code></pre></div><blockquote>
+<p>一维阵列采集的二维信号怎么计算协方差矩阵？</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>频域法
+</span></span><span style="display:flex;"><span>转为频域  &gt;&gt;  多次快拍(多个短窗口)的频域平均  &gt;&gt; 求外积并平均
+</span></span></code></pre></div><p><strong>求外积并平均</strong>：在特定频率 f 下，空间协方差矩阵是这样算出来的：
+$$
+R_{xx}(f)=\frac{1}{K}\sum_{k=1}^{K} X_k(f),X_k(f)^H
+$$</p>
+<ul>
+<li>
+<p>Xk(f) 是一个列向量 (M×1)。</p>
+</li>
+<li>
+<p>Xk(f)H 是一个行向量 (1×M)。</p>
+</li>
+<li>
+<p>它们相乘（外积）恰好得到一个 M×M 的复数矩阵。</p>
+</li>
+<li>
+<p>把 K 个短窗口算出来的矩阵加起来求平均。</p>
+</li>
+</ul>
+<p><strong>信号到达方向</strong></p>
+<p>MUSIC 或 传统 Beamforming 算法寻找信号到达方向（信号到达方向对应车辆速度）</p>
+<p>对一维阵列，根据阵列传感器的间距和角度关系，计算对应的延时量，截取多个快拍，从而计算二维信号的协方差矩阵</p>
+<p><strong>结合空间物理模型</strong></p>
+<p><code>结合空间物理模型 (dt -&gt; A)</code> 就是依据车辆的速度范围，限制搜索的慢度区间</p>
 
     <footer>
       
@@ -296,6 +471,8 @@ FigS1_training_curves 与 logs/）。</li>
     
     <span class="previous"><a href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">&laquo; Previous Post</a></span>
     
+    
+    <span class="next"><a href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/">Next Post &raquo;</a></span>
     
   </div>
 </section>

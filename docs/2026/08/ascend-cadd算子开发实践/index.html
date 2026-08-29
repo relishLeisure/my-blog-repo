@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="cn-zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ascend C（Add算子）开发实践 : Truman&#39;s blog</title>
+  <link rel="icon" href="/my-blog-repo/favicon.ico">
+
+  <link rel="stylesheet" href="/my-blog-repo/css/style.css" type="text/css" media="screen">
+  <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet" type="text/css">
+
+  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="https://relishleisure.github.io/my-blog-repo/feed.xml">
+
+
+<style>
+ 
+pre {
+    margin-left: 0;
+    padding: 1em;
+    background: var(--code-bg);
+    overflow-x: auto;
+    font-family: 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--code-text);
+}
+
+code {
+    font-family: 'Ubuntu Mono', monospace;
+}
+
+ 
+p code, li code {
+    background: var(--code-bg);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+@media screen and (min-width: 640px) {
+    pre {
+        margin-left: 3em;
+    }
+}
+</style>
+<meta name="generator" content="Hugo 0.165.0">
+</head>
+
+<body class="single">
+
+<header>
+  <h1 class="vcard author"><a href="/my-blog-repo/" title="Home">Truman&#39;s blog</a></h1>
+  <p>
+    God helps those who help themselves.
+    <ul class="pages">
+      <li><a href="/my-blog-repo/archives/">archives</a></li>
+      <li><a href="/my-blog-repo/feed.xml">subscribe</a></li>
+    </ul>
+  </p>
+</header>
+
+<div class="content wrap">
+  
+<section class="posts">
+  <article class="post">
+    <h2>Ascend C（Add算子）开发实践</h2>
+    <abbr class="small postDate" title="2026-08-27">August 27, 2026</abbr>
+    <table>
+	<thead>
+			<tr>
+					<th>实验名称</th>
+					<th>Ascend C简单Vector算子开发实践（Add算子）</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>实验内容</td>
+					<td>Add算子</td>
+			</tr>
+			<tr>
+					<td>实验时间</td>
+					<td>2026-08-27</td>
+			</tr>
+			<tr>
+					<td>实验类型</td>
+					<td></td>
+			</tr>
+			<tr>
+					<td>实验地点</td>
+					<td></td>
+			</tr>
+			<tr>
+					<td>在线地点</td>
+					<td><a href="https://www.hiascend.com/edu/experiment/detail/1d0b0b790fb24947977d6d954112c016?tab=1">https://www.hiascend.com/edu/experiment/detail/1d0b0b790fb24947977d6d954112c016?tab=1</a></td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="环境与器材"  id="环境与器材">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e7%8e%af%e5%a2%83%e4%b8%8e%e5%99%a8%e6%9d%90">环境与器材<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><strong>环境搭建</strong></p>
+<p>本实验依赖基础NPU环境，包括昇腾NPU驱动、固件、Toolkit（CANN开发套件）、ops（CANN算子包集成一系列库文件 ）、<strong>msprof性能采集工具</strong>（随 CANN Toolkit 一起安装）。</p>
+<p><strong>实验平台</strong></p>
+<p>CANNLAB</p>
+<p><a href="https://gitcode.com/org/cann/cannlab/environment">https://gitcode.com/org/cann/cannlab/environment</a></p>
+<h3 id="实验过程"  id="实验过程">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e5%ae%9e%e9%aa%8c%e8%bf%87%e7%a8%8b">实验过程<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="实验环境"  id="实验环境">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e5%ae%9e%e9%aa%8c%e7%8e%af%e5%a2%83">实验环境<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>1.启动环境</p>
+<p><a href="https://gitcode.com/org/cann/cannlab/environment/create">https://gitcode.com/org/cann/cannlab/environment/create</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>实例名称
+</span></span><span style="display:flex;"><span>cann_dev_env
+</span></span><span style="display:flex;"><span>名称可包含数字、字母、下划线，不能以数字开头，长度不超过15个字符。
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>模板名称
+</span></span><span style="display:flex;"><span>cann_8.5.2-py3.11-A2-arm
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>NPU规格
+</span></span><span style="display:flex;"><span>1*NPU 910B3 16vCPUs 32GiB
+</span></span></code></pre></div><p><strong>notebook</strong></p>
+<p>由于没有上面的npu资源了，换成使用notebook</p>
+<p>cann 版本是8.5.0</p>
+<p><a href="https://gitcode.com/user/qq_4277658311111111111111173q/notebook/lab">https://gitcode.com/user/qq_4277658311111111111111173q/notebook/lab</a></p>
+<p>2.<strong>查看环境版本</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>echo $ASCEND_HOME_PATH
+</span></span><span style="display:flex;"><span>/usr/local/Ascend/cann-8.5.0
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>cd /usr/local/Ascend/cann-8.5.0
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 可以看到 set_enc.sh</span>
+</span></span><span style="display:flex;"><span>ls
+</span></span><span style="display:flex;"><span>aarch64-linux  cann_uninstall.sh  compiler  fwkacllib  mindstudio-toolkit  pkg_inc  set_env.sh  toolkit
+</span></span><span style="display:flex;"><span>arm64-linux    combo_script       conf      include    opp                 python   share       tools
+</span></span><span style="display:flex;"><span>bin            compat             devlib    lib64      ops_uninstall.sh    runtime  test-ops    var
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 在当前终端会话中  激活环境变量</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 每次新开终端都要 source 一次。建议把 source 命令加到 ~/.bashrc 里。</span>
+</span></span><span style="display:flex;"><span>source /usr/local/Ascend/cann-8.5.0/set_env.sh
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 确认msprof安装成功</span>
+</span></span><span style="display:flex;"><span>ls $ASCEND_HOME_PATH/tools/profiler/bin/msprof
+</span></span><span style="display:flex;"><span>/usr/local/Ascend/cann-8.5.0/tools/profiler/bin/msprof
+</span></span></code></pre></div><p>查看设备状态</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 查看NPU设备状态</span>
+</span></span><span style="display:flex;"><span>npu-smi info
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 可以看到设备名为 910B4 </span>
+</span></span><span style="display:flex;"><span>+------------------------------------------------------------------------------------------------+
+</span></span><span style="display:flex;"><span>| npu-smi 25.5.1                   Version: 25.5.1                                               |
+</span></span><span style="display:flex;"><span>+---------------------------+---------------+----------------------------------------------------+
+</span></span><span style="display:flex;"><span>| NPU   Name                | Health        | Power<span style="color:#f92672">(</span>W<span style="color:#f92672">)</span>    Temp<span style="color:#f92672">(</span>C<span style="color:#f92672">)</span>           Hugepages-Usage<span style="color:#f92672">(</span>page<span style="color:#f92672">)</span>|
+</span></span><span style="display:flex;"><span>| Chip                      | Bus-Id        | AICore<span style="color:#f92672">(</span>%<span style="color:#f92672">)</span>   Memory-Usage<span style="color:#f92672">(</span>MB<span style="color:#f92672">)</span>  HBM-Usage<span style="color:#f92672">(</span>MB<span style="color:#f92672">)</span>        |
+</span></span><span style="display:flex;"><span>+<span style="color:#f92672">===========================</span>+<span style="color:#f92672">===============</span>+<span style="color:#f92672">====================================================</span>+
+</span></span><span style="display:flex;"><span>| <span style="color:#ae81ff">6</span>     910B4               | OK            | 88.4        <span style="color:#ae81ff">42</span>                <span style="color:#ae81ff">0</span>    / <span style="color:#ae81ff">0</span>             |
+</span></span><span style="display:flex;"><span>| <span style="color:#ae81ff">0</span>                         | 0000:82:00.0  | <span style="color:#ae81ff">0</span>           <span style="color:#ae81ff">0</span>    / <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">2875</span> / <span style="color:#ae81ff">32768</span>         |
+</span></span><span style="display:flex;"><span>+<span style="color:#f92672">===========================</span>+<span style="color:#f92672">===============</span>+<span style="color:#f92672">====================================================</span>+
+</span></span><span style="display:flex;"><span>+---------------------------+---------------+----------------------------------------------------+
+</span></span><span style="display:flex;"><span>| NPU     Chip              | Process id    | Process name             | Process memory<span style="color:#f92672">(</span>MB<span style="color:#f92672">)</span>      |
+</span></span><span style="display:flex;"><span>+<span style="color:#f92672">===========================</span>+<span style="color:#f92672">===============</span>+<span style="color:#f92672">====================================================</span>+
+</span></span><span style="display:flex;"><span>| No running processes found in NPU <span style="color:#ae81ff">6</span>                                                            |
+</span></span><span style="display:flex;"><span>+<span style="color:#f92672">===========================</span>+<span style="color:#f92672">===============</span>+<span style="color:#f92672">====================================================</span>+
+</span></span></code></pre></div><p>验证python环境</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#一行验证：能 import acl 并初始化即 OK</span>
+</span></span><span style="display:flex;"><span>python3 -c <span style="color:#e6db74">&#34;import acl;acl.init();acl.rt.set_device(0);print(&#39;runtime OK&#39;)&#34;</span>
+</span></span><span style="display:flex;"><span>runtime OK
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 如有异常，安装CANN 运行时依赖的 Python 包（缺一不可，否则跑不起来）</span>
+</span></span><span style="display:flex;"><span>pip3install attrs cython numpy decorator sympy cffi pyyaml pathlib2 psutilprotobuf<span style="color:#f92672">==</span>3.20.0 scipy requests absl-py --user
+</span></span></code></pre></div><p><strong>环境验证清单（确认2.1.2-2.1.4）</strong></p>
+<p>进入下一步前，确认完成以下验证：</p>
+<p>☐ echo $ASCEND_HOME_PATH 输出非空</p>
+<p>☐ npu-smi info 至少显示 1 个 NPU，Health = OK</p>
+<p>☐ ls $ASCEND_HOME_PATH/include/acl/acl.h 存在</p>
+<p>☐ python3 -c &ldquo;importacl;acl.init();acl.rt.set_device(0)&rdquo; 不报错</p>
+<p>☐ ls $ASCEND_HOME_PATH/tools/profiler/bin/msprof存在</p>
+<hr>
+<h4 id="代码下载"  id="代码下载">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e4%bb%a3%e7%a0%81%e4%b8%8b%e8%bd%bd">代码下载<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>注意notebook创建文件夹有权限，自己摸索下</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># wget 下载示例代码</span>
+</span></span><span style="display:flex;"><span>wget https://ascend-lab.obs.cn-north-4.myhuaweicloud.com/AscendC-Labs/add_demo.zip
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 解压文件</span>
+</span></span><span style="display:flex;"><span>unzip add_demo.zip
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>cd add_demo/ <span style="color:#f92672">&amp;&amp;</span> ls
+</span></span><span style="display:flex;"><span>CMakeLists.txt  add.asc  build_and_run.sh  parse_msprof.py  run_with_msprof.sh  test_add_runner.sh  tools
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>add_demo/
+</span></span><span style="display:flex;"><span>├──add.asc              <span style="color:#75715e"># Device kernel +Host</span>
+</span></span><span style="display:flex;"><span>├──CMakeLists.txt       <span style="color:#75715e"># cmake文件</span>
+</span></span><span style="display:flex;"><span>├──build_and_run.sh     <span style="color:#75715e"># 执行add|sub 的脚本文件，会生成 CPUFP64 Add golden</span>
+</span></span><span style="display:flex;"><span>├──run_with_msprof.sh   <span style="color:#75715e"># msprof 脚本文件 启动msprof 并执行profiling采集</span>
+</span></span><span style="display:flex;"><span>└──parse_msprof.py      <span style="color:#75715e"># 解析 add_customtask_time/op_statistic</span>
+</span></span></code></pre></div><p>源码导览</p>
+<p><a href="https://www.hiascend.com/edu/experiment/detail/1d0b0b790fb24947977d6d954112c016?tab=4">https://www.hiascend.com/edu/experiment/detail/1d0b0b790fb24947977d6d954112c016?tab=4</a></p>
+<h4 id="运行-add-demo"  id="运行-add-demo">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e8%bf%90%e8%a1%8c-add-demo">运行 Add Demo<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd add_demo
+</span></span><span style="display:flex;"><span>bash build_and_run.sh add
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 运行结果</span>
+</span></span><span style="display:flex;"><span>--- Precision <span style="color:#f92672">(</span>NPU vs PyTorch CPU FP64 golden<span style="color:#f92672">)</span> ---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> MERE <span style="color:#f92672">=</span> 2.31711e-08  <span style="color:#f92672">(</span>FP32 pass <span style="color:#66d9ef">if</span> &lt; 2^-13 <span style="color:#f92672">=</span> 0.00012207<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> MARE <span style="color:#f92672">=</span> 5.96044e-08  <span style="color:#f92672">(</span>FP32 pass <span style="color:#66d9ef">if</span> &lt; 10*2^-13 <span style="color:#f92672">=</span> 0.0012207<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> PASS ✓
+</span></span><span style="display:flex;"><span>REFERENCE_VALUE<span style="color:#f92672">=</span>2.09999996
+</span></span><span style="display:flex;"><span>ACTUAL_VALUE<span style="color:#f92672">=</span>2.0999999
+</span></span><span style="display:flex;"><span>ABS_ERROR<span style="color:#f92672">=</span>5.96046448e-08
+</span></span><span style="display:flex;"><span>REL_ERROR<span style="color:#f92672">=</span>2.83831633e-08
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>--- Performance <span style="color:#f92672">(</span>kernel only, 不含 host↔device 拷贝<span style="color:#f92672">)</span> ---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>CPU<span style="color:#f92672">]</span> add_cpu average time:    3.151 ms
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>NPU<span style="color:#f92672">]</span> kernel_add_npu average time <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 0.047 ms
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; NPU vs CPU speedup <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 67.70 x
+</span></span><span style="display:flex;"><span>  （NPU 的纯硬件耗时可用 msprof 采集，更精确：见 run_with_msprof.sh）
+</span></span><span style="display:flex;"><span><span style="color:#f92672">============================================================</span>
+</span></span><span style="display:flex;"><span>✓ 运行结束（更精确的 NPU 耗时可用 run_with_msprof.sh）
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>bash build_and_run.sh sub
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 运行结果</span>
+</span></span><span style="display:flex;"><span>--- Precision <span style="color:#f92672">(</span>NPU vs PyTorch CPU FP64 golden<span style="color:#f92672">)</span> ---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> MERE <span style="color:#f92672">=</span> 1.33333  <span style="color:#f92672">(</span>FP32 pass <span style="color:#66d9ef">if</span> &lt; 2^-13 <span style="color:#f92672">=</span> 0.00012207<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> MARE <span style="color:#f92672">=</span> 1.33333  <span style="color:#f92672">(</span>FP32 pass <span style="color:#66d9ef">if</span> &lt; 10*2^-13 <span style="color:#f92672">=</span> 0.0012207<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> FAIL ✗
+</span></span><span style="display:flex;"><span>REFERENCE_VALUE<span style="color:#f92672">=</span>2.09999996
+</span></span><span style="display:flex;"><span>ACTUAL_VALUE<span style="color:#f92672">=</span>-0.699999988
+</span></span><span style="display:flex;"><span>ABS_ERROR<span style="color:#f92672">=</span>2.79999995
+</span></span><span style="display:flex;"><span>REL_ERROR<span style="color:#f92672">=</span>1.33333327
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> sub 模式使用 Add golden，预期精度失败。
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>--- Performance <span style="color:#f92672">(</span>kernel only, 不含 host↔device 拷贝<span style="color:#f92672">)</span> ---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>CPU<span style="color:#f92672">]</span> add_cpu average time:    3.143 ms
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>NPU<span style="color:#f92672">]</span> kernel_add_npu average time <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 0.044 ms
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; NPU vs CPU speedup <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 71.36 x
+</span></span><span style="display:flex;"><span>  （NPU 的纯硬件耗时可用 msprof 采集，更精确：见 run_with_msprof.sh）
+</span></span></code></pre></div><h4 id="运行msprof-采集"  id="运行msprof-采集">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e8%bf%90%e8%a1%8cmsprof-%e9%87%87%e9%9b%86">运行msprof 采集<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 在add_demo 目录下进行profiling数据采集，--elements N表示会采集1M（1048576）个float的add算子耗时</span>
+</span></span><span style="display:flex;"><span>bash run_with_msprof.sh --elements <span style="color:#ae81ff">1048576</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 问题：输出这一行就没了</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>INFO<span style="color:#f92672">]</span> 检测到 昇腾 A2 系列产品
+</span></span></code></pre></div><p><strong>解决办法</strong></p>
+<p>将脚本中</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>MSPROF_BIN<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>find <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ASCEND_HOME_PATH<span style="color:#66d9ef">:-</span>/usr/local/Ascend<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> -name <span style="color:#e6db74">&#34;msprof&#34;</span> -type f 2&gt;/dev/null | head -1<span style="color:#66d9ef">)</span>
+</span></span></code></pre></div><p>替换为</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># 优先直接使用 PATH 里的 msprof，找不到再用安全规避 SIGPIPE 的 find 命令</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> command -v msprof &gt;/dev/null 2&gt;&amp;1; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    MSPROF_BIN<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>command -v msprof<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 末尾加上 || true 吸收 find 遭遇 SIGPIPE 时的 141 错误码，防止 pipefail 杀掉脚本</span>
+</span></span><span style="display:flex;"><span>    MSPROF_BIN<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>find <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ASCEND_HOME_PATH<span style="color:#66d9ef">:-</span>/usr/local/Ascend<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> -maxdepth <span style="color:#ae81ff">6</span> -name <span style="color:#e6db74">&#34;msprof&#34;</span> -type f 2&gt;/dev/null | head -1 <span style="color:#f92672">||</span> true<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>MSPROF_BIN<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;[ERROR] 找不到 msprof，请安装 CANN toolkit 后重试&#34;</span> &gt;&amp;<span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>MSPROF_BIN<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>    --output<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>OUTPUT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>    --task-time<span style="color:#f92672">=</span>l1 <span style="color:#ae81ff">\	</span>							<span style="color:#75715e"># cann-8.5.0  环境下要使用 l1，源代码使用 l2</span>
+</span></span><span style="display:flex;"><span>    --application<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SCRIPT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/build/demo add --golden </span><span style="color:#e6db74">${</span>REFERENCE_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74"> --elements </span><span style="color:#e6db74">${</span>ELEMENTS<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>    2&gt;&amp;<span style="color:#ae81ff">1</span> | tee <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>OUTPUT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/msprof_collect.log&#34;</span>
+</span></span></code></pre></div><p>msprof 结果</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>--- Performance <span style="color:#f92672">(</span>kernel only, 不含 host↔device 拷贝<span style="color:#f92672">)</span> ---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>CPU<span style="color:#f92672">]</span> add_cpu average time:    3.228 ms
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>NPU<span style="color:#f92672">]</span> kernel_add_npu average time <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 0.050 ms
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; NPU vs CPU speedup <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 64.37 x
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>INFO<span style="color:#f92672">]</span> msprof 采集完成，开始解析 add_custom 耗时 ...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">===</span> msprof task_time 采集到的 add_custom 耗时 <span style="color:#f92672">===</span>
+</span></span><span style="display:flex;"><span>  样本数: <span style="color:#ae81ff">103</span>
+</span></span><span style="display:flex;"><span>  平均:   30.50 us <span style="color:#f92672">=</span> 0.0305 ms
+</span></span><span style="display:flex;"><span>  最小:   27.66 us
+</span></span><span style="display:flex;"><span>  最大:   44.04 us
+</span></span><span style="display:flex;"><span>  累计:   3141.66 us <span style="color:#f92672">=</span> 3.14 ms
+</span></span></code></pre></div><h4 id="扩展实验"  id="扩展实验">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e6%89%a9%e5%b1%95%e5%ae%9e%e9%aa%8c">扩展实验<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p><strong>A 修改参数大小</strong></p>
+<p>修改 <code>bash run_with_msprof.sh --elements 1048576</code> 中 elements 参数大小</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>bash run_with_msprof-Copy1.sh --elements <span style="color:#ae81ff">16777216</span> 
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>-- Performance <span style="color:#f92672">(</span>kernel only, 不含 host↔device 拷贝<span style="color:#f92672">)</span> ---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>CPU<span style="color:#f92672">]</span> add_cpu average time:    89.897 ms
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>NPU<span style="color:#f92672">]</span> kernel_add_npu average time <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 0.683 ms
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; NPU vs CPU speedup <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 131.71 x
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>INFO<span style="color:#f92672">]</span> msprof 采集完成，开始解析 add_custom 耗时 ...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">===</span> msprof task_time 采集到的 add_custom 耗时 <span style="color:#f92672">===</span>
+</span></span><span style="display:flex;"><span>  样本数: <span style="color:#ae81ff">103</span>
+</span></span><span style="display:flex;"><span>  平均:   664.62 us <span style="color:#f92672">=</span> 0.6646 ms
+</span></span><span style="display:flex;"><span>  最小:   655.97 us
+</span></span><span style="display:flex;"><span>  最大:   673.63 us
+</span></span><span style="display:flex;"><span>  累计:   68455.90 us <span style="color:#f92672">=</span> 68.46 ms
+</span></span></code></pre></div><p>加速比更大了</p>
+<p><strong>B 改 tileLength</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// 全局 kernel 配置常量：Host 与 Device 共享      .asc 文件
+</span></span></span><span style="display:flex;"><span>constexpruint32_t tileLength <span style="color:#f92672">=</span> <span style="color:#ae81ff">1024</span>;
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 在add_demo 目录下，删除缓存编译文件</span>
+</span></span><span style="display:flex;"><span>rm build/demo
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 在add_demo 目录下进行profiling数据采集（包含重新编译）</span>
+</span></span><span style="display:flex;"><span>bash run_with_msprof.sh --elements <span style="color:#ae81ff">1048576</span>
+</span></span></code></pre></div><p>结果</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>--- Precision (NPU vs PyTorch CPU FP64 golden) ---
+</span></span><span style="display:flex;"><span>[Precision] MERE = 2.31711e-08  (FP32 pass if &lt; 2^-13 = 0.00012207)
+</span></span><span style="display:flex;"><span>[Precision] MARE = 5.96044e-08  (FP32 pass if &lt; 10*2^-13 = 0.0012207)
+</span></span><span style="display:flex;"><span>[Precision] PASS ✓
+</span></span><span style="display:flex;"><span>REFERENCE_VALUE=2.09999996
+</span></span><span style="display:flex;"><span>ACTUAL_VALUE=2.0999999
+</span></span><span style="display:flex;"><span>ABS_ERROR=5.96046448e-08
+</span></span><span style="display:flex;"><span>REL_ERROR=2.83831633e-08
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>--- Performance (kernel only, 不含 host↔device 拷贝) ---
+</span></span><span style="display:flex;"><span>[CPU] add_cpu average time:    3.146 ms
+</span></span><span style="display:flex;"><span>[NPU] kernel_add_npu average time (host wall): 0.063 ms
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; NPU vs CPU speedup (host wall): 50.05 x
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>=== msprof task_time 采集到的 add_custom 耗时 ===
+</span></span><span style="display:flex;"><span>  样本数: 103
+</span></span><span style="display:flex;"><span>  平均:   47.69 us = 0.0477 ms
+</span></span><span style="display:flex;"><span>  最小:   45.50 us
+</span></span><span style="display:flex;"><span>  最大:   71.58 us
+</span></span><span style="display:flex;"><span>  累计:   4912.09 us = 4.91 ms
+</span></span></code></pre></div><p><strong>C：改 numBlocks</strong></p>
+<p>注释：tileLength 改回了 2048</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// 用于计算的 block 数量，从8修改为4
+</span></span></span><span style="display:flex;"><span>constexpruint32_t numBlocks  <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>;
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>rm build/demo
+</span></span><span style="display:flex;"><span>bash run_with_msprof.sh --elements <span style="color:#ae81ff">1048576</span>
+</span></span></code></pre></div><p>实验结果</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>--- Precision <span style="color:#f92672">(</span>NPU vs PyTorch CPU FP64 golden<span style="color:#f92672">)</span> ---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> MERE <span style="color:#f92672">=</span> 2.31711e-08  <span style="color:#f92672">(</span>FP32 pass <span style="color:#66d9ef">if</span> &lt; 2^-13 <span style="color:#f92672">=</span> 0.00012207<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> MARE <span style="color:#f92672">=</span> 5.96044e-08  <span style="color:#f92672">(</span>FP32 pass <span style="color:#66d9ef">if</span> &lt; 10*2^-13 <span style="color:#f92672">=</span> 0.0012207<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> PASS ✓
+</span></span><span style="display:flex;"><span>REFERENCE_VALUE<span style="color:#f92672">=</span>2.09999996
+</span></span><span style="display:flex;"><span>ACTUAL_VALUE<span style="color:#f92672">=</span>2.0999999
+</span></span><span style="display:flex;"><span>ABS_ERROR<span style="color:#f92672">=</span>5.96046448e-08
+</span></span><span style="display:flex;"><span>REL_ERROR<span style="color:#f92672">=</span>2.83831633e-08
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>--- Performance <span style="color:#f92672">(</span>kernel only, 不含 host↔device 拷贝<span style="color:#f92672">)</span> ---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>CPU<span style="color:#f92672">]</span> add_cpu average time:    3.435 ms
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>NPU<span style="color:#f92672">]</span> kernel_add_npu average time <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 0.075 ms
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; NPU vs CPU speedup <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 46.09 x
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">===</span> msprof task_time 采集到的 add_custom 耗时 <span style="color:#f92672">===</span>
+</span></span><span style="display:flex;"><span>  样本数: <span style="color:#ae81ff">103</span>
+</span></span><span style="display:flex;"><span>  平均:   57.51 us <span style="color:#f92672">=</span> 0.0575 ms
+</span></span><span style="display:flex;"><span>  最小:   53.56 us
+</span></span><span style="display:flex;"><span>  最大:   82.66 us
+</span></span><span style="display:flex;"><span>  累计:   5923.02 us <span style="color:#f92672">=</span> 5.92 ms
+</span></span></code></pre></div><p>性能下降了（用时接近两倍）</p>
+<h3 id="附录"  id="附录">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e9%99%84%e5%bd%95">附录<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p>修改后的run_msprof.sh 文件</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"># ----------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Lab 2 —— 用 msprof 采集 NPU 算子真实耗时</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 用法：bash run_with_msprof.sh [--elements N]（自动识别产品）</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 输出：prof_output/ 目录下有 msprof 采集的 csv / json</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ----------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>set -euo pipefail
+</span></span><span style="display:flex;"><span>SCRIPT_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>cd <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>dirname <span style="color:#e6db74">&#34;</span>$0<span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&amp;&amp;</span> pwd<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>source <span style="color:#e6db74">&#34;</span>$SCRIPT_DIR<span style="color:#e6db74">/tools/ascend_product.sh&#34;</span>
+</span></span><span style="display:flex;"><span>OUTPUT_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SCRIPT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/prof_output&#34;</span>
+</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>OUTPUT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ELEMENTS<span style="color:#f92672">=</span><span style="color:#ae81ff">1048576</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> <span style="color:#f92672">[[</span> $# -gt <span style="color:#ae81ff">0</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span> in
+</span></span><span style="display:flex;"><span>        --elements<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">[[</span> $# -ge <span style="color:#ae81ff">2</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#e6db74">&#34;</span>$2<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span>~ ^<span style="color:#f92672">[</span>1-9<span style="color:#f92672">][</span>0-9<span style="color:#f92672">]</span>*$ <span style="color:#f92672">]]</span> <span style="color:#f92672">||</span> <span style="color:#f92672">{</span> echo <span style="color:#e6db74">&#34;[ERROR] --elements requires a positive integer&#34;</span> &gt;&amp;2; exit 2; <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            ELEMENTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$2<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>            shift <span style="color:#ae81ff">2</span> ;;
+</span></span><span style="display:flex;"><span>        -h|--help<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>            echo <span style="color:#e6db74">&#34;用法: </span>$0<span style="color:#e6db74"> [--elements N]&#34;</span>
+</span></span><span style="display:flex;"><span>            exit <span style="color:#ae81ff">0</span> ;;
+</span></span><span style="display:flex;"><span>        *<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>            echo <span style="color:#e6db74">&#34;[ERROR] 用法: </span>$0<span style="color:#e6db74"> [--elements N]&#34;</span> &gt;&amp;<span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>            exit <span style="color:#ae81ff">2</span> ;;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">esac</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>DEVICE_ID<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>ASCEND_RT_VISIBLE_DEVICES<span style="color:#66d9ef">:-</span><span style="color:#e6db74">}</span>
+</span></span><span style="display:flex;"><span>DEVICE_ID<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>DEVICE_ID%%,*<span style="color:#e6db74">}</span>
+</span></span><span style="display:flex;"><span>DEVICE_ID<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>DEVICE_ID<span style="color:#66d9ef">:-</span>0<span style="color:#e6db74">}</span>
+</span></span><span style="display:flex;"><span>detect_ascend_product <span style="color:#e6db74">&#34;</span>$DEVICE_ID<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">||</span> <span style="color:#f92672">{</span> echo <span style="color:#e6db74">&#34;[ERROR] 无法识别当前 NPU 产品，请检查 npu-smi、驱动和设备状态&#34;</span> &gt;&amp;2; exit 1; <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[INFO] 检测到 </span><span style="color:#e6db74">${</span>ASCEND_PRODUCT_SERIES<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 1. 加载环境</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span>$ASCEND_HOME_PATH<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -f <span style="color:#e6db74">&#34;/usr/local/Ascend/ascend-toolkit/set_env.sh&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        source /usr/local/Ascend/ascend-toolkit/set_env.sh
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">elif</span> <span style="color:#f92672">[</span> -f <span style="color:#e6db74">&#34;/usr/local/Ascend/cann/set_env.sh&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        source /usr/local/Ascend/cann/set_env.sh
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 优先直接使用 PATH 里的 msprof，找不到再用安全规避 SIGPIPE 的 find 命令</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> command -v msprof &gt;/dev/null 2&gt;&amp;1; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    MSPROF_BIN<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>command -v msprof<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 末尾加上 || true 吸收 find 遭遇 SIGPIPE 时的 141 错误码，防止 pipefail 杀掉脚本</span>
+</span></span><span style="display:flex;"><span>    MSPROF_BIN<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>find <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ASCEND_HOME_PATH<span style="color:#66d9ef">:-</span>/usr/local/Ascend<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> -maxdepth <span style="color:#ae81ff">6</span> -name <span style="color:#e6db74">&#34;msprof&#34;</span> -type f 2&gt;/dev/null | head -1 <span style="color:#f92672">||</span> true<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>MSPROF_BIN<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;[ERROR] 找不到 msprof，请安装 CANN toolkit 后重试&#34;</span> &gt;&amp;<span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[INFO] msprof: </span><span style="color:#e6db74">${</span>MSPROF_BIN<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 2. 先确保 demo 已编译</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! -f <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SCRIPT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/build/demo&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;[INFO] 还没编译 demo，先编译 ...&#34;</span>
+</span></span><span style="display:flex;"><span>    bash <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SCRIPT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/build_and_run.sh&#34;</span> add &gt;/dev/null
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>REFERENCE_FILE<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>ADD_GOLDEN_FILE<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SCRIPT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/build/add_golden_fp64.bin&#34;</span><span style="color:#e6db74">}</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[INFO] 生成 PyTorch CPU FP64 Add golden: </span><span style="color:#e6db74">${</span>REFERENCE_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>python3 <span style="color:#e6db74">&#34;</span>$SCRIPT_DIR<span style="color:#e6db74">/tools/add_reference.py&#34;</span> --elements <span style="color:#e6db74">&#34;</span>$ELEMENTS<span style="color:#e6db74">&#34;</span> --output <span style="color:#e6db74">&#34;</span>$REFERENCE_FILE<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 3. 用 msprof 包住 demo</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[INFO] 开始用 msprof 采集 ...&#34;</span>
+</span></span><span style="display:flex;"><span>BEFORE_PROF_LIST<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>mktemp<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>trap <span style="color:#e6db74">&#39;rm -f &#34;$BEFORE_PROF_LIST&#34;&#39;</span> EXIT
+</span></span><span style="display:flex;"><span>find <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>OUTPUT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> -mindepth <span style="color:#ae81ff">1</span> -maxdepth <span style="color:#ae81ff">1</span> -type d -name <span style="color:#e6db74">&#39;PROF_*&#39;</span> -print | sort &gt; <span style="color:#e6db74">&#34;</span>$BEFORE_PROF_LIST<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>MSPROF_BIN<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>    --output<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>OUTPUT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>    --task-time<span style="color:#f92672">=</span>l1 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>    --application<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SCRIPT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/build/demo add --golden </span><span style="color:#e6db74">${</span>REFERENCE_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74"> --elements </span><span style="color:#e6db74">${</span>ELEMENTS<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>    2&gt;&amp;<span style="color:#ae81ff">1</span> | tee <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>OUTPUT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/msprof_collect.log&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>LATEST_PROF<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>comm -13 <span style="color:#e6db74">&#34;</span>$BEFORE_PROF_LIST<span style="color:#e6db74">&#34;</span> &lt;<span style="color:#f92672">(</span>find <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>OUTPUT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> -mindepth <span style="color:#ae81ff">1</span> -maxdepth <span style="color:#ae81ff">1</span> -type d -name <span style="color:#e6db74">&#39;PROF_*&#39;</span> -print | sort<span style="color:#66d9ef">)</span> | tail -1<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>LATEST_PROF<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;[ERROR] 本次 msprof 未生成新的 PROF_* 目录，拒绝复用历史采集结果&#34;</span> &gt;&amp;<span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! -d <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>LATEST_PROF<span style="color:#e6db74">}</span><span style="color:#e6db74">/mindstudio_profiler_output&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;[ERROR] 本次 msprof 目录缺少 mindstudio_profiler_output: </span><span style="color:#e6db74">${</span>LATEST_PROF<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> &gt;&amp;<span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 4. 自动解析 add_custom 的耗时</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[INFO] msprof 采集完成，开始解析 add_custom 耗时 ...&#34;</span>
+</span></span><span style="display:flex;"><span>python3 <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SCRIPT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/parse_msprof.py&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>LATEST_PROF<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[INFO] 结果目录: </span><span style="color:#e6db74">${</span>LATEST_PROF<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span></code></pre></div>
+    <footer>
+      
+      <ul class="small">
+        <li><a href="/my-blog-repo/categories/cann/">CANN</a>, <a href="/my-blog-repo/categories/%E5%AE%9E%E9%AA%8C/">实验</a></li>
+      </ul>
+      
+      
+    </footer>
+  </article>
+
+<div class="pagination p">
+    
+    <span class="previous"><a href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/">&laquo; Previous Post</a></span>
+    
+    
+    <span class="next"><a href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/">Next Post &raquo;</a></span>
+    
+  </div>
+</section>
+
+</div>
+
+<footer class="bottom small wrap">
+  <p class="small">&copy; Truman&#39;s blog. Powered by <a href="https://gohugo.io/">Hugo</a>, theme based off of <a href="http://jxnblk.com/ashley/">Ashley</a>.</p>
+</footer>
+
+</body>
+</html>

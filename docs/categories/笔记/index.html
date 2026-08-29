@@ -71,6 +71,55 @@ p code, li code {
   
   
   <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/">CUDA学习--2简单运算</a> <abbr class="small postDate" title="2026-08-28">August 28, 2026</abbr></h2>
+    
+    <div class="summary">
+      <h3 id="目录"  id="目录">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#%e7%9b%ae%e5%bd%95">目录<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><a href="https://leetgpu.com/challenges/1d-convolution">1D Convolution</a></p>
+<p><a href="https://leetgpu.com/challenges/leaky-relu">Leaky ReLU</a></p>
+<p><a href="https://leetgpu.com/challenges/sigmoid-linear-unit">Sigmoid Linear Unit</a></p>
+<p><a href="https://leetgpu.com/challenges/matrix-transpose">Matrix Transpose</a></p>
+<p><a href="https://leetgpu.com/challenges/swish-gated-linear-unit">Swish-Gated Linear Unit</a></p>
+<h4 id="1d-convolution"  id="1d-convolution">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#1d-convolution">1D Convolution<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>CUDA</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">convolution_1d_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> kernel, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output,
+</span></span><span style="display:flex;"><span>                                      <span style="color:#66d9ef">int</span> input_size, <span style="color:#66d9ef">int</span> kernel_size) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x; 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> sum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0f</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (tid <span style="color:#f92672">&lt;</span> input_size <span style="color:#f92672">-</span> kernel_size <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i<span style="color:#f92672">&lt;</span>kernel_size; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>            sum <span style="color:#f92672">+=</span> input[tid <span style="color:#f92672">+</span> i] <span style="color:#f92672">*</span> kernel[i];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        output[tid] <span style="color:#f92672">=</span> sum;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// input, kernel, output are device pointers (i.e. pointers to memory on the GPU)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> kernel, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> input_size,
+</span></span><span style="display:flex;"><span>                      <span style="color:#66d9ef">int</span> kernel_size) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> output_size <span style="color:#f92672">=</span> input_size <span style="color:#f92672">-</span> kernel_size <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> threadsPerBlock <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> blocksPerGrid <span style="color:#f92672">=</span> (output_size <span style="color:#f92672">+</span> threadsPerBlock <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    convolution_1d_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(input, kernel, output, input_size,
+</span></span><span style="display:flex;"><span>                                                              kernel_size);
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Triton</p>
+      
+      <p><a href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/">Read more...</a></p>
+      
+    </div>
+    
+  </article>
+  
+  <article class="post">
     <h2><a class="post-title" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/">van_den_Ende DDCN 笔记</a> <abbr class="small postDate" title="2026-08-26">August 26, 2026</abbr></h2>
     
     <div class="summary">

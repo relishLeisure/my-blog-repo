@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="cn-zh">
+
+<head><script src="/my-blog-repo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=my-blog-repo/livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CUDA学习--0环境 : Truman&#39;s blog</title>
+  <link rel="icon" href="/my-blog-repo/favicon.ico">
+
+  <link rel="stylesheet" href="/my-blog-repo/css/style.css" type="text/css" media="screen">
+  <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet" type="text/css">
+
+  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="http://localhost:1313/my-blog-repo/feed.xml">
+
+
+<style>
+ 
+pre {
+    margin-left: 0;
+    padding: 1em;
+    background: var(--code-bg);
+    overflow-x: auto;
+    font-family: 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--code-text);
+}
+
+code {
+    font-family: 'Ubuntu Mono', monospace;
+}
+
+ 
+p code, li code {
+    background: var(--code-bg);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+@media screen and (min-width: 640px) {
+    pre {
+        margin-left: 3em;
+    }
+}
+</style>
+<meta name="generator" content="Hugo 0.165.0">
+</head>
+
+<body class="single">
+
+<header>
+  <h1 class="vcard author"><a href="/my-blog-repo/" title="Home">Truman&#39;s blog</a></h1>
+  <p>
+    God helps those who help themselves.
+    <ul class="pages">
+      <li><a href="/my-blog-repo/archives/">archives</a></li>
+      <li><a href="/my-blog-repo/feed.xml">subscribe</a></li>
+    </ul>
+  </p>
+</header>
+
+<div class="content wrap">
+  
+<section class="posts">
+  <article class="post">
+    <h2>CUDA学习--0环境</h2>
+    <abbr class="small postDate" title="2026-08-28">August 28, 2026</abbr>
+    <h3 id="目录"  id="目录">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#%e7%9b%ae%e5%bd%95">目录<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h3 id="自建环境"  id="自建环境">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#%e8%87%aa%e5%bb%ba%e7%8e%af%e5%a2%83">自建环境<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><strong>CUDA环境WSL</strong></p>
+<p><strong>CUDA环境Linux</strong></p>
+<p><strong>CANN云环境</strong></p>
+<p><strong>CANN香橙派</strong></p>
+<p><strong>性能测试工具</strong></p>
+<h3 id="自建环境-1"  id="自建环境-1">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#%e8%87%aa%e5%bb%ba%e7%8e%af%e5%a2%83-1">自建环境<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="cuda环境wsl"  id="cuda环境wsl">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#cuda%e7%8e%af%e5%a2%83wsl">CUDA环境WSL<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>打开环境</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cmd" data-lang="cmd"><span style="display:flex;"><span># 列出wsl 的linux环境
+</span></span><span style="display:flex;"><span>wsl -l
+</span></span><span style="display:flex;"><span># 进入环境  wsl -d &lt;linux-name&gt;
+</span></span><span style="display:flex;"><span>wsl -d Debian
+</span></span></code></pre></div><p>安装cuda驱动</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>nvidia-smi
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># </span>
+</span></span></code></pre></div>
+    <footer>
+      
+      <ul class="small">
+        <li><a href="/my-blog-repo/categories/cuda/">CUDA</a>, <a href="/my-blog-repo/categories/%E7%8E%AF%E5%A2%83/">环境</a></li>
+      </ul>
+      
+      
+    </footer>
+  </article>
+
+<div class="pagination p">
+    
+    <span class="previous"><a href="/my-blog-repo/2026/08/%E8%80%83%E5%85%AC%E6%97%B6%E9%97%B4%E8%A1%A8/">&laquo; Previous Post</a></span>
+    
+    
+    <span class="next"><a href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/">Next Post &raquo;</a></span>
+    
+  </div>
+</section>
+
+</div>
+
+<footer class="bottom small wrap">
+  <p class="small">&copy; Truman&#39;s blog. Powered by <a href="https://gohugo.io/">Hugo</a>, theme based off of <a href="http://jxnblk.com/ashley/">Ashley</a>.</p>
+</footer>
+
+</body>
+</html>
+="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        res[i]<span style="color:#f92672">=</span>a[i]<span style="color:#f92672">+</span>b[i];
+</span></span><span style="display:flex;"><span>        res[i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">=</span>a[i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">+</span>b[i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>        res[i<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>]<span style="color:#f92672">=</span>a[i<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>]<span style="color:#f92672">+</span>b[i<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>];
+</span></span><span style="display:flex;"><span>        res[i<span style="color:#f92672">+</span><span style="color:#ae81ff">3</span>]<span style="color:#f92672">=</span>a[i<span style="color:#f92672">+</span><span style="color:#ae81ff">3</span>]<span style="color:#f92672">+</span>b[i<span style="color:#f92672">+</span><span style="color:#ae81ff">3</span>];
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// gpu 计算向量之和，每个线程并行执行，根据自己所处的位置（id）执行不同的操作
+</span></span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sumArraysGPU</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>a,<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>b,<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>res)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>threadIdx.x;
+</span></span><span style="display:flex;"><span>    res[i]<span style="color:#f92672">=</span>a[i]<span style="color:#f92672">+</span>b[i];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// main 函数，程序的入口
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc,<span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>argv)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// cuda 设备
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> dev <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    cudaSetDevice(dev);									
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 尺寸计算
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> nElem<span style="color:#f92672">=</span><span style="color:#ae81ff">32</span>;
+</span></span><span style="display:flex;"><span>    printf(<span style="color:#e6db74">&#34;Vector size:%d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,nElem);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> nByte<span style="color:#f92672">=</span><span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">float</span>)<span style="color:#f92672">*</span>nElem;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// cpu分配内存
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>a_h<span style="color:#f92672">=</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>)malloc(nByte);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>b_h<span style="color:#f92672">=</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>)malloc(nByte);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>res_h<span style="color:#f92672">=</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>)malloc(nByte);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>res_from_gpu_h<span style="color:#f92672">=</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>)malloc(nByte);
+</span></span><span style="display:flex;"><span>    memset(res_h,<span style="color:#ae81ff">0</span>,nByte);
+</span></span><span style="display:flex;"><span>    memset(res_from_gpu_h,<span style="color:#ae81ff">0</span>,nByte);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 检查gpu内存分配
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>a_d,<span style="color:#f92672">*</span>b_d,<span style="color:#f92672">*</span>res_d;
+</span></span><span style="display:flex;"><span>    CHECK(cudaMalloc((<span style="color:#66d9ef">float</span><span style="color:#f92672">**</span>)<span style="color:#f92672">&amp;</span>a_d,nByte));
+</span></span><span style="display:flex;"><span>    CHECK(cudaMalloc((<span style="color:#66d9ef">float</span><span style="color:#f92672">**</span>)<span style="color:#f92672">&amp;</span>b_d,nByte));
+</span></span><span style="display:flex;"><span>    CHECK(cudaMalloc((<span style="color:#66d9ef">float</span><span style="color:#f92672">**</span>)<span style="color:#f92672">&amp;</span>res_d,nByte));
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// cpu内存数据：初始化赋值
+</span></span></span><span style="display:flex;"><span>    initialData(a_h,nElem);
+</span></span><span style="display:flex;"><span>    initialData(b_h,nElem);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 数据从cpu/host拷贝到gpu/device
+</span></span></span><span style="display:flex;"><span>    CHECK(cudaMemcpy(a_d,a_h,nByte,cudaMemcpyHostToDevice));
+</span></span><span style="display:flex;"><span>    CHECK(cudaMemcpy(b_d,b_h,nByte,cudaMemcpyHostToDevice));
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 核函数
+</span></span></span><span style="display:flex;"><span>    dim3 block(nElem);
+</span></span><span style="display:flex;"><span>    dim3 grid(nElem<span style="color:#f92672">/</span>block.x);
+</span></span><span style="display:flex;"><span>    sumArraysGPU<span style="color:#f92672">&lt;&lt;&lt;</span>grid,block<span style="color:#f92672">&gt;&gt;&gt;</span>(a_d,b_d,res_d);
+</span></span><span style="display:flex;"><span>    printf(<span style="color:#e6db74">&#34;Execution configuration&lt;&lt;&lt;%d,%d&gt;&gt;&gt;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,block.x,grid.x);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 数据从device拷贝到host
+</span></span></span><span style="display:flex;"><span>    CHECK(cudaMemcpy(res_from_gpu_h,res_d,nByte,cudaMemcpyDeviceToHost));
+</span></span><span style="display:flex;"><span>    sumArrays(a_h,b_h,res_h,nElem);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 核验计算结果
+</span></span></span><span style="display:flex;"><span>    checkResult(res_h,res_from_gpu_h,nElem);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 释放cuda内存
+</span></span></span><span style="display:flex;"><span>    cudaFree(a_d);
+</span></span><span style="display:flex;"><span>    cudaFree(b_d);
+</span></span><span style="display:flex;"><span>    cudaFree(res_d);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 释放cpu内存
+</span></span></span><span style="display:flex;"><span>    free(a_h);
+</span></span><span style="display:flex;"><span>    free(b_h);
+</span></span><span style="display:flex;"><span>    free(res_h);
+</span></span><span style="display:flex;"><span>    free(res_from_gpu_h);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="2线程管理"  id="2线程管理">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#2%e7%ba%bf%e7%a8%8b%e7%ae%a1%e7%90%86"><strong>2线程管理</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>上面代码的核函数出现<code>&lt;&lt;&lt;grid,block&gt;&gt;&gt;</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// 核函数
+</span></span></span><span style="display:flex;"><span>dim3 <span style="color:#a6e22e">block</span>(nElem);									<span style="color:#75715e">// 
+</span></span></span><span style="display:flex;"><span>dim3 <span style="color:#a6e22e">grid</span>(nElem<span style="color:#f92672">/</span>block.x);
+</span></span><span style="display:flex;"><span>sumArraysGPU<span style="color:#f92672">&lt;&lt;&lt;</span>grid,block<span style="color:#f92672">&gt;&gt;&gt;</span>(a_d,b_d,res_d);
+</span></span></code></pre></div><ul>
+<li>1个kernel 对应 1个grid</li>
+<li>1个grid对应多个block</li>
+<li>1个block里面有多个线程（每个block里的thread数量是32的整数倍）</li>
+</ul>
+<p><strong>形象化————复述</strong></p>
+<ul>
+<li>每个Grid是一个大厂房</li>
+<li>每个Block是一个车间，整齐排布在Grid中</li>
+<li>每个Thread是一个工人，以 32 为一组，每个Block中的工人数量都是 32 的整数倍，最少 32 个，最多 1024 个线程。</li>
+<li>每个Block中的线程同步，共享内存</li>
+</ul>
+<p><strong>线程标号</strong></p>
+<p>区分线程拿到不同数据</p>
+<ul>
+<li>
+<p>blockIdx（block 在 grid 中的位置索引）</p>
+</li>
+<li>
+<p>threadIdx（thread 在 block 中的位置索引）</p>
+</li>
+<li>
+<p>blockIdx.x    blockIdx.y    blockIdx.z</p>
+</li>
+<li>
+<p>threadIdx.x   threadIdx.y   threadIdx.z</p>
+</li>
+</ul>
+<p><strong>标号的方向</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15         --&gt; x 
+</span></span><span style="display:flex;"><span>|
+</span></span><span style="display:flex;"><span>| y
+</span></span><span style="display:flex;"><span>V 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>[         ] [         ] [         ] [         ]    
+</span></span><span style="display:flex;"><span>[00 01 02 03]                                        blockDim:(4,1,1)
+</span></span><span style="display:flex;"><span>   	                                                 threadIdx:  thread 位于 grid 的位置索引
+</span></span><span style="display:flex;"><span>[[ block0 ] [ block1 ]] 					       gridDim:(2,2,1)				
+</span></span><span style="display:flex;"><span>[[ block2 ] [ block3 ]] 	     				   blockIdx: block 位于 grid 的位置索引
+</span></span></code></pre></div><p><strong>线程的全局索引</strong></p>
+<p>线程的全局索引 == 数据在数组中的索引 == 指针指向内存空间的偏置
+一维数组</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;  
+</span></span></code></pre></div><p>二维矩阵</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// 内核内
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x; <span style="color:#75715e">// 全局列号
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> y <span style="color:#f92672">=</span> blockIdx.y <span style="color:#f92672">*</span> blockDim.y <span style="color:#f92672">+</span> threadIdx.y; <span style="color:#75715e">// 全局行号
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (x <span style="color:#f92672">&lt;</span> W <span style="color:#f92672">&amp;&amp;</span> y <span style="color:#f92672">&lt;</span> H) { <span style="color:#75715e">// W=总列数(宽度)，H=总行数(高度)
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> y <span style="color:#f92672">*</span> W <span style="color:#f92672">+</span> x; <span style="color:#75715e">// 行优先转线性索引
+</span></span></span><span style="display:flex;"><span>    C[tid] <span style="color:#f92672">=</span> A[tid] <span style="color:#f92672">+</span> B[tid];
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>三维张量</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// 内核内
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x; <span style="color:#75715e">// 列
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> y <span style="color:#f92672">=</span> blockIdx.y <span style="color:#f92672">*</span> blockDim.y <span style="color:#f92672">+</span> threadIdx.y; <span style="color:#75715e">// 行
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> z <span style="color:#f92672">=</span> blockIdx.z <span style="color:#f92672">*</span> blockDim.z <span style="color:#f92672">+</span> threadIdx.z; <span style="color:#75715e">// 深度/批次
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (x <span style="color:#f92672">&lt;</span> W <span style="color:#f92672">&amp;&amp;</span> y <span style="color:#f92672">&lt;</span> H <span style="color:#f92672">&amp;&amp;</span> z <span style="color:#f92672">&lt;</span> D) { <span style="color:#75715e">// W=宽, H=高, D=深度
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> z <span style="color:#f92672">*</span> (H <span style="color:#f92672">*</span> W) <span style="color:#f92672">+</span> y <span style="color:#f92672">*</span> W <span style="color:#f92672">+</span> x; <span style="color:#75715e">// 三维转线性索引
+</span></span></span><span style="display:flex;"><span>    C[tid] <span style="color:#f92672">=</span> A[tid] <span style="color:#f92672">+</span> B[tid];
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="3维度表示"  id="3维度表示">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#3%e7%bb%b4%e5%ba%a6%e8%a1%a8%e7%a4%ba"><strong>3维度表示</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>注意：这里是一维排布！</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// 1. 每个 Block 里的线程数量
+</span></span></span><span style="display:flex;"><span>dim3 <span style="color:#a6e22e">block</span>(<span style="color:#ae81ff">256</span>);  							
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 2. 设置 Grid 里需要多少个 Block
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// 计算方式：总数据量 / 每个 Block 的容量。
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// (通常写成 (nElem + block.x - 1) / block.x 向上取整，防止除不尽)
+</span></span></span><span style="display:flex;"><span>dim3 <span style="color:#a6e22e">grid</span>(nElem <span style="color:#f92672">/</span> block.x); 				
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 3. 启动内核函数（Kernel Launch）
+</span></span></span><span style="display:flex;"><span>sumArraysGPU<span style="color:#f92672">&lt;&lt;&lt;</span>grid, block<span style="color:#f92672">&gt;&gt;&gt;</span>(a_d, b_d, res_d);
+</span></span></code></pre></div><p>二维写法（仍然表示一维）</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// 1. 每个 Block 里的线程数量
+</span></span></span><span style="display:flex;"><span>dim3 <span style="color:#a6e22e">block</span>(<span style="color:#ae81ff">256</span>,<span style="color:#ae81ff">1</span>);  							
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 2. 设置 Grid 里需要多少个 Block
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// (通常写成 (nElem + block.x - 1) / block.x 向上取整，防止除不尽)
+</span></span></span><span style="display:flex;"><span>dim3 <span style="color:#a6e22e">grid</span>((nElem <span style="color:#f92672">+</span> block.x <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> block.x, <span style="color:#ae81ff">1</span>); 				
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 3. 启动内核函数（Kernel Launch）
+</span></span></span><span style="display:flex;"><span>sumArraysGPU<span style="color:#f92672">&lt;&lt;&lt;</span>grid, block<span style="color:#f92672">&gt;&gt;&gt;</span>(a_d, b_d, res_d);
+</span></span></code></pre></div><p><strong>核函数</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sumArraysGPU</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>a,<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>b,<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>res)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>threadIdx.x;		<span style="color:#75715e">// 在这个场景中，一维向量加法，线程id就等于数组的索引，因为blockIdx.x等于0
+</span></span></span><span style="display:flex;"><span>    res[i]<span style="color:#f92672">=</span>a[i]<span style="color:#f92672">+</span>b[i];
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="4在leetgpu上刷一道向量加法"  id="4在leetgpu上刷一道向量加法">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#4%e5%9c%a8leetgpu%e4%b8%8a%e5%88%b7%e4%b8%80%e9%81%93%e5%90%91%e9%87%8f%e5%8a%a0%e6%b3%95"><strong>4在LeetGPU上刷一道向量加法</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p><a href="https://leetgpu.com/challenges/vector-addition">https://leetgpu.com/challenges/vector-addition</a></p>
+<blockquote>
+<p>int 范围 32位</p>
+<ul>
+<li>最大值：<code>2^31 - 1 = 2147483647</code></li>
+<li>最小值：<code>-2^31 = -2147483648</code></li>
+</ul>
+</blockquote>
+<p>CUDA</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">vector_add</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> A, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> B, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> C, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> id <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (id <span style="color:#f92672">&lt;</span> N) {
+</span></span><span style="display:flex;"><span>        C[id] <span style="color:#f92672">=</span> A[id] <span style="color:#f92672">+</span> B[id];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// A, B, C are device pointers (i.e. pointers to memory on the GPU)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> A, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> B, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> C, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> threadsPerBlock <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> blocksPerGrid <span style="color:#f92672">=</span> (N <span style="color:#f92672">+</span> threadsPerBlock <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    vector_add<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(A, B, C, N);
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Triton</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> triton
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> triton.language <span style="color:#66d9ef">as</span> tl
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@triton.jit</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">vector_add_kernel</span>(a, b, c, n_elements, BLOCK_SIZE: tl<span style="color:#f92672">.</span>constexpr):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 1. 获取当前 Block (Program) 的 ID</span>
+</span></span><span style="display:flex;"><span>    pid <span style="color:#f92672">=</span> tl<span style="color:#f92672">.</span>program_id(axis<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 2. 计算当前 Block 需要处理的全局索引 (offsets)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># tl.arange(0, BLOCK_SIZE) 生成 [0, 1, ..., BLOCK_SIZE-1]</span>
+</span></span><span style="display:flex;"><span>    block_start <span style="color:#f92672">=</span> pid <span style="color:#f92672">*</span> BLOCK_SIZE
+</span></span><span style="display:flex;"><span>    offsets <span style="color:#f92672">=</span> block_start <span style="color:#f92672">+</span> tl<span style="color:#f92672">.</span>arange(<span style="color:#ae81ff">0</span>, BLOCK_SIZE)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 3. 边界保护，防止最后一个 Block 越界</span>
+</span></span><span style="display:flex;"><span>    mask <span style="color:#f92672">=</span> offsets <span style="color:#f92672">&lt;</span> n_elements
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 4. 加载数据</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 注意：这里的 a 和 b 实际上是显存指针，a + offsets 得到一批地址</span>
+</span></span><span style="display:flex;"><span>    x <span style="color:#f92672">=</span> tl<span style="color:#f92672">.</span>load(a <span style="color:#f92672">+</span> offsets, mask<span style="color:#f92672">=</span>mask)
+</span></span><span style="display:flex;"><span>    y <span style="color:#f92672">=</span> tl<span style="color:#f92672">.</span>load(b <span style="color:#f92672">+</span> offsets, mask<span style="color:#f92672">=</span>mask)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 5. 执行加法并写回显存</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 这里用 x + y，避免覆盖传进来的同名变量 a 和 b</span>
+</span></span><span style="display:flex;"><span>    tl<span style="color:#f92672">.</span>store(c <span style="color:#f92672">+</span> offsets, x <span style="color:#f92672">+</span> y, mask<span style="color:#f92672">=</span>mask)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># a, b, c are tensors on the GPU</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">solve</span>(a: torch<span style="color:#f92672">.</span>Tensor, b: torch<span style="color:#f92672">.</span>Tensor, c: torch<span style="color:#f92672">.</span>Tensor, N: int):
+</span></span><span style="display:flex;"><span>    BLOCK_SIZE <span style="color:#f92672">=</span> <span style="color:#ae81ff">1024</span>
+</span></span><span style="display:flex;"><span>    grid <span style="color:#f92672">=</span> (triton<span style="color:#f92672">.</span>cdiv(N, BLOCK_SIZE),)					<span style="color:#75715e"># N 分配的内存空间，BLOCK_SIZE block的尺寸</span>
+</span></span><span style="display:flex;"><span>    vector_add_kernel[grid](a, b, c, N, BLOCK_SIZE)
+</span></span></code></pre></div><h4 id="5矩阵加法"  id="5矩阵加法">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#5%e7%9f%a9%e9%98%b5%e5%8a%a0%e6%b3%95">5矩阵加法<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>CUDA</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 解法1：二维矩阵坐标
+</span></span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">matrix_add_2d</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> A, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> B, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> C, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> y <span style="color:#f92672">=</span> blockIdx.y <span style="color:#f92672">*</span> blockDim.y <span style="color:#f92672">+</span> threadIdx.y;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> y <span style="color:#f92672">*</span> gridDim.x <span style="color:#f92672">+</span> x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (x <span style="color:#f92672">&lt;</span> N <span style="color:#f92672">&amp;&amp;</span> y <span style="color:#f92672">&lt;</span> N) {
+</span></span><span style="display:flex;"><span>        C[tid] <span style="color:#f92672">=</span> A[tid] <span style="color:#f92672">+</span> B[tid];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 解法2：在内存空间中，实际上本来就是一维矩阵
+</span></span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">matrix_add_1d</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> A, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> B, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> C, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (tid <span style="color:#f92672">&lt;</span> N <span style="color:#f92672">*</span> N) {
+</span></span><span style="display:flex;"><span>        C[tid] <span style="color:#f92672">=</span> A[tid] <span style="color:#f92672">+</span> B[tid];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// A, B, C are device pointers (i.e. pointers to memory on the GPU)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> A, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> B, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> C, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> threadsPerBlock <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> blocksPerGrid <span style="color:#f92672">=</span> (N <span style="color:#f92672">*</span> N <span style="color:#f92672">+</span> threadsPerBlock <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 一维的 grid/block 配置
+</span></span></span><span style="display:flex;"><span>    matrix_add<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(A, B, C, N);
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Triton</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> triton
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> triton.language <span style="color:#66d9ef">as</span> tl
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 代码和向量加法完全一样</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@triton.jit</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">matrix_add_kernel</span>(a, b, c, n_elements, BLOCK_SIZE: tl<span style="color:#f92672">.</span>constexpr):
+</span></span><span style="display:flex;"><span>    pid <span style="color:#f92672">=</span> tl<span style="color:#f92672">.</span>program_id(axis<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>    block_start <span style="color:#f92672">=</span> pid <span style="color:#f92672">*</span> BLOCK_SIZE
+</span></span><span style="display:flex;"><span>    offsets <span style="color:#f92672">=</span> block_start <span style="color:#f92672">+</span> tl<span style="color:#f92672">.</span>arange(<span style="color:#ae81ff">0</span>, BLOCK_SIZE)
+</span></span><span style="display:flex;"><span>    mask <span style="color:#f92672">=</span> offsets <span style="color:#f92672">&lt;</span> n_elements
+</span></span><span style="display:flex;"><span>    x <span style="color:#f92672">=</span> tl<span style="color:#f92672">.</span>load(a <span style="color:#f92672">+</span> offsets, mask<span style="color:#f92672">=</span>mask)
+</span></span><span style="display:flex;"><span>    y <span style="color:#f92672">=</span> tl<span style="color:#f92672">.</span>load(b <span style="color:#f92672">+</span> offsets, mask<span style="color:#f92672">=</span>mask)
+</span></span><span style="display:flex;"><span>    tl<span style="color:#f92672">.</span>store(c <span style="color:#f92672">+</span> offsets, x <span style="color:#f92672">+</span> y, mask<span style="color:#f92672">=</span>mask)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># a, b, c are tensors on the GPU</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">solve</span>(a: torch<span style="color:#f92672">.</span>Tensor, b: torch<span style="color:#f92672">.</span>Tensor, c: torch<span style="color:#f92672">.</span>Tensor, N: int):
+</span></span><span style="display:flex;"><span>    BLOCK_SIZE <span style="color:#f92672">=</span> <span style="color:#ae81ff">1024</span>
+</span></span><span style="display:flex;"><span>    n_elements <span style="color:#f92672">=</span> N <span style="color:#f92672">*</span> N
+</span></span><span style="display:flex;"><span>    grid <span style="color:#f92672">=</span> (triton<span style="color:#f92672">.</span>cdiv(n_elements, BLOCK_SIZE),)
+</span></span><span style="display:flex;"><span>    matrix_add_kernel[grid](a, b, c, n_elements, BLOCK_SIZE)
+</span></span></code></pre></div>
+    <footer>
+      
+      <ul class="small">
+        <li><a href="/my-blog-repo/categories/cuda/">CUDA</a>, <a href="/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/">笔记</a></li>
+      </ul>
+      
+      
+    </footer>
+  </article>
+
+<div class="pagination p">
+    
+    <span class="previous"><a href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/">&laquo; Previous Post</a></span>
+    
+    
+    <span class="next"><a href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/">Next Post &raquo;</a></span>
+    
+  </div>
+</section>
+
+</div>
+
+<footer class="bottom small wrap">
+  <p class="small">&copy; Truman&#39;s blog. Powered by <a href="https://gohugo.io/">Hugo</a>, theme based off of <a href="http://jxnblk.com/ashley/">Ashley</a>.</p>
+</footer>
+
+</body>
+</html>

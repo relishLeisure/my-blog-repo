@@ -13,6 +13,9 @@ categories: [笔记]
 ```cmd
 # 命令
 hugo new --kind <template-name> path/<filename>
+
+hugo new --kind default posts/2026/08/CUDA复习.md
+
 # 示例
 E:\github_pages\my-blog-repo>hugo new --kind default posts/2026/thoughts/2608随便写.md
 # 结果

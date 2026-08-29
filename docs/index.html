@@ -67,6 +67,656 @@ p code, li code {
   
   
   <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/">Tailscale使用记录</a></h2>
+    <abbr class="small postDate" title="2026-08-28">August 28, 2026</abbr>
+    <h3 id="作为流量转发节点"  id="作为流量转发节点">
+  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#%e4%bd%9c%e4%b8%ba%e6%b5%81%e9%87%8f%e8%bd%ac%e5%8f%91%e8%8a%82%e7%82%b9">作为流量转发节点<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><strong>Linux下载安装Tailscale</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo mkdir -p /etc/apt/sources.list.d/
+</span></span><span style="display:flex;"><span>curl -fsSL https://tailscale.com/install.sh | sh
+</span></span></code></pre></div><p><strong>登录</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo tailscale up
+</span></span></code></pre></div><p><strong>开启ip转发</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;net.ipv4.ip_forward = 1&#39;</span> | sudo tee -a /etc/sysctl.d/99-tailscale.conf
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;net.ipv6.conf.all.forwarding = 1&#39;</span> | sudo tee -a /etc/sysctl.d/99-tailscale.conf
+</span></span><span style="display:flex;"><span>sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
+</span></span></code></pre></div><p><strong>设置流量出口节点 Exit Node</strong>，其他机器流量经过这个设备转发</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>sudo tailscale up <span style="color:#f92672">--</span>advertise<span style="color:#f92672">-</span>exit<span style="color:#f92672">-</span>node
+</span></span></code></pre></div><p><strong>在 Tailscale 控制面板中批准 Authorization</strong></p>
+<p>出于安全考虑，宣告后并不会立刻生效，必须在后台手工允许：</p>
+<ol>
+<li>打开 <a href="https://login.tailscale.com/admin/machines">Tailscale Admin Console (Machines 页面)</a>。</li>
+<li>找到你刚配置的这台 Linux 设备。</li>
+<li>点击设备右侧的 <strong><code>...</code></strong> (更多选项) -&gt; 选择 <strong>Edit route settings</strong>。</li>
+<li>勾选 <strong>Use as exit node</strong>。</li>
+<li>点击 <strong>Save</strong>。</li>
+</ol>
+<p><strong>其他设备配置</strong></p>
+<p>Windows</p>
+<p>右键 &ndash; Exit Node &ndash; 选择设备</p>
+<p>Linux</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo tailscale up --exit-node<span style="color:#f92672">=</span>&lt;这台Linux的Tailscale IP或设备名&gt;
+</span></span></code></pre></div>
+  </article>
+  
+  <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/">CUDA学习--2简单运算</a></h2>
+    <abbr class="small postDate" title="2026-08-28">August 28, 2026</abbr>
+    <h3 id="目录"  id="目录">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#%e7%9b%ae%e5%bd%95">目录<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><a href="https://leetgpu.com/challenges/1d-convolution">1D Convolution</a></p>
+<p><a href="https://leetgpu.com/challenges/leaky-relu">Leaky ReLU</a></p>
+<p><a href="https://leetgpu.com/challenges/sigmoid-linear-unit">Sigmoid Linear Unit</a></p>
+<p><a href="https://leetgpu.com/challenges/matrix-transpose">Matrix Transpose</a></p>
+<p><a href="https://leetgpu.com/challenges/swish-gated-linear-unit">Swish-Gated Linear Unit</a></p>
+<h4 id="1d-convolution"  id="1d-convolution">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#1d-convolution">1D Convolution<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>CUDA</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">convolution_1d_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> kernel, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output,
+</span></span><span style="display:flex;"><span>                                      <span style="color:#66d9ef">int</span> input_size, <span style="color:#66d9ef">int</span> kernel_size) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x; 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> sum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0f</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (tid <span style="color:#f92672">&lt;</span> input_size <span style="color:#f92672">-</span> kernel_size <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i<span style="color:#f92672">&lt;</span>kernel_size; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>            sum <span style="color:#f92672">+=</span> input[tid <span style="color:#f92672">+</span> i] <span style="color:#f92672">*</span> kernel[i];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        output[tid] <span style="color:#f92672">=</span> sum;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// input, kernel, output are device pointers (i.e. pointers to memory on the GPU)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> kernel, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> input_size,
+</span></span><span style="display:flex;"><span>                      <span style="color:#66d9ef">int</span> kernel_size) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> output_size <span style="color:#f92672">=</span> input_size <span style="color:#f92672">-</span> kernel_size <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> threadsPerBlock <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> blocksPerGrid <span style="color:#f92672">=</span> (output_size <span style="color:#f92672">+</span> threadsPerBlock <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    convolution_1d_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(input, kernel, output, input_size,
+</span></span><span style="display:flex;"><span>                                                              kernel_size);
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Triton</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> triton
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> triton.language <span style="color:#66d9ef">as</span> tl
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@triton.jit</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">conv1d_kernel</span>(input, kernel, output, input_size, kernel_size, BLOCK_SIZE: tl<span style="color:#f92672">.</span>constexpr):
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># input, kernel, output are tensors on the GPU</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">solve</span>(
+</span></span><span style="display:flex;"><span>    input: torch<span style="color:#f92672">.</span>Tensor,
+</span></span><span style="display:flex;"><span>    kernel: torch<span style="color:#f92672">.</span>Tensor,
+</span></span><span style="display:flex;"><span>    output: torch<span style="color:#f92672">.</span>Tensor,
+</span></span><span style="display:flex;"><span>    input_size: int,
+</span></span><span style="display:flex;"><span>    kernel_size: int,
+</span></span><span style="display:flex;"><span>):
+</span></span><span style="display:flex;"><span>    BLOCK_SIZE <span style="color:#f92672">=</span> <span style="color:#ae81ff">1024</span>
+</span></span><span style="display:flex;"><span>    n_blocks <span style="color:#f92672">=</span> triton<span style="color:#f92672">.</span>cdiv(input_size <span style="color:#f92672">-</span> kernel_size <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>, BLOCK_SIZE)
+</span></span><span style="display:flex;"><span>    grid <span style="color:#f92672">=</span> (n_blocks,)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    conv1d_kernel[grid](input, kernel, output, input_size, kernel_size, BLOCK_SIZE)
+</span></span></code></pre></div><h4 id="leaky-relu"  id="leaky-relu">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#leaky-relu">Leaky ReLU<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>CUDA</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">leaky_relu_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> value <span style="color:#f92672">=</span> input[tid];
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (tid <span style="color:#f92672">&lt;</span> N) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (value <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>            output[tid] <span style="color:#f92672">=</span> value;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            output[tid] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.01f</span> <span style="color:#f92672">*</span> value;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// input, output are device pointers (i.e. pointers to memory on the GPU)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> threadsPerBlock <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> blocksPerGrid <span style="color:#f92672">=</span> (N <span style="color:#f92672">+</span> threadsPerBlock <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    leaky_relu_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(input, output, N);
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Triton</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@triton.jit</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">leaky_relu_kernel</span>(input, output, n_elements, BLOCK_SIZE: tl<span style="color:#f92672">.</span>constexpr):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># input, output are tensors on the GPU</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">solve</span>(input: torch<span style="color:#f92672">.</span>Tensor, output: torch<span style="color:#f92672">.</span>Tensor, N: int):
+</span></span><span style="display:flex;"><span>    BLOCK_SIZE <span style="color:#f92672">=</span> <span style="color:#ae81ff">1024</span>
+</span></span><span style="display:flex;"><span>    grid <span style="color:#f92672">=</span> (triton<span style="color:#f92672">.</span>cdiv(N, BLOCK_SIZE),)
+</span></span><span style="display:flex;"><span>    leaky_relu_kernel[grid](input, output, N, BLOCK_SIZE)
+</span></span></code></pre></div><h4 id="sigmoid-linear-unit"  id="sigmoid-linear-unit">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#sigmoid-linear-unit">Sigmoid Linear Unit<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>CUDA</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">silu_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> value <span style="color:#f92672">=</span> input[tid];
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (tid <span style="color:#f92672">&lt;</span> N) {
+</span></span><span style="display:flex;"><span>        output[tid] <span style="color:#f92672">=</span> value <span style="color:#f92672">/</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> exp(<span style="color:#f92672">-</span> value));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// input, output are device pointers
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> threadsPerBlock <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> blocksPerGrid <span style="color:#f92672">=</span> (N <span style="color:#f92672">+</span> threadsPerBlock <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    silu_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(input, output, N);
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Triton</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"></code></pre></div><h4 id="matrix-transpose"  id="matrix-transpose">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#matrix-transpose">Matrix Transpose<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>CUDA</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">matrix_transpose_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> rows, <span style="color:#66d9ef">int</span> cols) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> y <span style="color:#f92672">=</span> blockIdx.y <span style="color:#f92672">*</span> blockDim.y <span style="color:#f92672">+</span> threadIdx.y;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (y <span style="color:#f92672">&lt;</span> rows <span style="color:#f92672">&amp;&amp;</span> x <span style="color:#f92672">&lt;</span> cols) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// input[row, col] 放到 output[col, row]
+</span></span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> input_idx <span style="color:#f92672">=</span> y <span style="color:#f92672">*</span> cols <span style="color:#f92672">+</span> x;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> output_idx <span style="color:#f92672">=</span> x <span style="color:#f92672">*</span> rows <span style="color:#f92672">+</span> y;
+</span></span><span style="display:flex;"><span>        output[output_idx] <span style="color:#f92672">=</span> input[input_idx];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// input, output are device pointers (i.e. pointers to memory on the GPU)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> rows, <span style="color:#66d9ef">int</span> cols) {
+</span></span><span style="display:flex;"><span>    dim3 <span style="color:#a6e22e">threadsPerBlock</span>(<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>);
+</span></span><span style="display:flex;"><span>    dim3 <span style="color:#a6e22e">blocksPerGrid</span>((cols <span style="color:#f92672">+</span> threadsPerBlock.x <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock.x,
+</span></span><span style="display:flex;"><span>                       (rows <span style="color:#f92672">+</span> threadsPerBlock.y <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock.y);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    matrix_transpose_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(input, output, rows, cols);
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>用到了 <code>dim3</code></p>
+<h4 id="一个很好的平台"  id="一个很好的平台">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#%e4%b8%80%e4%b8%aa%e5%be%88%e5%a5%bd%e7%9a%84%e5%b9%b3%e5%8f%b0">一个很好的平台<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>刷题格式</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdint.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_bf16.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// ReLU逐元素核函数：y = max(x, 0)
+</span></span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">relu_kernel</span>(<span style="color:#66d9ef">const</span> __nv_bfloat16<span style="color:#f92672">*</span> x, __nv_bfloat16<span style="color:#f92672">*</span> y, <span style="color:#66d9ef">int64_t</span> total) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int64_t</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (tid <span style="color:#f92672">&lt;</span> total) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 转float计算再转回bf16，兼容性最好、逻辑最清晰
+</span></span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 使用 &lt;cuda_bf16.h&gt; 库函数实现 float &lt;-&gt; bf16 转换
+</span></span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">float</span> val <span style="color:#f92672">=</span> __bfloat162float(x[tid]);
+</span></span><span style="display:flex;"><span>        val <span style="color:#f92672">=</span> val <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0.0f</span> <span style="color:#f92672">?</span> val : <span style="color:#ae81ff">0.0f</span>;
+</span></span><span style="display:flex;"><span>        y[tid] <span style="color:#f92672">=</span> __float2bfloat16(val);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param x    input
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param y    output
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param T,H    张量形状 (T,H)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> run_kernel(
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> __nv_bfloat16<span style="color:#f92672">*</span> x,
+</span></span><span style="display:flex;"><span>    __nv_bfloat16<span style="color:#f92672">*</span> y,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int64_t</span> T,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int64_t</span> H
+</span></span><span style="display:flex;"><span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int64_t</span> total_elements <span style="color:#f92672">=</span> T <span style="color:#f92672">*</span> H;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> block_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int64_t</span> grid_size <span style="color:#f92672">=</span> (total_elements <span style="color:#f92672">+</span> block_size <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> block_size;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    relu_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>grid_size, block_size<span style="color:#f92672">&gt;&gt;&gt;</span>(x, y, total_elements);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// cudaDeviceSynchronize();
+</span></span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="swish-gated-linear-unit"  id="swish-gated-linear-unit">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#swish-gated-linear-unit">Swish-Gated Linear Unit<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>SWiGLU is defined as:</p>
+<ol>
+<li>Split input into two halves: <code>x1</code> and <code>x2</code></li>
+<li>silu(x1) = x1 / (1 + exp(- x1))</li>
+<li>res = silu(x1) * x2</li>
+</ol>
+<p>CUDA</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">swiglu_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> halfN) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i<span style="color:#f92672">&lt;</span>halfN; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">float</span> silu <span style="color:#f92672">=</span> input[i] <span style="color:#f92672">/</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> exp(<span style="color:#f92672">-</span>input[i]));
+</span></span><span style="display:flex;"><span>        output[i] <span style="color:#f92672">=</span> silu <span style="color:#f92672">*</span> input[i<span style="color:#f92672">+</span>halfN];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// input, output are device pointers
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> halfN <span style="color:#f92672">=</span> N <span style="color:#f92672">/</span> <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> threadsPerBlock <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> blocksPerGrid <span style="color:#f92672">=</span> (halfN <span style="color:#f92672">+</span> threadsPerBlock <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    swiglu_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(input, output, halfN);
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+  </article>
+  
+  <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/">Ascend C（Add算子）开发实践</a></h2>
+    <abbr class="small postDate" title="2026-08-27">August 27, 2026</abbr>
+    <table>
+	<thead>
+			<tr>
+					<th>实验名称</th>
+					<th>Ascend C简单Vector算子开发实践（Add算子）</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>实验内容</td>
+					<td>Add算子</td>
+			</tr>
+			<tr>
+					<td>实验时间</td>
+					<td>2026-08-27</td>
+			</tr>
+			<tr>
+					<td>实验类型</td>
+					<td></td>
+			</tr>
+			<tr>
+					<td>实验地点</td>
+					<td></td>
+			</tr>
+			<tr>
+					<td>在线地点</td>
+					<td><a href="https://www.hiascend.com/edu/experiment/detail/1d0b0b790fb24947977d6d954112c016?tab=1">https://www.hiascend.com/edu/experiment/detail/1d0b0b790fb24947977d6d954112c016?tab=1</a></td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="环境与器材"  id="环境与器材">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e7%8e%af%e5%a2%83%e4%b8%8e%e5%99%a8%e6%9d%90">环境与器材<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><strong>环境搭建</strong></p>
+<p>本实验依赖基础NPU环境，包括昇腾NPU驱动、固件、Toolkit（CANN开发套件）、ops（CANN算子包集成一系列库文件 ）、<strong>msprof性能采集工具</strong>（随 CANN Toolkit 一起安装）。</p>
+<p><strong>实验平台</strong></p>
+<p>CANNLAB</p>
+<p><a href="https://gitcode.com/org/cann/cannlab/environment">https://gitcode.com/org/cann/cannlab/environment</a></p>
+<h3 id="实验过程"  id="实验过程">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e5%ae%9e%e9%aa%8c%e8%bf%87%e7%a8%8b">实验过程<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="实验环境"  id="实验环境">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e5%ae%9e%e9%aa%8c%e7%8e%af%e5%a2%83">实验环境<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>1.启动环境</p>
+<p><a href="https://gitcode.com/org/cann/cannlab/environment/create">https://gitcode.com/org/cann/cannlab/environment/create</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>实例名称
+</span></span><span style="display:flex;"><span>cann_dev_env
+</span></span><span style="display:flex;"><span>名称可包含数字、字母、下划线，不能以数字开头，长度不超过15个字符。
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>模板名称
+</span></span><span style="display:flex;"><span>cann_8.5.2-py3.11-A2-arm
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>NPU规格
+</span></span><span style="display:flex;"><span>1*NPU 910B3 16vCPUs 32GiB
+</span></span></code></pre></div><p><strong>notebook</strong></p>
+<p>由于没有上面的npu资源了，换成使用notebook</p>
+<p>cann 版本是8.5.0</p>
+<p><a href="https://gitcode.com/user/qq_4277658311111111111111173q/notebook/lab">https://gitcode.com/user/qq_4277658311111111111111173q/notebook/lab</a></p>
+<p>2.<strong>查看环境版本</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>echo $ASCEND_HOME_PATH
+</span></span><span style="display:flex;"><span>/usr/local/Ascend/cann-8.5.0
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>cd /usr/local/Ascend/cann-8.5.0
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 可以看到 set_enc.sh</span>
+</span></span><span style="display:flex;"><span>ls
+</span></span><span style="display:flex;"><span>aarch64-linux  cann_uninstall.sh  compiler  fwkacllib  mindstudio-toolkit  pkg_inc  set_env.sh  toolkit
+</span></span><span style="display:flex;"><span>arm64-linux    combo_script       conf      include    opp                 python   share       tools
+</span></span><span style="display:flex;"><span>bin            compat             devlib    lib64      ops_uninstall.sh    runtime  test-ops    var
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 在当前终端会话中  激活环境变量</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 每次新开终端都要 source 一次。建议把 source 命令加到 ~/.bashrc 里。</span>
+</span></span><span style="display:flex;"><span>source /usr/local/Ascend/cann-8.5.0/set_env.sh
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 确认msprof安装成功</span>
+</span></span><span style="display:flex;"><span>ls $ASCEND_HOME_PATH/tools/profiler/bin/msprof
+</span></span><span style="display:flex;"><span>/usr/local/Ascend/cann-8.5.0/tools/profiler/bin/msprof
+</span></span></code></pre></div><p>查看设备状态</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 查看NPU设备状态</span>
+</span></span><span style="display:flex;"><span>npu-smi info
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 可以看到设备名为 910B4 </span>
+</span></span><span style="display:flex;"><span>+------------------------------------------------------------------------------------------------+
+</span></span><span style="display:flex;"><span>| npu-smi 25.5.1                   Version: 25.5.1                                               |
+</span></span><span style="display:flex;"><span>+---------------------------+---------------+----------------------------------------------------+
+</span></span><span style="display:flex;"><span>| NPU   Name                | Health        | Power<span style="color:#f92672">(</span>W<span style="color:#f92672">)</span>    Temp<span style="color:#f92672">(</span>C<span style="color:#f92672">)</span>           Hugepages-Usage<span style="color:#f92672">(</span>page<span style="color:#f92672">)</span>|
+</span></span><span style="display:flex;"><span>| Chip                      | Bus-Id        | AICore<span style="color:#f92672">(</span>%<span style="color:#f92672">)</span>   Memory-Usage<span style="color:#f92672">(</span>MB<span style="color:#f92672">)</span>  HBM-Usage<span style="color:#f92672">(</span>MB<span style="color:#f92672">)</span>        |
+</span></span><span style="display:flex;"><span>+<span style="color:#f92672">===========================</span>+<span style="color:#f92672">===============</span>+<span style="color:#f92672">====================================================</span>+
+</span></span><span style="display:flex;"><span>| <span style="color:#ae81ff">6</span>     910B4               | OK            | 88.4        <span style="color:#ae81ff">42</span>                <span style="color:#ae81ff">0</span>    / <span style="color:#ae81ff">0</span>             |
+</span></span><span style="display:flex;"><span>| <span style="color:#ae81ff">0</span>                         | 0000:82:00.0  | <span style="color:#ae81ff">0</span>           <span style="color:#ae81ff">0</span>    / <span style="color:#ae81ff">0</span>          <span style="color:#ae81ff">2875</span> / <span style="color:#ae81ff">32768</span>         |
+</span></span><span style="display:flex;"><span>+<span style="color:#f92672">===========================</span>+<span style="color:#f92672">===============</span>+<span style="color:#f92672">====================================================</span>+
+</span></span><span style="display:flex;"><span>+---------------------------+---------------+----------------------------------------------------+
+</span></span><span style="display:flex;"><span>| NPU     Chip              | Process id    | Process name             | Process memory<span style="color:#f92672">(</span>MB<span style="color:#f92672">)</span>      |
+</span></span><span style="display:flex;"><span>+<span style="color:#f92672">===========================</span>+<span style="color:#f92672">===============</span>+<span style="color:#f92672">====================================================</span>+
+</span></span><span style="display:flex;"><span>| No running processes found in NPU <span style="color:#ae81ff">6</span>                                                            |
+</span></span><span style="display:flex;"><span>+<span style="color:#f92672">===========================</span>+<span style="color:#f92672">===============</span>+<span style="color:#f92672">====================================================</span>+
+</span></span></code></pre></div><p>验证python环境</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#一行验证：能 import acl 并初始化即 OK</span>
+</span></span><span style="display:flex;"><span>python3 -c <span style="color:#e6db74">&#34;import acl;acl.init();acl.rt.set_device(0);print(&#39;runtime OK&#39;)&#34;</span>
+</span></span><span style="display:flex;"><span>runtime OK
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 如有异常，安装CANN 运行时依赖的 Python 包（缺一不可，否则跑不起来）</span>
+</span></span><span style="display:flex;"><span>pip3install attrs cython numpy decorator sympy cffi pyyaml pathlib2 psutilprotobuf<span style="color:#f92672">==</span>3.20.0 scipy requests absl-py --user
+</span></span></code></pre></div><p><strong>环境验证清单（确认2.1.2-2.1.4）</strong></p>
+<p>进入下一步前，确认完成以下验证：</p>
+<p>☐ echo $ASCEND_HOME_PATH 输出非空</p>
+<p>☐ npu-smi info 至少显示 1 个 NPU，Health = OK</p>
+<p>☐ ls $ASCEND_HOME_PATH/include/acl/acl.h 存在</p>
+<p>☐ python3 -c &ldquo;importacl;acl.init();acl.rt.set_device(0)&rdquo; 不报错</p>
+<p>☐ ls $ASCEND_HOME_PATH/tools/profiler/bin/msprof存在</p>
+<hr>
+<h4 id="代码下载"  id="代码下载">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e4%bb%a3%e7%a0%81%e4%b8%8b%e8%bd%bd">代码下载<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>注意notebook创建文件夹有权限，自己摸索下</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># wget 下载示例代码</span>
+</span></span><span style="display:flex;"><span>wget https://ascend-lab.obs.cn-north-4.myhuaweicloud.com/AscendC-Labs/add_demo.zip
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 解压文件</span>
+</span></span><span style="display:flex;"><span>unzip add_demo.zip
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>cd add_demo/ <span style="color:#f92672">&amp;&amp;</span> ls
+</span></span><span style="display:flex;"><span>CMakeLists.txt  add.asc  build_and_run.sh  parse_msprof.py  run_with_msprof.sh  test_add_runner.sh  tools
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>add_demo/
+</span></span><span style="display:flex;"><span>├──add.asc              <span style="color:#75715e"># Device kernel +Host</span>
+</span></span><span style="display:flex;"><span>├──CMakeLists.txt       <span style="color:#75715e"># cmake文件</span>
+</span></span><span style="display:flex;"><span>├──build_and_run.sh     <span style="color:#75715e"># 执行add|sub 的脚本文件，会生成 CPUFP64 Add golden</span>
+</span></span><span style="display:flex;"><span>├──run_with_msprof.sh   <span style="color:#75715e"># msprof 脚本文件 启动msprof 并执行profiling采集</span>
+</span></span><span style="display:flex;"><span>└──parse_msprof.py      <span style="color:#75715e"># 解析 add_customtask_time/op_statistic</span>
+</span></span></code></pre></div><p>源码导览</p>
+<p><a href="https://www.hiascend.com/edu/experiment/detail/1d0b0b790fb24947977d6d954112c016?tab=4">https://www.hiascend.com/edu/experiment/detail/1d0b0b790fb24947977d6d954112c016?tab=4</a></p>
+<h4 id="运行-add-demo"  id="运行-add-demo">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e8%bf%90%e8%a1%8c-add-demo">运行 Add Demo<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd add_demo
+</span></span><span style="display:flex;"><span>bash build_and_run.sh add
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 运行结果</span>
+</span></span><span style="display:flex;"><span>--- Precision <span style="color:#f92672">(</span>NPU vs PyTorch CPU FP64 golden<span style="color:#f92672">)</span> ---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> MERE <span style="color:#f92672">=</span> 2.31711e-08  <span style="color:#f92672">(</span>FP32 pass <span style="color:#66d9ef">if</span> &lt; 2^-13 <span style="color:#f92672">=</span> 0.00012207<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> MARE <span style="color:#f92672">=</span> 5.96044e-08  <span style="color:#f92672">(</span>FP32 pass <span style="color:#66d9ef">if</span> &lt; 10*2^-13 <span style="color:#f92672">=</span> 0.0012207<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> PASS ✓
+</span></span><span style="display:flex;"><span>REFERENCE_VALUE<span style="color:#f92672">=</span>2.09999996
+</span></span><span style="display:flex;"><span>ACTUAL_VALUE<span style="color:#f92672">=</span>2.0999999
+</span></span><span style="display:flex;"><span>ABS_ERROR<span style="color:#f92672">=</span>5.96046448e-08
+</span></span><span style="display:flex;"><span>REL_ERROR<span style="color:#f92672">=</span>2.83831633e-08
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>--- Performance <span style="color:#f92672">(</span>kernel only, 不含 host↔device 拷贝<span style="color:#f92672">)</span> ---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>CPU<span style="color:#f92672">]</span> add_cpu average time:    3.151 ms
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>NPU<span style="color:#f92672">]</span> kernel_add_npu average time <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 0.047 ms
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; NPU vs CPU speedup <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 67.70 x
+</span></span><span style="display:flex;"><span>  （NPU 的纯硬件耗时可用 msprof 采集，更精确：见 run_with_msprof.sh）
+</span></span><span style="display:flex;"><span><span style="color:#f92672">============================================================</span>
+</span></span><span style="display:flex;"><span>✓ 运行结束（更精确的 NPU 耗时可用 run_with_msprof.sh）
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>bash build_and_run.sh sub
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 运行结果</span>
+</span></span><span style="display:flex;"><span>--- Precision <span style="color:#f92672">(</span>NPU vs PyTorch CPU FP64 golden<span style="color:#f92672">)</span> ---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> MERE <span style="color:#f92672">=</span> 1.33333  <span style="color:#f92672">(</span>FP32 pass <span style="color:#66d9ef">if</span> &lt; 2^-13 <span style="color:#f92672">=</span> 0.00012207<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> MARE <span style="color:#f92672">=</span> 1.33333  <span style="color:#f92672">(</span>FP32 pass <span style="color:#66d9ef">if</span> &lt; 10*2^-13 <span style="color:#f92672">=</span> 0.0012207<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> FAIL ✗
+</span></span><span style="display:flex;"><span>REFERENCE_VALUE<span style="color:#f92672">=</span>2.09999996
+</span></span><span style="display:flex;"><span>ACTUAL_VALUE<span style="color:#f92672">=</span>-0.699999988
+</span></span><span style="display:flex;"><span>ABS_ERROR<span style="color:#f92672">=</span>2.79999995
+</span></span><span style="display:flex;"><span>REL_ERROR<span style="color:#f92672">=</span>1.33333327
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> sub 模式使用 Add golden，预期精度失败。
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>--- Performance <span style="color:#f92672">(</span>kernel only, 不含 host↔device 拷贝<span style="color:#f92672">)</span> ---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>CPU<span style="color:#f92672">]</span> add_cpu average time:    3.143 ms
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>NPU<span style="color:#f92672">]</span> kernel_add_npu average time <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 0.044 ms
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; NPU vs CPU speedup <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 71.36 x
+</span></span><span style="display:flex;"><span>  （NPU 的纯硬件耗时可用 msprof 采集，更精确：见 run_with_msprof.sh）
+</span></span></code></pre></div><h4 id="运行msprof-采集"  id="运行msprof-采集">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e8%bf%90%e8%a1%8cmsprof-%e9%87%87%e9%9b%86">运行msprof 采集<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 在add_demo 目录下进行profiling数据采集，--elements N表示会采集1M（1048576）个float的add算子耗时</span>
+</span></span><span style="display:flex;"><span>bash run_with_msprof.sh --elements <span style="color:#ae81ff">1048576</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 问题：输出这一行就没了</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>INFO<span style="color:#f92672">]</span> 检测到 昇腾 A2 系列产品
+</span></span></code></pre></div><p><strong>解决办法</strong></p>
+<p>将脚本中</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>MSPROF_BIN<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>find <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ASCEND_HOME_PATH<span style="color:#66d9ef">:-</span>/usr/local/Ascend<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> -name <span style="color:#e6db74">&#34;msprof&#34;</span> -type f 2&gt;/dev/null | head -1<span style="color:#66d9ef">)</span>
+</span></span></code></pre></div><p>替换为</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># 优先直接使用 PATH 里的 msprof，找不到再用安全规避 SIGPIPE 的 find 命令</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> command -v msprof &gt;/dev/null 2&gt;&amp;1; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    MSPROF_BIN<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>command -v msprof<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 末尾加上 || true 吸收 find 遭遇 SIGPIPE 时的 141 错误码，防止 pipefail 杀掉脚本</span>
+</span></span><span style="display:flex;"><span>    MSPROF_BIN<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>find <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ASCEND_HOME_PATH<span style="color:#66d9ef">:-</span>/usr/local/Ascend<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> -maxdepth <span style="color:#ae81ff">6</span> -name <span style="color:#e6db74">&#34;msprof&#34;</span> -type f 2&gt;/dev/null | head -1 <span style="color:#f92672">||</span> true<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>MSPROF_BIN<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;[ERROR] 找不到 msprof，请安装 CANN toolkit 后重试&#34;</span> &gt;&amp;<span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>MSPROF_BIN<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>    --output<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>OUTPUT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>    --task-time<span style="color:#f92672">=</span>l1 <span style="color:#ae81ff">\	</span>							<span style="color:#75715e"># cann-8.5.0  环境下要使用 l1，源代码使用 l2</span>
+</span></span><span style="display:flex;"><span>    --application<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SCRIPT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/build/demo add --golden </span><span style="color:#e6db74">${</span>REFERENCE_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74"> --elements </span><span style="color:#e6db74">${</span>ELEMENTS<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>    2&gt;&amp;<span style="color:#ae81ff">1</span> | tee <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>OUTPUT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/msprof_collect.log&#34;</span>
+</span></span></code></pre></div><p>msprof 结果</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>--- Performance <span style="color:#f92672">(</span>kernel only, 不含 host↔device 拷贝<span style="color:#f92672">)</span> ---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>CPU<span style="color:#f92672">]</span> add_cpu average time:    3.228 ms
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>NPU<span style="color:#f92672">]</span> kernel_add_npu average time <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 0.050 ms
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; NPU vs CPU speedup <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 64.37 x
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>INFO<span style="color:#f92672">]</span> msprof 采集完成，开始解析 add_custom 耗时 ...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">===</span> msprof task_time 采集到的 add_custom 耗时 <span style="color:#f92672">===</span>
+</span></span><span style="display:flex;"><span>  样本数: <span style="color:#ae81ff">103</span>
+</span></span><span style="display:flex;"><span>  平均:   30.50 us <span style="color:#f92672">=</span> 0.0305 ms
+</span></span><span style="display:flex;"><span>  最小:   27.66 us
+</span></span><span style="display:flex;"><span>  最大:   44.04 us
+</span></span><span style="display:flex;"><span>  累计:   3141.66 us <span style="color:#f92672">=</span> 3.14 ms
+</span></span></code></pre></div><h4 id="扩展实验"  id="扩展实验">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e6%89%a9%e5%b1%95%e5%ae%9e%e9%aa%8c">扩展实验<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p><strong>A 修改参数大小</strong></p>
+<p>修改 <code>bash run_with_msprof.sh --elements 1048576</code> 中 elements 参数大小</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>bash run_with_msprof-Copy1.sh --elements <span style="color:#ae81ff">16777216</span> 
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>-- Performance <span style="color:#f92672">(</span>kernel only, 不含 host↔device 拷贝<span style="color:#f92672">)</span> ---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>CPU<span style="color:#f92672">]</span> add_cpu average time:    89.897 ms
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>NPU<span style="color:#f92672">]</span> kernel_add_npu average time <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 0.683 ms
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; NPU vs CPU speedup <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 131.71 x
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>INFO<span style="color:#f92672">]</span> msprof 采集完成，开始解析 add_custom 耗时 ...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">===</span> msprof task_time 采集到的 add_custom 耗时 <span style="color:#f92672">===</span>
+</span></span><span style="display:flex;"><span>  样本数: <span style="color:#ae81ff">103</span>
+</span></span><span style="display:flex;"><span>  平均:   664.62 us <span style="color:#f92672">=</span> 0.6646 ms
+</span></span><span style="display:flex;"><span>  最小:   655.97 us
+</span></span><span style="display:flex;"><span>  最大:   673.63 us
+</span></span><span style="display:flex;"><span>  累计:   68455.90 us <span style="color:#f92672">=</span> 68.46 ms
+</span></span></code></pre></div><p>加速比更大了</p>
+<p><strong>B 改 tileLength</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// 全局 kernel 配置常量：Host 与 Device 共享      .asc 文件
+</span></span></span><span style="display:flex;"><span>constexpruint32_t tileLength <span style="color:#f92672">=</span> <span style="color:#ae81ff">1024</span>;
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 在add_demo 目录下，删除缓存编译文件</span>
+</span></span><span style="display:flex;"><span>rm build/demo
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 在add_demo 目录下进行profiling数据采集（包含重新编译）</span>
+</span></span><span style="display:flex;"><span>bash run_with_msprof.sh --elements <span style="color:#ae81ff">1048576</span>
+</span></span></code></pre></div><p>结果</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>--- Precision (NPU vs PyTorch CPU FP64 golden) ---
+</span></span><span style="display:flex;"><span>[Precision] MERE = 2.31711e-08  (FP32 pass if &lt; 2^-13 = 0.00012207)
+</span></span><span style="display:flex;"><span>[Precision] MARE = 5.96044e-08  (FP32 pass if &lt; 10*2^-13 = 0.0012207)
+</span></span><span style="display:flex;"><span>[Precision] PASS ✓
+</span></span><span style="display:flex;"><span>REFERENCE_VALUE=2.09999996
+</span></span><span style="display:flex;"><span>ACTUAL_VALUE=2.0999999
+</span></span><span style="display:flex;"><span>ABS_ERROR=5.96046448e-08
+</span></span><span style="display:flex;"><span>REL_ERROR=2.83831633e-08
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>--- Performance (kernel only, 不含 host↔device 拷贝) ---
+</span></span><span style="display:flex;"><span>[CPU] add_cpu average time:    3.146 ms
+</span></span><span style="display:flex;"><span>[NPU] kernel_add_npu average time (host wall): 0.063 ms
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; NPU vs CPU speedup (host wall): 50.05 x
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>=== msprof task_time 采集到的 add_custom 耗时 ===
+</span></span><span style="display:flex;"><span>  样本数: 103
+</span></span><span style="display:flex;"><span>  平均:   47.69 us = 0.0477 ms
+</span></span><span style="display:flex;"><span>  最小:   45.50 us
+</span></span><span style="display:flex;"><span>  最大:   71.58 us
+</span></span><span style="display:flex;"><span>  累计:   4912.09 us = 4.91 ms
+</span></span></code></pre></div><p><strong>C：改 numBlocks</strong></p>
+<p>注释：tileLength 改回了 2048</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// 用于计算的 block 数量，从8修改为4
+</span></span></span><span style="display:flex;"><span>constexpruint32_t numBlocks  <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>;
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>rm build/demo
+</span></span><span style="display:flex;"><span>bash run_with_msprof.sh --elements <span style="color:#ae81ff">1048576</span>
+</span></span></code></pre></div><p>实验结果</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>--- Precision <span style="color:#f92672">(</span>NPU vs PyTorch CPU FP64 golden<span style="color:#f92672">)</span> ---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> MERE <span style="color:#f92672">=</span> 2.31711e-08  <span style="color:#f92672">(</span>FP32 pass <span style="color:#66d9ef">if</span> &lt; 2^-13 <span style="color:#f92672">=</span> 0.00012207<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> MARE <span style="color:#f92672">=</span> 5.96044e-08  <span style="color:#f92672">(</span>FP32 pass <span style="color:#66d9ef">if</span> &lt; 10*2^-13 <span style="color:#f92672">=</span> 0.0012207<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Precision<span style="color:#f92672">]</span> PASS ✓
+</span></span><span style="display:flex;"><span>REFERENCE_VALUE<span style="color:#f92672">=</span>2.09999996
+</span></span><span style="display:flex;"><span>ACTUAL_VALUE<span style="color:#f92672">=</span>2.0999999
+</span></span><span style="display:flex;"><span>ABS_ERROR<span style="color:#f92672">=</span>5.96046448e-08
+</span></span><span style="display:flex;"><span>REL_ERROR<span style="color:#f92672">=</span>2.83831633e-08
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>--- Performance <span style="color:#f92672">(</span>kernel only, 不含 host↔device 拷贝<span style="color:#f92672">)</span> ---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>CPU<span style="color:#f92672">]</span> add_cpu average time:    3.435 ms
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>NPU<span style="color:#f92672">]</span> kernel_add_npu average time <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 0.075 ms
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; NPU vs CPU speedup <span style="color:#f92672">(</span>host wall<span style="color:#f92672">)</span>: 46.09 x
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">===</span> msprof task_time 采集到的 add_custom 耗时 <span style="color:#f92672">===</span>
+</span></span><span style="display:flex;"><span>  样本数: <span style="color:#ae81ff">103</span>
+</span></span><span style="display:flex;"><span>  平均:   57.51 us <span style="color:#f92672">=</span> 0.0575 ms
+</span></span><span style="display:flex;"><span>  最小:   53.56 us
+</span></span><span style="display:flex;"><span>  最大:   82.66 us
+</span></span><span style="display:flex;"><span>  累计:   5923.02 us <span style="color:#f92672">=</span> 5.92 ms
+</span></span></code></pre></div><p>性能下降了（用时接近两倍）</p>
+<h3 id="附录"  id="附录">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e9%99%84%e5%bd%95">附录<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p>修改后的run_msprof.sh 文件</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"># ----------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Lab 2 —— 用 msprof 采集 NPU 算子真实耗时</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 用法：bash run_with_msprof.sh [--elements N]（自动识别产品）</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 输出：prof_output/ 目录下有 msprof 采集的 csv / json</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ----------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>set -euo pipefail
+</span></span><span style="display:flex;"><span>SCRIPT_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>cd <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>dirname <span style="color:#e6db74">&#34;</span>$0<span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&amp;&amp;</span> pwd<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>source <span style="color:#e6db74">&#34;</span>$SCRIPT_DIR<span style="color:#e6db74">/tools/ascend_product.sh&#34;</span>
+</span></span><span style="display:flex;"><span>OUTPUT_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SCRIPT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/prof_output&#34;</span>
+</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>OUTPUT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ELEMENTS<span style="color:#f92672">=</span><span style="color:#ae81ff">1048576</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> <span style="color:#f92672">[[</span> $# -gt <span style="color:#ae81ff">0</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span> in
+</span></span><span style="display:flex;"><span>        --elements<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">[[</span> $# -ge <span style="color:#ae81ff">2</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#e6db74">&#34;</span>$2<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span>~ ^<span style="color:#f92672">[</span>1-9<span style="color:#f92672">][</span>0-9<span style="color:#f92672">]</span>*$ <span style="color:#f92672">]]</span> <span style="color:#f92672">||</span> <span style="color:#f92672">{</span> echo <span style="color:#e6db74">&#34;[ERROR] --elements requires a positive integer&#34;</span> &gt;&amp;2; exit 2; <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            ELEMENTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$2<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>            shift <span style="color:#ae81ff">2</span> ;;
+</span></span><span style="display:flex;"><span>        -h|--help<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>            echo <span style="color:#e6db74">&#34;用法: </span>$0<span style="color:#e6db74"> [--elements N]&#34;</span>
+</span></span><span style="display:flex;"><span>            exit <span style="color:#ae81ff">0</span> ;;
+</span></span><span style="display:flex;"><span>        *<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>            echo <span style="color:#e6db74">&#34;[ERROR] 用法: </span>$0<span style="color:#e6db74"> [--elements N]&#34;</span> &gt;&amp;<span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>            exit <span style="color:#ae81ff">2</span> ;;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">esac</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>DEVICE_ID<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>ASCEND_RT_VISIBLE_DEVICES<span style="color:#66d9ef">:-</span><span style="color:#e6db74">}</span>
+</span></span><span style="display:flex;"><span>DEVICE_ID<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>DEVICE_ID%%,*<span style="color:#e6db74">}</span>
+</span></span><span style="display:flex;"><span>DEVICE_ID<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>DEVICE_ID<span style="color:#66d9ef">:-</span>0<span style="color:#e6db74">}</span>
+</span></span><span style="display:flex;"><span>detect_ascend_product <span style="color:#e6db74">&#34;</span>$DEVICE_ID<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">||</span> <span style="color:#f92672">{</span> echo <span style="color:#e6db74">&#34;[ERROR] 无法识别当前 NPU 产品，请检查 npu-smi、驱动和设备状态&#34;</span> &gt;&amp;2; exit 1; <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[INFO] 检测到 </span><span style="color:#e6db74">${</span>ASCEND_PRODUCT_SERIES<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 1. 加载环境</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span>$ASCEND_HOME_PATH<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -f <span style="color:#e6db74">&#34;/usr/local/Ascend/ascend-toolkit/set_env.sh&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        source /usr/local/Ascend/ascend-toolkit/set_env.sh
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">elif</span> <span style="color:#f92672">[</span> -f <span style="color:#e6db74">&#34;/usr/local/Ascend/cann/set_env.sh&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        source /usr/local/Ascend/cann/set_env.sh
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 优先直接使用 PATH 里的 msprof，找不到再用安全规避 SIGPIPE 的 find 命令</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> command -v msprof &gt;/dev/null 2&gt;&amp;1; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    MSPROF_BIN<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>command -v msprof<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 末尾加上 || true 吸收 find 遭遇 SIGPIPE 时的 141 错误码，防止 pipefail 杀掉脚本</span>
+</span></span><span style="display:flex;"><span>    MSPROF_BIN<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>find <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ASCEND_HOME_PATH<span style="color:#66d9ef">:-</span>/usr/local/Ascend<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> -maxdepth <span style="color:#ae81ff">6</span> -name <span style="color:#e6db74">&#34;msprof&#34;</span> -type f 2&gt;/dev/null | head -1 <span style="color:#f92672">||</span> true<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>MSPROF_BIN<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;[ERROR] 找不到 msprof，请安装 CANN toolkit 后重试&#34;</span> &gt;&amp;<span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[INFO] msprof: </span><span style="color:#e6db74">${</span>MSPROF_BIN<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 2. 先确保 demo 已编译</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! -f <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SCRIPT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/build/demo&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;[INFO] 还没编译 demo，先编译 ...&#34;</span>
+</span></span><span style="display:flex;"><span>    bash <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SCRIPT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/build_and_run.sh&#34;</span> add &gt;/dev/null
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>REFERENCE_FILE<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>ADD_GOLDEN_FILE<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SCRIPT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/build/add_golden_fp64.bin&#34;</span><span style="color:#e6db74">}</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[INFO] 生成 PyTorch CPU FP64 Add golden: </span><span style="color:#e6db74">${</span>REFERENCE_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>python3 <span style="color:#e6db74">&#34;</span>$SCRIPT_DIR<span style="color:#e6db74">/tools/add_reference.py&#34;</span> --elements <span style="color:#e6db74">&#34;</span>$ELEMENTS<span style="color:#e6db74">&#34;</span> --output <span style="color:#e6db74">&#34;</span>$REFERENCE_FILE<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 3. 用 msprof 包住 demo</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[INFO] 开始用 msprof 采集 ...&#34;</span>
+</span></span><span style="display:flex;"><span>BEFORE_PROF_LIST<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>mktemp<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>trap <span style="color:#e6db74">&#39;rm -f &#34;$BEFORE_PROF_LIST&#34;&#39;</span> EXIT
+</span></span><span style="display:flex;"><span>find <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>OUTPUT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> -mindepth <span style="color:#ae81ff">1</span> -maxdepth <span style="color:#ae81ff">1</span> -type d -name <span style="color:#e6db74">&#39;PROF_*&#39;</span> -print | sort &gt; <span style="color:#e6db74">&#34;</span>$BEFORE_PROF_LIST<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>MSPROF_BIN<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>    --output<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>OUTPUT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>    --task-time<span style="color:#f92672">=</span>l1 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>    --application<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SCRIPT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/build/demo add --golden </span><span style="color:#e6db74">${</span>REFERENCE_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74"> --elements </span><span style="color:#e6db74">${</span>ELEMENTS<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span>    2&gt;&amp;<span style="color:#ae81ff">1</span> | tee <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>OUTPUT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/msprof_collect.log&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>LATEST_PROF<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>comm -13 <span style="color:#e6db74">&#34;</span>$BEFORE_PROF_LIST<span style="color:#e6db74">&#34;</span> &lt;<span style="color:#f92672">(</span>find <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>OUTPUT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> -mindepth <span style="color:#ae81ff">1</span> -maxdepth <span style="color:#ae81ff">1</span> -type d -name <span style="color:#e6db74">&#39;PROF_*&#39;</span> -print | sort<span style="color:#66d9ef">)</span> | tail -1<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>LATEST_PROF<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;[ERROR] 本次 msprof 未生成新的 PROF_* 目录，拒绝复用历史采集结果&#34;</span> &gt;&amp;<span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! -d <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>LATEST_PROF<span style="color:#e6db74">}</span><span style="color:#e6db74">/mindstudio_profiler_output&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;[ERROR] 本次 msprof 目录缺少 mindstudio_profiler_output: </span><span style="color:#e6db74">${</span>LATEST_PROF<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> &gt;&amp;<span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 4. 自动解析 add_custom 的耗时</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[INFO] msprof 采集完成，开始解析 add_custom 耗时 ...&#34;</span>
+</span></span><span style="display:flex;"><span>python3 <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SCRIPT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/parse_msprof.py&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>LATEST_PROF<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[INFO] 结果目录: </span><span style="color:#e6db74">${</span>LATEST_PROF<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span></code></pre></div>
+  </article>
+  
+  <article class="post">
     <h2><a class="post-title" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/">van_den_Ende DDCN 笔记</a></h2>
     <abbr class="small postDate" title="2026-08-26">August 26, 2026</abbr>
     <h3 id="项目地址"  id="项目地址">
@@ -283,6 +933,181 @@ FigS1_training_curves 与 logs/）。</li>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># 或</span>
 </span></span><span style="display:flex;"><span>conda list &lt;包名&gt;
 </span></span></code></pre></div><hr>
+<h3 id="模型结构"  id="模型结构">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e6%a8%a1%e5%9e%8b%e7%bb%93%e6%9e%84">模型结构<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><code>models.py</code></p>
+<p><strong>结构</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DataGenerator</span>(keras<span style="color:#f92672">.</span>utils<span style="color:#f92672">.</span>Sequence):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 相当于 pytorch 的data_loader</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 定义了回调方法，分别记录日志、保存最佳模型</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CallBacks</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@staticmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">tensorboard</span>(logdir):
+</span></span><span style="display:flex;"><span>        tensorboard_callback <span style="color:#f92672">=</span> keras<span style="color:#f92672">.</span>callbacks<span style="color:#f92672">.</span>TensorBoard(
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> tensorboard_callback
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@staticmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">checkpoint</span>(savefile):
+</span></span><span style="display:flex;"><span>        checkpoint_callback <span style="color:#f92672">=</span> keras<span style="color:#f92672">.</span>callbacks<span style="color:#f92672">.</span>ModelCheckpoint(
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> checkpoint_callback
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 模型</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ResNet</span>(keras<span style="color:#f92672">.</span>Model):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__init__</span>(self, impulse_response, lam<span style="color:#f92672">=</span><span style="color:#ae81ff">0.0</span>, f0<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>, data_shape<span style="color:#f92672">=</span>(<span style="color:#ae81ff">24</span>, <span style="color:#ae81ff">1024</span>, <span style="color:#ae81ff">1</span>), blocks<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>, AA<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, bn<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>, dropout<span style="color:#f92672">=</span><span style="color:#ae81ff">0.0</span>):
+</span></span><span style="display:flex;"><span>        super()<span style="color:#f92672">.</span><span style="color:#a6e22e">__init__</span>()
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 初始化模型，指定参数</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 前向过程</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">call</span>(self, x):
+</span></span><span style="display:flex;"><span>        x_hat <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>ResNet(x)
+</span></span><span style="display:flex;"><span>        y_hat <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>nn<span style="color:#f92672">.</span>conv2d(x_hat, self<span style="color:#f92672">.</span>impulse_response, padding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;SAME&#34;</span>, strides<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> x_hat, y_hat
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 重写 compile()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">compile</span>(self, opt):
+</span></span><span style="display:flex;"><span>        super()<span style="color:#f92672">.</span>compile()
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>opt <span style="color:#f92672">=</span> opt						<span style="color:#75715e"># 指定 optimizer </span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 计算损失函数</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">compute_loss</span>(self, Y, Y_hat, X):
+</span></span><span style="display:flex;"><span>        l1 <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reduce_mean(tf<span style="color:#f92672">.</span>abs(X))
+</span></span><span style="display:flex;"><span>        l2 <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reduce_mean(tf<span style="color:#f92672">.</span>square(Y <span style="color:#f92672">-</span> Y_hat))
+</span></span><span style="display:flex;"><span>        total_loss <span style="color:#f92672">=</span> l2 <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>lam <span style="color:#f92672">*</span> l1
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> total_loss, l2, l1
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 正向传播：X, Y_hat = self.call(Y) (对应 PyTorch 里的 output = model(data))</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 计算损失：total_loss, ... = self.compute_loss(...) (对应 loss = criterion(...))</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 反向传播求梯度：grads = tape.gradient(total_loss, RN_vars) (对应 loss.backward())</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 更新权重：self.opt.apply_gradients(zip(grads, RN_vars))</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">train_step</span>(self, Y):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> isinstance(data, tuple):
+</span></span><span style="display:flex;"><span>            Y <span style="color:#f92672">=</span> Y[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        RN <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>ResNet
+</span></span><span style="display:flex;"><span>        RN_vars <span style="color:#f92672">=</span> RN<span style="color:#f92672">.</span>trainable_variables
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> tf<span style="color:#f92672">.</span>GradientTape() <span style="color:#66d9ef">as</span> tape:
+</span></span><span style="display:flex;"><span>            X, Y_hat <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>call(Y)
+</span></span><span style="display:flex;"><span>            total_loss, l2_loss, l1_loss <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>compute_loss(Y, Y_hat, X)
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        grads <span style="color:#f92672">=</span> tape<span style="color:#f92672">.</span>gradient(total_loss, RN_vars)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>opt<span style="color:#f92672">.</span>apply_gradients(zip(grads, RN_vars))
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>compiled_metrics<span style="color:#f92672">.</span>update_state(Y, Y_hat)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;loss&#34;</span>: total_loss,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;l2&#34;</span>: l2_loss,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;l1&#34;</span>: l1_loss,
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_step</span>(self, Y):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> isinstance(data, tuple):
+</span></span><span style="display:flex;"><span>            Y <span style="color:#f92672">=</span> Y[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        X, Y_hat <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>call(Y)
+</span></span><span style="display:flex;"><span>        total_loss, l2_loss, l1_loss <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>compute_loss(Y, Y_hat, X)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>compiled_metrics<span style="color:#f92672">.</span>update_state(Y, Y_hat)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;loss&#34;</span>: total_loss,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;l2&#34;</span>: l2_loss,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;l1&#34;</span>: l1_loss,
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 模块</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">conv_layer</span>(self, x, filters, kernel_size, dilation,
+</span></span><span style="display:flex;"><span>                   use_bn<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>, use_dropout<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>, use_bias<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, activ<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        Convolution layer &gt; batch normalisation &gt; activation &gt; dropout
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> x
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 模块</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">residual_block</span>(self, x, f0):
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> x0 <span style="color:#f92672">+</span> x
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 拼接卷积层和</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">construct</span>(self):
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        Construct ResNet model
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>ResNet <span style="color:#f92672">=</span> Model(inputs, x)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>ResNet
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 模型</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UNet</span>(keras<span style="color:#f92672">.</span>Model):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 同上</span>
+</span></span></code></pre></div><p><strong>前向过程和损失函数</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">call</span>(self, x):
+</span></span><span style="display:flex;"><span>    x_hat <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>ResNet(x) 			<span style="color:#75715e"># 神经网络预测源信号 X</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 将预测结果与已知的物理脉冲响应进行卷积，得到重建信号</span>
+</span></span><span style="display:flex;"><span>    y_hat <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>nn<span style="color:#f92672">.</span>conv2d(x_hat, self<span style="color:#f92672">.</span>impulse_response, padding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;SAME&#34;</span>, strides<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>) 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> x_hat, y_hat
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">compute_loss</span>(self, Y, Y_hat, X):
+</span></span><span style="display:flex;"><span>    l1 <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reduce_mean(tf<span style="color:#f92672">.</span>abs(X)) 				<span style="color:#75715e"># 强制预测信号稀疏 (大部分为0)</span>
+</span></span><span style="display:flex;"><span>    l2 <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reduce_mean(tf<span style="color:#f92672">.</span>square(Y <span style="color:#f92672">-</span> Y_hat)) 	<span style="color:#75715e"># 保证重建信号与原观测信号一致</span>
+</span></span><span style="display:flex;"><span>    total_loss <span style="color:#f92672">=</span> l2 <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>lam <span style="color:#f92672">*</span> l1
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> total_loss, l2, l1
+</span></span></code></pre></div><p><strong><code>ResNet</code> 和 <code>UNet</code></strong></p>
+<p>在这个代码中，<code>ResNet</code> 和 <code>UNet</code> 是<strong>分别使用的</strong></p>
+<hr>
+<h3 id="代码阅读"  id="代码阅读">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e4%bb%a3%e7%a0%81%e9%98%85%e8%af%bb"><strong>代码阅读</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><code>Beamforming.py</code></p>
+<p><strong>它的数据流</strong></p>
+<p><code>输入阵列时间序列数据 X</code> -&gt; <code>多窗频域变换 (CMTM)</code> -&gt; <code>并行计算通道间的协方差矩阵 (Cxy)</code> -&gt; <code>结合空间物理模型 (dt -&gt; A)</code> -&gt; <code>使用 MUSIC 或 传统 Beamforming 算法寻找信号到达方向</code>。</p>
+<p><strong>CMTM多窗频域变换</strong></p>
+<p>标准的 FFT 会产生频谱泄漏和高方差，先用多个正交的 Slepian 窗对信号进行加窗处理，再对多个加窗后的频谱求平均，得到稳定、低方差的协方差矩阵，这对于嘈杂信号（如脑电波、微弱地震波）极其重要。</p>
+<p><strong>多窗法计算协方差矩阵</strong></p>
+<p><strong>MUSIC算法</strong></p>
+<p><strong>一维信号 <code>MUSIC</code> 算法</strong></p>
+<p>一维时序信号的 MUSIC 算法估计的是：信号中包含的“频率成分“</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>求一维信号的协方差矩阵————滑动窗口延时构建矩阵
+</span></span><span style="display:flex;"><span>矩阵求自相关————得到协方差矩阵，怎么求的？
+</span></span><span style="display:flex;"><span>正交分解，按特征值大小分为信号空间和噪声空间
+</span></span><span style="display:flex;"><span>通过信号空间与噪声空间正交，确定特征值和特征向量
+</span></span><span style="display:flex;"><span>噪声空间对应特征值置为0，再恢复信号
+</span></span></code></pre></div><blockquote>
+<p>一维阵列采集的二维信号怎么计算协方差矩阵？</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>频域法
+</span></span><span style="display:flex;"><span>转为频域  &gt;&gt;  多次快拍(多个短窗口)的频域平均  &gt;&gt; 求外积并平均
+</span></span></code></pre></div><p><strong>求外积并平均</strong>：在特定频率 f 下，空间协方差矩阵是这样算出来的：
+$$
+R_{xx}(f)=\frac{1}{K}\sum_{k=1}^{K} X_k(f),X_k(f)^H
+$$</p>
+<ul>
+<li>
+<p>Xk(f) 是一个列向量 (M×1)。</p>
+</li>
+<li>
+<p>Xk(f)H 是一个行向量 (1×M)。</p>
+</li>
+<li>
+<p>它们相乘（外积）恰好得到一个 M×M 的复数矩阵。</p>
+</li>
+<li>
+<p>把 K 个短窗口算出来的矩阵加起来求平均。</p>
+</li>
+</ul>
+<p><strong>信号到达方向</strong></p>
+<p>MUSIC 或 传统 Beamforming 算法寻找信号到达方向（信号到达方向对应车辆速度）</p>
+<p>对一维阵列，根据阵列传感器的间距和角度关系，计算对应的延时量，截取多个快拍，从而计算二维信号的协方差矩阵</p>
+<p><strong>结合空间物理模型</strong></p>
+<p><code>结合空间物理模型 (dt -&gt; A)</code> 就是依据车辆的速度范围，限制搜索的慢度区间</p>
 
   </article>
   
@@ -1046,6 +1871,54 @@ FigS1_training_curves 与 logs/）。</li>
 <p>世界很平凡，每个人都撒谎，与自己和解吧</p>
 <p>接纳自己，相信自己，守护自己的本心</p>
 </blockquote>
+
+  </article>
+  
+  <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/1/01/"></a></h2>
+    <abbr class="small postDate" title="0001-01-01">January 1, 0001</abbr>
+    <h3 id="研究记录"  id="研究记录">
+  <a class="heading-link" href="/my-blog-repo/1/01/#%e7%a0%94%e7%a9%b6%e8%ae%b0%e5%bd%95">研究记录<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<ol>
+<li>论文阅读笔记</li>
+<li>代码学习笔记</li>
+<li>数据处理记录</li>
+<li>模型与方法创新</li>
+<li>实验</li>
+</ol>
+<p><strong>文件地址</strong></p>
+<p>D:\study\graduate\code\python\ResearchDAS</p>
+<p><strong>配置文件</strong></p>
+<p>D:\study\graduate\code\python\ResearchDAS\src\python\test\test_yaml.yaml</p>
+<p><strong>读取配置文件</strong></p>
+<h3 id="数据处理记录"  id="数据处理记录">
+  <a class="heading-link" href="/my-blog-repo/1/01/#%e6%95%b0%e6%8d%ae%e5%a4%84%e7%90%86%e8%ae%b0%e5%bd%95">数据处理记录<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="文件地址"  id="文件地址">
+  <a class="heading-link" href="/my-blog-repo/1/01/#%e6%96%87%e4%bb%b6%e5%9c%b0%e5%9d%80">文件地址<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p><strong>重车连续行驶</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">date0722</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">folder_path</span>: <span style="color:#e6db74">&#34;K:\\DAS\\验证数据\\新建文件夹\\20250722-0.5m-不含水-渣土车行驶1小时\\&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">files_info</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">zhatu</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#e6db74">&#34;空洞验证不含水_20240722-030000.264443461_300-2100_渣土车行驶.dat&#34;</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#e6db74">&#34;空洞验证不含水_20240722-030100.261659328_300-2100_渣土车行驶.dat&#34;</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#e6db74">&#34;空洞验证不含水_20240722-030200.258873637_300-2100_渣土车行驶.dat&#34;</span>
+</span></span></code></pre></div><p><strong>数据查看</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"></code></pre></div><p><strong>瀑布图</strong></p>
+<h3 id="模型与方法创新"  id="模型与方法创新">
+  <a class="heading-link" href="/my-blog-repo/1/01/#%e6%a8%a1%e5%9e%8b%e4%b8%8e%e6%96%b9%e6%b3%95%e5%88%9b%e6%96%b0">模型与方法创新<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="方法"  id="方法">
+  <a class="heading-link" href="/my-blog-repo/1/01/#%e6%96%b9%e6%b3%95">方法<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<ol>
+<li>稀疏恢复降噪：F-K 谱 + Radon 变换 + 波束成形 融合</li>
+<li>信号建模：取代作者的冲激响应函数</li>
+</ol>
+<p>降噪</p>
 
   </article>
   

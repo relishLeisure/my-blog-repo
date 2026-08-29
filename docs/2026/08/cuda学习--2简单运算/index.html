@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="cn-zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CUDA学习--2简单运算 : Truman&#39;s blog</title>
+  <link rel="icon" href="/my-blog-repo/favicon.ico">
+
+  <link rel="stylesheet" href="/my-blog-repo/css/style.css" type="text/css" media="screen">
+  <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet" type="text/css">
+
+  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="https://relishleisure.github.io/my-blog-repo/feed.xml">
+
+
+<style>
+ 
+pre {
+    margin-left: 0;
+    padding: 1em;
+    background: var(--code-bg);
+    overflow-x: auto;
+    font-family: 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--code-text);
+}
+
+code {
+    font-family: 'Ubuntu Mono', monospace;
+}
+
+ 
+p code, li code {
+    background: var(--code-bg);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+@media screen and (min-width: 640px) {
+    pre {
+        margin-left: 3em;
+    }
+}
+</style>
+<meta name="generator" content="Hugo 0.165.0">
+</head>
+
+<body class="single">
+
+<header>
+  <h1 class="vcard author"><a href="/my-blog-repo/" title="Home">Truman&#39;s blog</a></h1>
+  <p>
+    God helps those who help themselves.
+    <ul class="pages">
+      <li><a href="/my-blog-repo/archives/">archives</a></li>
+      <li><a href="/my-blog-repo/feed.xml">subscribe</a></li>
+    </ul>
+  </p>
+</header>
+
+<div class="content wrap">
+  
+<section class="posts">
+  <article class="post">
+    <h2>CUDA学习--2简单运算</h2>
+    <abbr class="small postDate" title="2026-08-28">August 28, 2026</abbr>
+    <h3 id="目录"  id="目录">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#%e7%9b%ae%e5%bd%95">目录<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><a href="https://leetgpu.com/challenges/1d-convolution">1D Convolution</a></p>
+<p><a href="https://leetgpu.com/challenges/leaky-relu">Leaky ReLU</a></p>
+<p><a href="https://leetgpu.com/challenges/sigmoid-linear-unit">Sigmoid Linear Unit</a></p>
+<p><a href="https://leetgpu.com/challenges/matrix-transpose">Matrix Transpose</a></p>
+<p><a href="https://leetgpu.com/challenges/swish-gated-linear-unit">Swish-Gated Linear Unit</a></p>
+<h4 id="1d-convolution"  id="1d-convolution">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#1d-convolution">1D Convolution<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>CUDA</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">convolution_1d_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> kernel, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output,
+</span></span><span style="display:flex;"><span>                                      <span style="color:#66d9ef">int</span> input_size, <span style="color:#66d9ef">int</span> kernel_size) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x; 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> sum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0f</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (tid <span style="color:#f92672">&lt;</span> input_size <span style="color:#f92672">-</span> kernel_size <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i<span style="color:#f92672">&lt;</span>kernel_size; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>            sum <span style="color:#f92672">+=</span> input[tid <span style="color:#f92672">+</span> i] <span style="color:#f92672">*</span> kernel[i];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        output[tid] <span style="color:#f92672">=</span> sum;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// input, kernel, output are device pointers (i.e. pointers to memory on the GPU)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> kernel, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> input_size,
+</span></span><span style="display:flex;"><span>                      <span style="color:#66d9ef">int</span> kernel_size) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> output_size <span style="color:#f92672">=</span> input_size <span style="color:#f92672">-</span> kernel_size <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> threadsPerBlock <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> blocksPerGrid <span style="color:#f92672">=</span> (output_size <span style="color:#f92672">+</span> threadsPerBlock <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    convolution_1d_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(input, kernel, output, input_size,
+</span></span><span style="display:flex;"><span>                                                              kernel_size);
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Triton</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> triton
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> triton.language <span style="color:#66d9ef">as</span> tl
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@triton.jit</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">conv1d_kernel</span>(input, kernel, output, input_size, kernel_size, BLOCK_SIZE: tl<span style="color:#f92672">.</span>constexpr):
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># input, kernel, output are tensors on the GPU</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">solve</span>(
+</span></span><span style="display:flex;"><span>    input: torch<span style="color:#f92672">.</span>Tensor,
+</span></span><span style="display:flex;"><span>    kernel: torch<span style="color:#f92672">.</span>Tensor,
+</span></span><span style="display:flex;"><span>    output: torch<span style="color:#f92672">.</span>Tensor,
+</span></span><span style="display:flex;"><span>    input_size: int,
+</span></span><span style="display:flex;"><span>    kernel_size: int,
+</span></span><span style="display:flex;"><span>):
+</span></span><span style="display:flex;"><span>    BLOCK_SIZE <span style="color:#f92672">=</span> <span style="color:#ae81ff">1024</span>
+</span></span><span style="display:flex;"><span>    n_blocks <span style="color:#f92672">=</span> triton<span style="color:#f92672">.</span>cdiv(input_size <span style="color:#f92672">-</span> kernel_size <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>, BLOCK_SIZE)
+</span></span><span style="display:flex;"><span>    grid <span style="color:#f92672">=</span> (n_blocks,)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    conv1d_kernel[grid](input, kernel, output, input_size, kernel_size, BLOCK_SIZE)
+</span></span></code></pre></div><h4 id="leaky-relu"  id="leaky-relu">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#leaky-relu">Leaky ReLU<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>CUDA</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">leaky_relu_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> value <span style="color:#f92672">=</span> input[tid];
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (tid <span style="color:#f92672">&lt;</span> N) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (value <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>            output[tid] <span style="color:#f92672">=</span> value;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            output[tid] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.01f</span> <span style="color:#f92672">*</span> value;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// input, output are device pointers (i.e. pointers to memory on the GPU)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> threadsPerBlock <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> blocksPerGrid <span style="color:#f92672">=</span> (N <span style="color:#f92672">+</span> threadsPerBlock <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    leaky_relu_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(input, output, N);
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Triton</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@triton.jit</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">leaky_relu_kernel</span>(input, output, n_elements, BLOCK_SIZE: tl<span style="color:#f92672">.</span>constexpr):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># input, output are tensors on the GPU</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">solve</span>(input: torch<span style="color:#f92672">.</span>Tensor, output: torch<span style="color:#f92672">.</span>Tensor, N: int):
+</span></span><span style="display:flex;"><span>    BLOCK_SIZE <span style="color:#f92672">=</span> <span style="color:#ae81ff">1024</span>
+</span></span><span style="display:flex;"><span>    grid <span style="color:#f92672">=</span> (triton<span style="color:#f92672">.</span>cdiv(N, BLOCK_SIZE),)
+</span></span><span style="display:flex;"><span>    leaky_relu_kernel[grid](input, output, N, BLOCK_SIZE)
+</span></span></code></pre></div><h4 id="sigmoid-linear-unit"  id="sigmoid-linear-unit">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#sigmoid-linear-unit">Sigmoid Linear Unit<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>CUDA</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">silu_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> value <span style="color:#f92672">=</span> input[tid];
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (tid <span style="color:#f92672">&lt;</span> N) {
+</span></span><span style="display:flex;"><span>        output[tid] <span style="color:#f92672">=</span> value <span style="color:#f92672">/</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> exp(<span style="color:#f92672">-</span> value));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// input, output are device pointers
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> threadsPerBlock <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> blocksPerGrid <span style="color:#f92672">=</span> (N <span style="color:#f92672">+</span> threadsPerBlock <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    silu_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(input, output, N);
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Triton</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"></code></pre></div><h4 id="matrix-transpose"  id="matrix-transpose">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#matrix-transpose">Matrix Transpose<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>CUDA</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">matrix_transpose_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> rows, <span style="color:#66d9ef">int</span> cols) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> y <span style="color:#f92672">=</span> blockIdx.y <span style="color:#f92672">*</span> blockDim.y <span style="color:#f92672">+</span> threadIdx.y;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (y <span style="color:#f92672">&lt;</span> rows <span style="color:#f92672">&amp;&amp;</span> x <span style="color:#f92672">&lt;</span> cols) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// input[row, col] 放到 output[col, row]
+</span></span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> input_idx <span style="color:#f92672">=</span> y <span style="color:#f92672">*</span> cols <span style="color:#f92672">+</span> x;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> output_idx <span style="color:#f92672">=</span> x <span style="color:#f92672">*</span> rows <span style="color:#f92672">+</span> y;
+</span></span><span style="display:flex;"><span>        output[output_idx] <span style="color:#f92672">=</span> input[input_idx];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// input, output are device pointers (i.e. pointers to memory on the GPU)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> rows, <span style="color:#66d9ef">int</span> cols) {
+</span></span><span style="display:flex;"><span>    dim3 <span style="color:#a6e22e">threadsPerBlock</span>(<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>);
+</span></span><span style="display:flex;"><span>    dim3 <span style="color:#a6e22e">blocksPerGrid</span>((cols <span style="color:#f92672">+</span> threadsPerBlock.x <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock.x,
+</span></span><span style="display:flex;"><span>                       (rows <span style="color:#f92672">+</span> threadsPerBlock.y <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock.y);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    matrix_transpose_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(input, output, rows, cols);
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>用到了 <code>dim3</code></p>
+<h4 id="一个很好的平台"  id="一个很好的平台">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#%e4%b8%80%e4%b8%aa%e5%be%88%e5%a5%bd%e7%9a%84%e5%b9%b3%e5%8f%b0">一个很好的平台<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>刷题格式</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdint.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_bf16.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// ReLU逐元素核函数：y = max(x, 0)
+</span></span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">relu_kernel</span>(<span style="color:#66d9ef">const</span> __nv_bfloat16<span style="color:#f92672">*</span> x, __nv_bfloat16<span style="color:#f92672">*</span> y, <span style="color:#66d9ef">int64_t</span> total) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int64_t</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (tid <span style="color:#f92672">&lt;</span> total) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 转float计算再转回bf16，兼容性最好、逻辑最清晰
+</span></span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 使用 &lt;cuda_bf16.h&gt; 库函数实现 float &lt;-&gt; bf16 转换
+</span></span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">float</span> val <span style="color:#f92672">=</span> __bfloat162float(x[tid]);
+</span></span><span style="display:flex;"><span>        val <span style="color:#f92672">=</span> val <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0.0f</span> <span style="color:#f92672">?</span> val : <span style="color:#ae81ff">0.0f</span>;
+</span></span><span style="display:flex;"><span>        y[tid] <span style="color:#f92672">=</span> __float2bfloat16(val);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param x    input
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param y    output
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param T,H    张量形状 (T,H)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> run_kernel(
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> __nv_bfloat16<span style="color:#f92672">*</span> x,
+</span></span><span style="display:flex;"><span>    __nv_bfloat16<span style="color:#f92672">*</span> y,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int64_t</span> T,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int64_t</span> H
+</span></span><span style="display:flex;"><span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int64_t</span> total_elements <span style="color:#f92672">=</span> T <span style="color:#f92672">*</span> H;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> block_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int64_t</span> grid_size <span style="color:#f92672">=</span> (total_elements <span style="color:#f92672">+</span> block_size <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> block_size;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    relu_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>grid_size, block_size<span style="color:#f92672">&gt;&gt;&gt;</span>(x, y, total_elements);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// cudaDeviceSynchronize();
+</span></span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="swish-gated-linear-unit"  id="swish-gated-linear-unit">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#swish-gated-linear-unit">Swish-Gated Linear Unit<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>SWiGLU is defined as:</p>
+<ol>
+<li>Split input into two halves: <code>x1</code> and <code>x2</code></li>
+<li>silu(x1) = x1 / (1 + exp(- x1))</li>
+<li>res = silu(x1) * x2</li>
+</ol>
+<p>CUDA</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">swiglu_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> halfN) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i<span style="color:#f92672">&lt;</span>halfN; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">float</span> silu <span style="color:#f92672">=</span> input[i] <span style="color:#f92672">/</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> exp(<span style="color:#f92672">-</span>input[i]));
+</span></span><span style="display:flex;"><span>        output[i] <span style="color:#f92672">=</span> silu <span style="color:#f92672">*</span> input[i<span style="color:#f92672">+</span>halfN];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// input, output are device pointers
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> halfN <span style="color:#f92672">=</span> N <span style="color:#f92672">/</span> <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> threadsPerBlock <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> blocksPerGrid <span style="color:#f92672">=</span> (halfN <span style="color:#f92672">+</span> threadsPerBlock <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    swiglu_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(input, output, halfN);
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+    <footer>
+      
+      <ul class="small">
+        <li><a href="/my-blog-repo/categories/cuda/">CUDA</a>, <a href="/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/">笔记</a></li>
+      </ul>
+      
+      
+    </footer>
+  </article>
+
+<div class="pagination p">
+    
+    <span class="previous"><a href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/">&laquo; Previous Post</a></span>
+    
+    
+    <span class="next"><a href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/">Next Post &raquo;</a></span>
+    
+  </div>
+</section>
+
+</div>
+
+<footer class="bottom small wrap">
+  <p class="small">&copy; Truman&#39;s blog. Powered by <a href="https://gohugo.io/">Hugo</a>, theme based off of <a href="http://jxnblk.com/ashley/">Ashley</a>.</p>
+</footer>
+
+</body>
+</html>

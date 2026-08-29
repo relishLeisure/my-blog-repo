@@ -81,6 +81,180 @@ p code, li code {
   
   
   <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/">Tailscale使用记录</a> <abbr class="small postDate" title="2026-08-28">August 28, 2026</abbr></h2>
+    
+    <div class="summary">
+      <h3 id="作为流量转发节点"  id="作为流量转发节点">
+  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#%e4%bd%9c%e4%b8%ba%e6%b5%81%e9%87%8f%e8%bd%ac%e5%8f%91%e8%8a%82%e7%82%b9">作为流量转发节点<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><strong>Linux下载安装Tailscale</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo mkdir -p /etc/apt/sources.list.d/
+</span></span><span style="display:flex;"><span>curl -fsSL https://tailscale.com/install.sh | sh
+</span></span></code></pre></div><p><strong>登录</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo tailscale up
+</span></span></code></pre></div><p><strong>开启ip转发</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;net.ipv4.ip_forward = 1&#39;</span> | sudo tee -a /etc/sysctl.d/99-tailscale.conf
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;net.ipv6.conf.all.forwarding = 1&#39;</span> | sudo tee -a /etc/sysctl.d/99-tailscale.conf
+</span></span><span style="display:flex;"><span>sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
+</span></span></code></pre></div><p><strong>设置流量出口节点 Exit Node</strong>，其他机器流量经过这个设备转发</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>sudo tailscale up <span style="color:#f92672">--</span>advertise<span style="color:#f92672">-</span>exit<span style="color:#f92672">-</span>node
+</span></span></code></pre></div><p><strong>在 Tailscale 控制面板中批准 Authorization</strong></p>
+<p>出于安全考虑，宣告后并不会立刻生效，必须在后台手工允许：</p>
+<ol>
+<li>打开 <a href="https://login.tailscale.com/admin/machines">Tailscale Admin Console (Machines 页面)</a>。</li>
+<li>找到你刚配置的这台 Linux 设备。</li>
+<li>点击设备右侧的 <strong><code>...</code></strong> (更多选项) -&gt; 选择 <strong>Edit route settings</strong>。</li>
+<li>勾选 <strong>Use as exit node</strong>。</li>
+<li>点击 <strong>Save</strong>。</li>
+</ol>
+<p><strong>其他设备配置</strong></p>
+      
+      <p><a href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/">Read more...</a></p>
+      
+    </div>
+    
+  </article>
+  
+  <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/">CUDA学习--2简单运算</a> <abbr class="small postDate" title="2026-08-28">August 28, 2026</abbr></h2>
+    
+    <div class="summary">
+      <h3 id="目录"  id="目录">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#%e7%9b%ae%e5%bd%95">目录<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><a href="https://leetgpu.com/challenges/1d-convolution">1D Convolution</a></p>
+<p><a href="https://leetgpu.com/challenges/leaky-relu">Leaky ReLU</a></p>
+<p><a href="https://leetgpu.com/challenges/sigmoid-linear-unit">Sigmoid Linear Unit</a></p>
+<p><a href="https://leetgpu.com/challenges/matrix-transpose">Matrix Transpose</a></p>
+<p><a href="https://leetgpu.com/challenges/swish-gated-linear-unit">Swish-Gated Linear Unit</a></p>
+<h4 id="1d-convolution"  id="1d-convolution">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#1d-convolution">1D Convolution<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>CUDA</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">convolution_1d_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> kernel, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output,
+</span></span><span style="display:flex;"><span>                                      <span style="color:#66d9ef">int</span> input_size, <span style="color:#66d9ef">int</span> kernel_size) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x; 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> sum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0f</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (tid <span style="color:#f92672">&lt;</span> input_size <span style="color:#f92672">-</span> kernel_size <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i<span style="color:#f92672">&lt;</span>kernel_size; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>            sum <span style="color:#f92672">+=</span> input[tid <span style="color:#f92672">+</span> i] <span style="color:#f92672">*</span> kernel[i];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        output[tid] <span style="color:#f92672">=</span> sum;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// input, kernel, output are device pointers (i.e. pointers to memory on the GPU)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> kernel, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> input_size,
+</span></span><span style="display:flex;"><span>                      <span style="color:#66d9ef">int</span> kernel_size) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> output_size <span style="color:#f92672">=</span> input_size <span style="color:#f92672">-</span> kernel_size <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> threadsPerBlock <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> blocksPerGrid <span style="color:#f92672">=</span> (output_size <span style="color:#f92672">+</span> threadsPerBlock <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    convolution_1d_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(input, kernel, output, input_size,
+</span></span><span style="display:flex;"><span>                                                              kernel_size);
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Triton</p>
+      
+      <p><a href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/">Read more...</a></p>
+      
+    </div>
+    
+  </article>
+  
+  <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/">Ascend C（Add算子）开发实践</a> <abbr class="small postDate" title="2026-08-27">August 27, 2026</abbr></h2>
+    
+    <div class="summary">
+      <table>
+	<thead>
+			<tr>
+					<th>实验名称</th>
+					<th>Ascend C简单Vector算子开发实践（Add算子）</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>实验内容</td>
+					<td>Add算子</td>
+			</tr>
+			<tr>
+					<td>实验时间</td>
+					<td>2026-08-27</td>
+			</tr>
+			<tr>
+					<td>实验类型</td>
+					<td></td>
+			</tr>
+			<tr>
+					<td>实验地点</td>
+					<td></td>
+			</tr>
+			<tr>
+					<td>在线地点</td>
+					<td><a href="https://www.hiascend.com/edu/experiment/detail/1d0b0b790fb24947977d6d954112c016?tab=1">https://www.hiascend.com/edu/experiment/detail/1d0b0b790fb24947977d6d954112c016?tab=1</a></td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="环境与器材"  id="环境与器材">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e7%8e%af%e5%a2%83%e4%b8%8e%e5%99%a8%e6%9d%90">环境与器材<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><strong>环境搭建</strong></p>
+<p>本实验依赖基础NPU环境，包括昇腾NPU驱动、固件、Toolkit（CANN开发套件）、ops（CANN算子包集成一系列库文件 ）、<strong>msprof性能采集工具</strong>（随 CANN Toolkit 一起安装）。</p>
+<p><strong>实验平台</strong></p>
+<p>CANNLAB</p>
+<p><a href="https://gitcode.com/org/cann/cannlab/environment">https://gitcode.com/org/cann/cannlab/environment</a></p>
+<h3 id="实验过程"  id="实验过程">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e5%ae%9e%e9%aa%8c%e8%bf%87%e7%a8%8b">实验过程<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="实验环境"  id="实验环境">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e5%ae%9e%e9%aa%8c%e7%8e%af%e5%a2%83">实验环境<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>1.启动环境</p>
+<p><a href="https://gitcode.com/org/cann/cannlab/environment/create">https://gitcode.com/org/cann/cannlab/environment/create</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>实例名称
+</span></span><span style="display:flex;"><span>cann_dev_env
+</span></span><span style="display:flex;"><span>名称可包含数字、字母、下划线，不能以数字开头，长度不超过15个字符。
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>模板名称
+</span></span><span style="display:flex;"><span>cann_8.5.2-py3.11-A2-arm
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>NPU规格
+</span></span><span style="display:flex;"><span>1*NPU 910B3 16vCPUs 32GiB
+</span></span></code></pre></div><p><strong>notebook</strong></p>
+<p>由于没有上面的npu资源了，换成使用notebook</p>
+<p>cann 版本是8.5.0</p>
+<p><a href="https://gitcode.com/user/qq_4277658311111111111111173q/notebook/lab">https://gitcode.com/user/qq_4277658311111111111111173q/notebook/lab</a></p>
+<p>2.<strong>查看环境版本</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>echo $ASCEND_HOME_PATH
+</span></span><span style="display:flex;"><span>/usr/local/Ascend/cann-8.5.0
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>cd /usr/local/Ascend/cann-8.5.0
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 可以看到 set_enc.sh</span>
+</span></span><span style="display:flex;"><span>ls
+</span></span><span style="display:flex;"><span>aarch64-linux  cann_uninstall.sh  compiler  fwkacllib  mindstudio-toolkit  pkg_inc  set_env.sh  toolkit
+</span></span><span style="display:flex;"><span>arm64-linux    combo_script       conf      include    opp                 python   share       tools
+</span></span><span style="display:flex;"><span>bin            compat             devlib    lib64      ops_uninstall.sh    runtime  test-ops    var
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 在当前终端会话中  激活环境变量</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 每次新开终端都要 source 一次。建议把 source 命令加到 ~/.bashrc 里。</span>
+</span></span><span style="display:flex;"><span>source /usr/local/Ascend/cann-8.5.0/set_env.sh
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 确认msprof安装成功</span>
+</span></span><span style="display:flex;"><span>ls $ASCEND_HOME_PATH/tools/profiler/bin/msprof
+</span></span><span style="display:flex;"><span>/usr/local/Ascend/cann-8.5.0/tools/profiler/bin/msprof
+</span></span></code></pre></div><p>查看设备状态</p>
+      
+      <p><a href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/">Read more...</a></p>
+      
+    </div>
+    
+  </article>
+  
+  <article class="post">
     <h2><a class="post-title" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/">van_den_Ende DDCN 笔记</a> <abbr class="small postDate" title="2026-08-26">August 26, 2026</abbr></h2>
     
     <div class="summary">

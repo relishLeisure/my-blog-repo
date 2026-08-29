@@ -71,6 +71,96 @@ p code, li code {
   
   
   <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/">Ascend C（Add算子）开发实践</a> <abbr class="small postDate" title="2026-08-27">August 27, 2026</abbr></h2>
+    
+    <div class="summary">
+      <table>
+	<thead>
+			<tr>
+					<th>实验名称</th>
+					<th>Ascend C简单Vector算子开发实践（Add算子）</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>实验内容</td>
+					<td>Add算子</td>
+			</tr>
+			<tr>
+					<td>实验时间</td>
+					<td>2026-08-27</td>
+			</tr>
+			<tr>
+					<td>实验类型</td>
+					<td></td>
+			</tr>
+			<tr>
+					<td>实验地点</td>
+					<td></td>
+			</tr>
+			<tr>
+					<td>在线地点</td>
+					<td><a href="https://www.hiascend.com/edu/experiment/detail/1d0b0b790fb24947977d6d954112c016?tab=1">https://www.hiascend.com/edu/experiment/detail/1d0b0b790fb24947977d6d954112c016?tab=1</a></td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="环境与器材"  id="环境与器材">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e7%8e%af%e5%a2%83%e4%b8%8e%e5%99%a8%e6%9d%90">环境与器材<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><strong>环境搭建</strong></p>
+<p>本实验依赖基础NPU环境，包括昇腾NPU驱动、固件、Toolkit（CANN开发套件）、ops（CANN算子包集成一系列库文件 ）、<strong>msprof性能采集工具</strong>（随 CANN Toolkit 一起安装）。</p>
+<p><strong>实验平台</strong></p>
+<p>CANNLAB</p>
+<p><a href="https://gitcode.com/org/cann/cannlab/environment">https://gitcode.com/org/cann/cannlab/environment</a></p>
+<h3 id="实验过程"  id="实验过程">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e5%ae%9e%e9%aa%8c%e8%bf%87%e7%a8%8b">实验过程<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="实验环境"  id="实验环境">
+  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e5%ae%9e%e9%aa%8c%e7%8e%af%e5%a2%83">实验环境<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>1.启动环境</p>
+<p><a href="https://gitcode.com/org/cann/cannlab/environment/create">https://gitcode.com/org/cann/cannlab/environment/create</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>实例名称
+</span></span><span style="display:flex;"><span>cann_dev_env
+</span></span><span style="display:flex;"><span>名称可包含数字、字母、下划线，不能以数字开头，长度不超过15个字符。
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>模板名称
+</span></span><span style="display:flex;"><span>cann_8.5.2-py3.11-A2-arm
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>NPU规格
+</span></span><span style="display:flex;"><span>1*NPU 910B3 16vCPUs 32GiB
+</span></span></code></pre></div><p><strong>notebook</strong></p>
+<p>由于没有上面的npu资源了，换成使用notebook</p>
+<p>cann 版本是8.5.0</p>
+<p><a href="https://gitcode.com/user/qq_4277658311111111111111173q/notebook/lab">https://gitcode.com/user/qq_4277658311111111111111173q/notebook/lab</a></p>
+<p>2.<strong>查看环境版本</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>echo $ASCEND_HOME_PATH
+</span></span><span style="display:flex;"><span>/usr/local/Ascend/cann-8.5.0
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>cd /usr/local/Ascend/cann-8.5.0
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 可以看到 set_enc.sh</span>
+</span></span><span style="display:flex;"><span>ls
+</span></span><span style="display:flex;"><span>aarch64-linux  cann_uninstall.sh  compiler  fwkacllib  mindstudio-toolkit  pkg_inc  set_env.sh  toolkit
+</span></span><span style="display:flex;"><span>arm64-linux    combo_script       conf      include    opp                 python   share       tools
+</span></span><span style="display:flex;"><span>bin            compat             devlib    lib64      ops_uninstall.sh    runtime  test-ops    var
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 在当前终端会话中  激活环境变量</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 每次新开终端都要 source 一次。建议把 source 命令加到 ~/.bashrc 里。</span>
+</span></span><span style="display:flex;"><span>source /usr/local/Ascend/cann-8.5.0/set_env.sh
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 确认msprof安装成功</span>
+</span></span><span style="display:flex;"><span>ls $ASCEND_HOME_PATH/tools/profiler/bin/msprof
+</span></span><span style="display:flex;"><span>/usr/local/Ascend/cann-8.5.0/tools/profiler/bin/msprof
+</span></span></code></pre></div><p>查看设备状态</p>
+      
+      <p><a href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/">Read more...</a></p>
+      
+    </div>
+    
+  </article>
+  
+  <article class="post">
     <h2><a class="post-title" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/">WSL 测试 RoCE</a> <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr></h2>
     
     <div class="summary">
