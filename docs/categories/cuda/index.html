@@ -71,6 +71,54 @@ p code, li code {
   
   
   <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/">记一次实验室服务器被挖矿经历</a> <abbr class="small postDate" title="2026-09-02">September 2, 2026</abbr></h2>
+    
+    <div class="summary">
+      <h3 id="发现问题"  id="发现问题">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#%e5%8f%91%e7%8e%b0%e9%97%ae%e9%a2%98">发现问题<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="1异常占用"  id="1异常占用">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#1%e5%bc%82%e5%b8%b8%e5%8d%a0%e7%94%a8">1.异常占用<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>nvidia-smi
+</span></span></code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Wed Sep  <span style="color:#ae81ff">2</span> 14:38:41 <span style="color:#ae81ff">2026</span>
+</span></span><span style="display:flex;"><span>+-----------------------------------------------------------------------------------------+
+</span></span><span style="display:flex;"><span>| NVIDIA-SMI 550.120                Driver Version: 550.120        CUDA Version: 12.4     |
+</span></span><span style="display:flex;"><span>|-----------------------------------------+------------------------+----------------------+
+</span></span><span style="display:flex;"><span>| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+</span></span><span style="display:flex;"><span>| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+</span></span><span style="display:flex;"><span>|                                         |                        |               MIG M. |
+</span></span><span style="display:flex;"><span>|<span style="color:#f92672">=========================================</span>+<span style="color:#f92672">========================</span>+<span style="color:#f92672">======================</span>|
+</span></span><span style="display:flex;"><span>|   <span style="color:#ae81ff">0</span>  NVIDIA A100-SXM4-40GB          Off |   00000000:AF:00.0 Off |                    <span style="color:#ae81ff">0</span> |
+</span></span><span style="display:flex;"><span>| N/A   76C    P0            237W /  400W |    6083MiB /  40960MiB |    100%      Default |
+</span></span><span style="display:flex;"><span>|                                         |                        |             Disabled |
+</span></span><span style="display:flex;"><span>+-----------------------------------------+------------------------+----------------------+
+</span></span><span style="display:flex;"><span>|   <span style="color:#ae81ff">1</span>  NVIDIA A100-SXM4-40GB          Off |   00000000:D8:00.0 Off |                    <span style="color:#ae81ff">0</span> |
+</span></span><span style="display:flex;"><span>| N/A   64C    P0            241W /  400W |    6083MiB /  40960MiB |    100%      Default |
+</span></span><span style="display:flex;"><span>|                                         |                        |             Disabled |
+</span></span><span style="display:flex;"><span>+-----------------------------------------+------------------------+----------------------+
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>+-----------------------------------------------------------------------------------------+
+</span></span><span style="display:flex;"><span>| Processes:                                                                              |
+</span></span><span style="display:flex;"><span>|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+</span></span><span style="display:flex;"><span>|        ID   ID                                                               Usage      |
+</span></span><span style="display:flex;"><span>|<span style="color:#f92672">=========================================================================================</span>|
+</span></span><span style="display:flex;"><span>|    <span style="color:#ae81ff">0</span>   N/A  N/A      <span style="color:#ae81ff">3856</span>      G   /usr/lib/xorg/Xorg                              4MiB |
+</span></span><span style="display:flex;"><span>|    <span style="color:#ae81ff">0</span>   N/A  N/A    <span style="color:#ae81ff">513276</span>      C   python                                       6060MiB |
+</span></span><span style="display:flex;"><span>|    <span style="color:#ae81ff">1</span>   N/A  N/A      <span style="color:#ae81ff">3856</span>      G   /usr/lib/xorg/Xorg                              4MiB |
+</span></span><span style="display:flex;"><span>|    <span style="color:#ae81ff">1</span>   N/A  N/A    <span style="color:#ae81ff">513276</span>      C   python                                       6060MiB |
+</span></span><span style="display:flex;"><span>+-----------------------------------------------------------------------------------------+
+</span></span></code></pre></div></blockquote>
+<p>算力被占用100%，两张卡显存占用 6083MiB /  40960MiB</p>
+      
+      <p><a href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/">Read more...</a></p>
+      
+    </div>
+    
+  </article>
+  
+  <article class="post">
     <h2><a class="post-title" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/">CUDA学习--2简单运算</a> <abbr class="small postDate" title="2026-08-28">August 28, 2026</abbr></h2>
     
     <div class="summary">

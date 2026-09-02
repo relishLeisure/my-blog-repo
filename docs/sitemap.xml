@@ -3,26 +3,36 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://relishleisure.github.io/my-blog-repo/categories/</loc>
-    <lastmod>2026-08-28T16:00:05+08:00</lastmod>
+    <lastmod>2026-09-02T18:36:05+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://relishleisure.github.io/my-blog-repo/categories/cuda/</loc>
-    <lastmod>2026-08-28T16:00:05+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://relishleisure.github.io/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/</loc>
-    <lastmod>2026-08-28T16:00:05+08:00</lastmod>
+    <lastmod>2026-09-02T18:36:05+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://relishleisure.github.io/my-blog-repo/posts/</loc>
-    <lastmod>2026-08-28T16:00:05+08:00</lastmod>
+    <lastmod>2026-09-02T18:36:05+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://relishleisure.github.io/my-blog-repo/</loc>
+    <lastmod>2026-09-02T18:36:05+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://relishleisure.github.io/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/</loc>
+    <lastmod>2026-09-02T18:36:05+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/%E8%AE%B0%E5%BD%95/</loc>
+    <lastmod>2026-09-02T18:36:05+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://relishleisure.github.io/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/</loc>
     <lastmod>2026-08-28T16:00:05+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
