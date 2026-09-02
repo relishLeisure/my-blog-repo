@@ -71,41 +71,6 @@ p code, li code {
   
   
   <article class="post">
-    <h2><a class="post-title" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/">Tailscale使用记录</a> <abbr class="small postDate" title="2026-08-28">August 28, 2026</abbr></h2>
-    
-    <div class="summary">
-      <h3 id="作为流量转发节点"  id="作为流量转发节点">
-  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#%e4%bd%9c%e4%b8%ba%e6%b5%81%e9%87%8f%e8%bd%ac%e5%8f%91%e8%8a%82%e7%82%b9">作为流量转发节点<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p><strong>Linux下载安装Tailscale</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo mkdir -p /etc/apt/sources.list.d/
-</span></span><span style="display:flex;"><span>curl -fsSL https://tailscale.com/install.sh | sh
-</span></span></code></pre></div><p><strong>登录</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo tailscale up
-</span></span></code></pre></div><p><strong>开启ip转发</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;net.ipv4.ip_forward = 1&#39;</span> | sudo tee -a /etc/sysctl.d/99-tailscale.conf
-</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;net.ipv6.conf.all.forwarding = 1&#39;</span> | sudo tee -a /etc/sysctl.d/99-tailscale.conf
-</span></span><span style="display:flex;"><span>sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
-</span></span></code></pre></div><p><strong>设置流量出口节点 Exit Node</strong>，其他机器流量经过这个设备转发</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>sudo tailscale up <span style="color:#f92672">--</span>advertise<span style="color:#f92672">-</span>exit<span style="color:#f92672">-</span>node
-</span></span></code></pre></div><p><strong>在 Tailscale 控制面板中批准 Authorization</strong></p>
-<p>出于安全考虑，宣告后并不会立刻生效，必须在后台手工允许：</p>
-<ol>
-<li>打开 <a href="https://login.tailscale.com/admin/machines">Tailscale Admin Console (Machines 页面)</a>。</li>
-<li>找到你刚配置的这台 Linux 设备。</li>
-<li>点击设备右侧的 <strong><code>...</code></strong> (更多选项) -&gt; 选择 <strong>Edit route settings</strong>。</li>
-<li>勾选 <strong>Use as exit node</strong>。</li>
-<li>点击 <strong>Save</strong>。</li>
-</ol>
-<p><strong>其他设备配置</strong></p>
-      
-      <p><a href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/">Read more...</a></p>
-      
-    </div>
-    
-  </article>
-  
-  <article class="post">
     <h2><a class="post-title" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/">CUDA学习--2简单运算</a> <abbr class="small postDate" title="2026-08-28">August 28, 2026</abbr></h2>
     
     <div class="summary">
@@ -117,6 +82,7 @@ p code, li code {
 <p><a href="https://leetgpu.com/challenges/sigmoid-linear-unit">Sigmoid Linear Unit</a></p>
 <p><a href="https://leetgpu.com/challenges/matrix-transpose">Matrix Transpose</a></p>
 <p><a href="https://leetgpu.com/challenges/swish-gated-linear-unit">Swish-Gated Linear Unit</a></p>
+<p><a href="https://leetgpu.com/challenges/matrix-multiplication">Matrix Multiplication</a></p>
 <h4 id="1d-convolution"  id="1d-convolution">
   <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#1d-convolution">1D Convolution<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h4>
@@ -444,6 +410,22 @@ p code, li code {
 <p>他是理想者还是骗子？为什么取得信任之后，盗走了浩瀚哥的车子？</p>
       
       <p><a href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/">Read more...</a></p>
+      
+    </div>
+    
+  </article>
+  
+  <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/1/01/"></a> <abbr class="small postDate" title="0001-01-01">January 1, 0001</abbr></h2>
+    
+    <div class="summary">
+      <p>20260830</p>
+<blockquote>
+<p>1,2,&hellip;,n 的排列，单调栈问题，通过用例92.86%，不知道为什么</p>
+</blockquote>
+<blockquote>
+<p>图题目：双向图，城市之间的边，油耗，时间 两种限制，应该是背包问题</p>
+</blockquote>
       
     </div>
     

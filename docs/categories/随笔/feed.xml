@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>随笔 on Truman&#39;s blog</title>
+		<link>http://localhost:1313/my-blog-repo/categories/%E9%9A%8F%E7%AC%94/</link>
+		<description>Recent content in 随笔 on Truman&#39;s blog</description>
+		<generator>Hugo</generator>
+		<language>cn-zh</language>
+		
+		
+		
+		
+			<lastBuildDate>Tue, 01 Sep 2026 20:09:05 +0800</lastBuildDate>
+		
+			<atom:link href="http://localhost:1313/my-blog-repo/categories/%E9%9A%8F%E7%AC%94/feed.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>我的怨念</title>
+				<link>http://localhost:1313/my-blog-repo/2026/09/%E6%88%91%E7%9A%84%E6%80%A8%E5%BF%B5/</link>
+				<pubDate>Tue, 01 Sep 2026 20:09:05 +0800</pubDate>
+				<guid>http://localhost:1313/my-blog-repo/2026/09/%E6%88%91%E7%9A%84%E6%80%A8%E5%BF%B5/</guid>
+				<description>&lt;p&gt;&lt;img src=&#34;https://feishu.doubao.com/space/api/box/stream/download/preview/UDJWbJAE0oy8tUxr4docHLm2nbe?mount_point=explorer&amp;amp;preview_type=12&amp;amp;version=7680539841989250228&#34; alt=&#34;哀其不幸，怒其不争&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;https://feishu.doubao.com/drive/file/UDJWbJAE0oy8tUxr4docHLm2nbe&#34; alt=&#34;哀其不幸，怒其不争&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;“哀其不幸，怒其不争”，“可怜之人必有可恨之处”&lt;/p&gt;&#xA;&lt;p&gt;我很讨厌这两句话，&lt;/p&gt;&#xA;&lt;p&gt;鲁迅先生的本意是&lt;/p&gt;</description>
+			</item>
+	</channel>
+</rss>

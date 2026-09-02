@@ -20,6 +20,10 @@ categories: [CUDA,笔记]
 
 [Swish-Gated Linear Unit](https://leetgpu.com/challenges/swish-gated-linear-unit)
 
+[Matrix Multiplication](https://leetgpu.com/challenges/matrix-multiplication)
+
+
+
 ## 1D Convolution
 
 CUDA
@@ -230,10 +234,6 @@ extern "C" void run_kernel(
 }
 ```
 
-
-
-
-
 ## Swish-Gated Linear Unit
 
 SWiGLU is defined as:
@@ -263,6 +263,48 @@ extern "C" void solve(const float* input, float* output, int N) {
     swiglu_kernel<<<blocksPerGrid, threadsPerBlock>>>(input, output, halfN);
     cudaDeviceSynchronize();
 }
+```
+
+
+
+## Matrix Multiplication
+
+**naive** 
+
+CUDA  
+
+```c++
+#include <cuda_runtime.h>
+
+__global__ void matrix_multiplication_kernel(const float* A, const float* B, float* C, int M, int N,
+                                             int K) {
+    int x = blockIdx.x * blockDim.x + threadIdx.x;
+    int y = blockIdx.y * blockDim.y + threadIdx.y;
+    float temp = 0.0;
+    if (y < M && x < K) {
+        for (int i=0; i < N; i++) {
+            // 错误：B 矩阵的列固定(x不变)，行变化
+            // temp += A[y * N + i] * B[x * K + i];      
+            temp += A[y * N + i] * B[i * K + x];
+        }
+        C[y * K + x] = temp;
+    }
+}
+
+// A, B, C are device pointers (i.e. pointers to memory on the GPU)
+extern "C" void solve(const float* A, const float* B, float* C, int M, int N, int K) {
+    dim3 threadsPerBlock(16, 16);
+    dim3 blocksPerGrid((K + threadsPerBlock.x - 1) / threadsPerBlock.x,
+                       (M + threadsPerBlock.y - 1) / threadsPerBlock.y);
+
+    matrix_multiplication_kernel<<<blocksPerGrid, threadsPerBlock>>>(A, B, C, M, N, K);
+    cudaDeviceSynchronize();
+}
+```
+
+Triton
+
+```python
 ```
 
 

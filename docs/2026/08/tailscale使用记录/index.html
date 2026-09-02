@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="cn-zh">
 
-<head>
+<head><script src="/my-blog-repo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=my-blog-repo/livereload" data-no-instant defer></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tailscale使用记录 : Truman&#39;s blog</title>
@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet" type="text/css">
 
-  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="https://relishleisure.github.io/my-blog-repo/feed.xml">
+  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="http://localhost:1313/my-blog-repo/feed.xml">
 
 
 <style>
@@ -67,10 +67,12 @@ p code, li code {
   <article class="post">
     <h2>Tailscale使用记录</h2>
     <abbr class="small postDate" title="2026-08-28">August 28, 2026</abbr>
-    <h3 id="作为流量转发节点"  id="作为流量转发节点">
-  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#%e4%bd%9c%e4%b8%ba%e6%b5%81%e9%87%8f%e8%bd%ac%e5%8f%91%e8%8a%82%e7%82%b9">作为流量转发节点<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+    <h3 id="设置流量转发节点"  id="设置流量转发节点">
+  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#%e8%ae%be%e7%bd%ae%e6%b5%81%e9%87%8f%e8%bd%ac%e5%8f%91%e8%8a%82%e7%82%b9">设置流量转发节点<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h3>
-<p><strong>Linux下载安装Tailscale</strong></p>
+<h5 id="linux下载安装tailscale"  id="linux下载安装tailscale">
+  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#linux%e4%b8%8b%e8%bd%bd%e5%ae%89%e8%a3%85tailscale"><strong>Linux下载安装Tailscale</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo mkdir -p /etc/apt/sources.list.d/
 </span></span><span style="display:flex;"><span>curl -fsSL https://tailscale.com/install.sh | sh
 </span></span></code></pre></div><p><strong>登录</strong></p>
@@ -79,7 +81,10 @@ p code, li code {
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;net.ipv4.ip_forward = 1&#39;</span> | sudo tee -a /etc/sysctl.d/99-tailscale.conf
 </span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;net.ipv6.conf.all.forwarding = 1&#39;</span> | sudo tee -a /etc/sysctl.d/99-tailscale.conf
 </span></span><span style="display:flex;"><span>sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
-</span></span></code></pre></div><p><strong>设置流量出口节点 Exit Node</strong>，其他机器流量经过这个设备转发</p>
+</span></span></code></pre></div><h5 id="设置流量出口节点-exit-node"  id="设置流量出口节点-exit-node">
+  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#%e8%ae%be%e7%bd%ae%e6%b5%81%e9%87%8f%e5%87%ba%e5%8f%a3%e8%8a%82%e7%82%b9-exit-node"><strong>设置流量出口节点 Exit Node</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p>其他机器流量经过这个设备转发</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>sudo tailscale up <span style="color:#f92672">--</span>advertise<span style="color:#f92672">-</span>exit<span style="color:#f92672">-</span>node
 </span></span></code></pre></div><p><strong>在 Tailscale 控制面板中批准 Authorization</strong></p>
 <p>出于安全考虑，宣告后并不会立刻生效，必须在后台手工允许：</p>
@@ -90,12 +95,231 @@ p code, li code {
 <li>勾选 <strong>Use as exit node</strong>。</li>
 <li>点击 <strong>Save</strong>。</li>
 </ol>
-<p><strong>其他设备配置</strong></p>
+<h5 id="其他设备配置"  id="其他设备配置">
+  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#%e5%85%b6%e4%bb%96%e8%ae%be%e5%a4%87%e9%85%8d%e7%bd%ae"><strong>其他设备配置</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
 <p>Windows</p>
 <p>右键 &ndash; Exit Node &ndash; 选择设备</p>
 <p>Linux</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo tailscale up --exit-node<span style="color:#f92672">=</span>&lt;这台Linux的Tailscale IP或设备名&gt;
-</span></span></code></pre></div>
+</span></span></code></pre></div><hr>
+<h3 id="exit-node-卡顿排查"  id="exit-node-卡顿排查">
+  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#exit-node-%e5%8d%a1%e9%a1%bf%e6%8e%92%e6%9f%a5">Exit Node 卡顿排查<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<blockquote>
+<p>Tailscale  作为exit node 的设备， 只有单核1g内存，其他设备访问网络卡顿，
+开启exit node 走 linux 之后，网络十分的慢，网页打不开，考虑排查问题；
+考虑先查看 linux 系统设备和网络资源</p>
+</blockquote>
+<p>设备系统资源查看</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># cpu 资源占用</span>
+</span></span><span style="display:flex;"><span>top
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 结果显示</span>
+</span></span><span style="display:flex;"><span>ubuntu@10-40-95-220:~$ top
+</span></span><span style="display:flex;"><span>top - 15:39:18 up <span style="color:#ae81ff">3</span> days, 21:50,  <span style="color:#ae81ff">3</span> users,  load average: 0.00, 0.00, 0.00
+</span></span><span style="display:flex;"><span>Tasks:  <span style="color:#ae81ff">98</span> total,   <span style="color:#ae81ff">1</span> running,  <span style="color:#ae81ff">97</span> sleeping,   <span style="color:#ae81ff">0</span> stopped,   <span style="color:#ae81ff">0</span> zombie
+</span></span><span style="display:flex;"><span>%Cpu<span style="color:#f92672">(</span>s<span style="color:#f92672">)</span>:  0.7 us,  0.3 sy,  0.0 ni, 99.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+</span></span><span style="display:flex;"><span>MiB Mem :    960.6 total,    178.4 free,    351.5 used,    582.4 buff/cache
+</span></span><span style="display:flex;"><span>MiB Swap:      0.0 total,      0.0 free,      0.0 used.    609.1 avail Mem
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+</span></span><span style="display:flex;"><span>   <span style="color:#ae81ff">2544</span> root      <span style="color:#ae81ff">20</span>   <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">1422384</span>  <span style="color:#ae81ff">56964</span>  <span style="color:#ae81ff">24320</span> S   1.0   5.8   3:23.16 tailscaled
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">65122</span> ubuntu    <span style="color:#ae81ff">20</span>   <span style="color:#ae81ff">0</span>   <span style="color:#ae81ff">12344</span>   <span style="color:#ae81ff">5760</span>   <span style="color:#ae81ff">3584</span> R   0.3   0.6   0:00.02 top
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">1</span> root      <span style="color:#ae81ff">20</span>   <span style="color:#ae81ff">0</span>   <span style="color:#ae81ff">22412</span>  <span style="color:#ae81ff">11136</span>   <span style="color:#ae81ff">7056</span> S   0.0   1.1   0:25.52 systemd
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 观察 si (swap in) 和 so (swap out) 列。如果这两个数值在网络传输时持续大于 0，说明 1GB 内存耗尽，系统正向磁盘频繁读写 Swap，会导致系统严重卡顿甚至死锁。</span>
+</span></span><span style="display:flex;"><span>vmstat <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 没有问题</span>
+</span></span><span style="display:flex;"><span>ubuntu@10-40-95-220:~$ vmstat <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span>procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu-------
+</span></span><span style="display:flex;"><span> r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st gu
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">1</span>  <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">182640</span>  <span style="color:#ae81ff">65844</span> <span style="color:#ae81ff">530556</span>    <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>   <span style="color:#ae81ff">486</span>    <span style="color:#ae81ff">18</span>   <span style="color:#ae81ff">51</span>    <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">99</span>  <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">182640</span>  <span style="color:#ae81ff">65844</span> <span style="color:#ae81ff">530560</span>    <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>     <span style="color:#ae81ff">0</span>     <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">573</span>  <span style="color:#ae81ff">604</span>  <span style="color:#ae81ff">1</span>  <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">98</span>  <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">182640</span>  <span style="color:#ae81ff">65844</span> <span style="color:#ae81ff">530560</span>    <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">52</span>  <span style="color:#ae81ff">420</span>  <span style="color:#ae81ff">496</span>  <span style="color:#ae81ff">1</span>  <span style="color:#ae81ff">2</span> <span style="color:#ae81ff">97</span>  <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">182640</span>  <span style="color:#ae81ff">65844</span> <span style="color:#ae81ff">530560</span>    <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>     <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">44</span>  <span style="color:#ae81ff">157</span>  <span style="color:#ae81ff">160</span>  <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">100</span>  <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">182640</span>  <span style="color:#ae81ff">65844</span> <span style="color:#ae81ff">530556</span>    <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>     <span style="color:#ae81ff">0</span>     <span style="color:#ae81ff">4</span>  <span style="color:#ae81ff">178</span>  <span style="color:#ae81ff">231</span>  <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">100</span>  <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">0</span>  <span style="color:#ae81ff">0</span>
+</span></span></code></pre></div><p>网络</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 网络</span>
+</span></span><span style="display:flex;"><span>ip -s link show eth0
+</span></span><span style="display:flex;"><span>ip -s link show tailscale0
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># </span>
+</span></span><span style="display:flex;"><span>ubuntu@10-40-95-220:~$ ip -s link show eth0
+</span></span><span style="display:flex;"><span>ip -s link show tailscale0
+</span></span><span style="display:flex;"><span>2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">1452</span> qdisc pfifo_fast state UP mode DEFAULT group default qlen <span style="color:#ae81ff">1000</span>
+</span></span><span style="display:flex;"><span>    link/ether 52:54:00:11:80:f5 brd ff:ff:ff:ff:ff:ff
+</span></span><span style="display:flex;"><span>    RX:  bytes packets errors dropped  missed   mcast
+</span></span><span style="display:flex;"><span>     <span style="color:#ae81ff">837765237</span> <span style="color:#ae81ff">1266218</span>      <span style="color:#ae81ff">0</span>       <span style="color:#ae81ff">0</span>       <span style="color:#ae81ff">0</span>       <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    TX:  bytes packets errors dropped carrier collsns
+</span></span><span style="display:flex;"><span>     <span style="color:#ae81ff">327923527</span> <span style="color:#ae81ff">1005931</span>      <span style="color:#ae81ff">0</span>       <span style="color:#ae81ff">0</span>       <span style="color:#ae81ff">0</span>       <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>3: tailscale0: &lt;POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">1280</span> qdisc pfifo_fast state UNKNOWN mode DEFAULT group default qlen <span style="color:#ae81ff">500</span>
+</span></span><span style="display:flex;"><span>    link/none
+</span></span><span style="display:flex;"><span>    RX:  bytes packets errors dropped  missed   mcast
+</span></span><span style="display:flex;"><span>      <span style="color:#ae81ff">21266173</span>  <span style="color:#ae81ff">133651</span>      <span style="color:#ae81ff">0</span>       <span style="color:#ae81ff">0</span>       <span style="color:#ae81ff">0</span>       <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    TX:  bytes packets errors dropped carrier collsns
+</span></span><span style="display:flex;"><span>     <span style="color:#ae81ff">168118233</span>  <span style="color:#ae81ff">142024</span>      <span style="color:#ae81ff">0</span>       <span style="color:#ae81ff">0</span>       <span style="color:#ae81ff">0</span>       <span style="color:#ae81ff">0</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ubuntu@10-40-95-220:~$ tailscale status
+</span></span><span style="display:flex;"><span>100.120.240.21  ucloud-tokyo-till-0928  729505530@  linux    idle; offers exit node                 
+</span></span><span style="display:flex;"><span>100.125.69.36   iphone-11               729505530@  iOS      offline, last seen 3d ago              
+</span></span><span style="display:flex;"><span>100.88.164.45   pcofcg                  729505530@  windows  active; relay <span style="color:#e6db74">&#34;hkg&#34;</span>, tx <span style="color:#ae81ff">5695616</span> rx <span style="color:#ae81ff">2242248</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ubuntu@10-40-95-220:~$ tailscale netcheck
+</span></span><span style="display:flex;"><span>2026/09/01 15:45:02 portmap: monitor: gateway and self IP changed: gw<span style="color:#f92672">=</span>10.40.0.1 self<span style="color:#f92672">=</span>10.40.95.220
+</span></span><span style="display:flex;"><span>Report:
+</span></span><span style="display:flex;"><span>        * Time: 2026-09-01 15:45:04.195906728+09:00
+</span></span><span style="display:flex;"><span>        * UDP: true
+</span></span><span style="display:flex;"><span>        * IPv4: yes, 152.32.145.19:37105
+</span></span><span style="display:flex;"><span>        * IPv6: no, but OS has support
+</span></span><span style="display:flex;"><span>        * MappingVariesByDestIP: false
+</span></span><span style="display:flex;"><span>        * PortMapping:
+</span></span><span style="display:flex;"><span>        * CaptivePortal: false
+</span></span><span style="display:flex;"><span>        * Nearest DERP: Tokyo
+</span></span><span style="display:flex;"><span>        * DERP latency:
+</span></span><span style="display:flex;"><span>                - tok: 2.8ms   <span style="color:#f92672">(</span>Tokyo<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - hkg: 53.3ms  <span style="color:#f92672">(</span>Hong Kong<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - sin: 68.3ms  <span style="color:#f92672">(</span>Singapore<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - sea: 90.4ms  <span style="color:#f92672">(</span>Seattle<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - lax: 101.2ms <span style="color:#f92672">(</span>Los Angeles<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - sfo: 106.6ms <span style="color:#f92672">(</span>San Francisco<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - den: 126.5ms <span style="color:#f92672">(</span>Denver<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - dfw: 132.8ms <span style="color:#f92672">(</span>Dallas<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - ord: 140.6ms <span style="color:#f92672">(</span>Chicago<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - tor: 145.4ms <span style="color:#f92672">(</span>Toronto<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - hnl: 146.8ms <span style="color:#f92672">(</span>Honolulu<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - nyc: 153ms   <span style="color:#f92672">(</span>New York City<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - iad: 155.6ms <span style="color:#f92672">(</span>Ashburn<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - mia: 160.1ms <span style="color:#f92672">(</span>Miami<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - syd: 210.5ms <span style="color:#f92672">(</span>Sydney<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - lhr: 224ms   <span style="color:#f92672">(</span>London<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - ams: 228.7ms <span style="color:#f92672">(</span>Amsterdam<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - par: 234.3ms <span style="color:#f92672">(</span>Paris<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - fra: 239.2ms <span style="color:#f92672">(</span>Frankfurt<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - blr: 245.2ms <span style="color:#f92672">(</span>Bengaluru<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - nue: 245.4ms <span style="color:#f92672">(</span>Nuremberg<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - mad: 255.8ms <span style="color:#f92672">(</span>Madrid<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - waw: 258.1ms <span style="color:#f92672">(</span>Warsaw<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - hel: 260.7ms <span style="color:#f92672">(</span>Helsinki<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - sao: 291.4ms <span style="color:#f92672">(</span>São Paulo<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - dbi: 329.7ms <span style="color:#f92672">(</span>Dubai<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - jnb: 383.4ms <span style="color:#f92672">(</span>Johannesburg<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                - nai: 420.4ms <span style="color:#f92672">(</span>Nairobi<span style="color:#f92672">)</span>
+</span></span></code></pre></div><p>windows 设备</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span>(base) PS C:\Users\<span style="color:#ae81ff">72950</span>&gt; tailscale netcheck
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2026</span>/<span style="color:#ae81ff">09</span>/<span style="color:#ae81ff">01</span> <span style="color:#ae81ff">15</span><span style="color:#960050;background-color:#1e0010">:</span><span style="color:#ae81ff">02</span><span style="color:#960050;background-color:#1e0010">:</span><span style="color:#ae81ff">12</span> portmap<span style="color:#960050;background-color:#1e0010">:</span> monitor<span style="color:#960050;background-color:#1e0010">:</span> gateway and self IP changed<span style="color:#960050;background-color:#1e0010">:</span> gw=<span style="color:#ae81ff">10.203</span>.128.1 self=<span style="color:#ae81ff">10.203</span>.208.115
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Report<span style="color:#960050;background-color:#1e0010">:</span>
+</span></span><span style="display:flex;"><span>        * Time<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">2026</span>-<span style="color:#ae81ff">09</span>-<span style="color:#ae81ff">01</span> <span style="color:#ae81ff">15</span><span style="color:#960050;background-color:#1e0010">:</span><span style="color:#ae81ff">02</span><span style="color:#960050;background-color:#1e0010">:</span><span style="color:#ae81ff">16.8349557</span>+<span style="color:#ae81ff">08</span><span style="color:#960050;background-color:#1e0010">:</span><span style="color:#ae81ff">00</span>
+</span></span><span style="display:flex;"><span>        * UDP<span style="color:#960050;background-color:#1e0010">:</span> true
+</span></span><span style="display:flex;"><span>        * IPv4<span style="color:#960050;background-color:#1e0010">:</span> yes, <span style="color:#ae81ff">153.3</span>.60.<span style="color:#ae81ff">172</span><span style="color:#960050;background-color:#1e0010">:</span><span style="color:#ae81ff">57209</span>
+</span></span><span style="display:flex;"><span>        * IPv6<span style="color:#960050;background-color:#1e0010">:</span> no, but OS has support
+</span></span><span style="display:flex;"><span>        * MappingVariesByDestIP<span style="color:#960050;background-color:#1e0010">:</span> true
+</span></span><span style="display:flex;"><span>        * PortMapping<span style="color:#960050;background-color:#1e0010">:</span>
+</span></span><span style="display:flex;"><span>        * CaptivePortal<span style="color:#960050;background-color:#1e0010">:</span> false
+</span></span><span style="display:flex;"><span>        * Nearest DERP<span style="color:#960050;background-color:#1e0010">:</span> Hong Kong
+</span></span><span style="display:flex;"><span>        * DERP latency<span style="color:#960050;background-color:#1e0010">:</span>
+</span></span><span style="display:flex;"><span>                - hkg<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">163</span>.3ms (Hong Kong)
+</span></span><span style="display:flex;"><span>                - sfo<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">172</span>.7ms (San Francisco)
+</span></span><span style="display:flex;"><span>                - waw<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">172</span>.8ms (Warsaw)
+</span></span><span style="display:flex;"><span>                - nue<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">174</span>.8ms (Nuremberg)
+</span></span><span style="display:flex;"><span>                - den<span style="color:#960050;background-color:#1e0010">:</span> 189ms   (Denver)
+</span></span><span style="display:flex;"><span>                - lax<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">189</span>.3ms (Los Angeles)
+</span></span><span style="display:flex;"><span>                - sea<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">197</span>.1ms (Seattle)
+</span></span><span style="display:flex;"><span>                - blr<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">211</span>.4ms (Bengaluru)
+</span></span><span style="display:flex;"><span>                - dfw<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">226</span>.9ms (Dallas)
+</span></span><span style="display:flex;"><span>                - ord<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">227</span>.4ms (Chicago)
+</span></span><span style="display:flex;"><span>                - fra<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">227</span>.4ms (Frankfurt)
+</span></span><span style="display:flex;"><span>                - tok<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">227</span>.4ms (Tokyo)
+</span></span><span style="display:flex;"><span>                - ams<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">227</span>.4ms (Amsterdam)
+</span></span><span style="display:flex;"><span>                - tor<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">234</span>.3ms (Toronto)
+</span></span><span style="display:flex;"><span>                - mia<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">239</span>.2ms (Miami)
+</span></span><span style="display:flex;"><span>                - lhr<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">239</span>.2ms (London)
+</span></span><span style="display:flex;"><span>                - par<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">239</span>.8ms (Paris)
+</span></span><span style="display:flex;"><span>                - hnl<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">239</span>.8ms (Honolulu)
+</span></span><span style="display:flex;"><span>                - nyc<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">253</span>.2ms (New York City)
+</span></span><span style="display:flex;"><span>                - mad<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">284</span>.3ms (Madrid)
+</span></span><span style="display:flex;"><span>                - dbi<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">290</span>.4ms (Dubai)
+</span></span><span style="display:flex;"><span>                - iad<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">295</span>.4ms (Ashburn)
+</span></span><span style="display:flex;"><span>                - sin<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">299</span>.9ms (Singapore)
+</span></span><span style="display:flex;"><span>                - hel<span style="color:#960050;background-color:#1e0010">:</span> 325ms   (Helsinki)
+</span></span><span style="display:flex;"><span>                - syd<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">328</span>.9ms (Sydney)
+</span></span><span style="display:flex;"><span>                - sao<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">346</span>.9ms (São Paulo)
+</span></span><span style="display:flex;"><span>                - nai<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">347</span>.8ms (Nairobi)
+</span></span><span style="display:flex;"><span>                - jnb<span style="color:#960050;background-color:#1e0010">:</span> <span style="color:#ae81ff">411</span>.4ms (Johannesburg)
+</span></span></code></pre></div><h5 id="问题"  id="问题">
+  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#%e9%97%ae%e9%a2%98">问题<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p>问题的最核心原因：Windows 客户端的 <code>netcheck</code> 显示 <strong><code>MappingVariesByDestIP: true</code></strong>。</p>
+<p>这意味着你的 Windows 电脑处于<strong>对称 NAT</strong>（通常是企业网、校园网、运营商大内网或 5G 热点）环境下。在对称 NAT 下，客户端的 UDP 端口是动态随机变化的。此时想要建立 Tailscale 直连，<strong>云服务器（Exit Node）必须拥有一个完全公网开放的固定 UDP 端口（默认 41641）</strong>。由于你尚未在云服务器上放行该端口，两边互相“打洞”必定失败，只能退化为慢速的中继（Relay）。</p>
+<h5 id="解决过程"  id="解决过程">
+  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#%e8%a7%a3%e5%86%b3%e8%bf%87%e7%a8%8b">解决过程<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<h5 id="1-在-ucloud-控制台放行端口轻量应用服务专属位置"  id="1-在-ucloud-控制台放行端口轻量应用服务专属位置">
+  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#1-%e5%9c%a8-ucloud-%e6%8e%a7%e5%88%b6%e5%8f%b0%e6%94%be%e8%a1%8c%e7%ab%af%e5%8f%a3%e8%bd%bb%e9%87%8f%e5%ba%94%e7%94%a8%e6%9c%8d%e5%8a%a1%e4%b8%93%e5%b1%9e%e4%bd%8d%e7%bd%ae">1. 在 UCloud 控制台放行端口（轻量应用服务专属位置）<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p>UCloud 的“轻量应用服务”为了简化操作，<strong>没有</strong>全局的“安全组”概念。防火墙规则直接绑定在单台服务器实例上。</p>
+<img src="Tailscale使用记录.assets/image-20260901150603246.png" alt="image-20260901150603246" style="zoom:50%;" />
+<p>添加规则</p>
+<img src="Tailscale使用记录.assets/image-20260901150821249.png" alt="image-20260901150821249" style="zoom:50%;" />
+<h5 id="2-放行-linux-内部系统防火墙"  id="2-放行-linux-内部系统防火墙">
+  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#2-%e6%94%be%e8%a1%8c-linux-%e5%86%85%e9%83%a8%e7%b3%bb%e7%bb%9f%e9%98%b2%e7%81%ab%e5%a2%99">2. 放行 Linux 内部系统防火墙<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p>有时即便云控制台放行了，Linux 系统自身的防火墙仍会拦截。请在你的 Ubuntu 服务器上执行以下命令放行：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 如果使用 ufw (Ubuntu 默认)</span>
+</span></span><span style="display:flex;"><span>sudo ufw allow 41641/udp
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 如果使用 iptables</span>
+</span></span><span style="display:flex;"><span>sudo iptables -I INPUT -p udp --dport <span style="color:#ae81ff">41641</span> -j ACCEPT
+</span></span></code></pre></div><p>重启tailscale</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo systemctl restart tailscaled
+</span></span></code></pre></div><p>检验结果</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span><span style="color:#75715e"># windows 端</span>
+</span></span><span style="display:flex;"><span>tailscale status
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># </span>
+</span></span><span style="display:flex;"><span>(base) PS C:\Users\<span style="color:#ae81ff">72950</span>&gt; tailscale status
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">100.88</span>.164.45   pcofcg                  <span style="color:#ae81ff">729505530</span>@  windows  -
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">100.125</span>.69.36   iphone-<span style="color:#ae81ff">11</span>               <span style="color:#ae81ff">729505530</span>@  iOS      offline, last seen <span style="color:#ae81ff">3d</span> ago
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">100.120</span>.240.21  ucloud-tokyo-till-<span style="color:#ae81ff">0928</span>  <span style="color:#ae81ff">729505530</span>@  linux    idle; offers exit node
+</span></span></code></pre></div><p>开启exit node 之后</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span>(base) PS C:\Users\<span style="color:#ae81ff">72950</span>&gt; tailscale status
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">100.88</span>.164.45   pcofcg                  <span style="color:#ae81ff">729505530</span>@  windows  -                                      
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">100.125</span>.69.36   iphone-<span style="color:#ae81ff">11</span>               <span style="color:#ae81ff">729505530</span>@  iOS      offline, last seen <span style="color:#ae81ff">3d</span> ago              
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">100.120</span>.240.21  ucloud-tokyo-till-<span style="color:#ae81ff">0928</span>  <span style="color:#ae81ff">729505530</span>@  linux    active; exit node; relay <span style="color:#e6db74">&#34;tok&#34;</span>, tx <span style="color:#ae81ff">34004</span> rx <span style="color:#ae81ff">27100</span>
+</span></span></code></pre></div><h5 id="3dns-配置"  id="3dns-配置">
+  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#3dns-%e9%85%8d%e7%bd%ae">3.DNS 配置<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p><strong>关闭Tailscale DNS</strong></p>
+<p><strong>校园网 DNS 污染</strong></p>
+<ul>
+<li><strong>现象</strong>：开启 Exit Node 后，能够 Ping 通 IP（如 <code>8.8.8.8</code>），但访问域名全部超时。</li>
+<li><strong>原因</strong>：校园网默认 DNS 拦截了你的域名请求，返回了虚假 IP（如 <code>174.132.x.x</code>）。</li>
+<li><strong>解决</strong>：在 Windows 本地物理网卡手动指定公共 DNS（<code>8.8.8.8</code>），并刷新本地 DNS 缓存，绕过了校园网的劫持。</li>
+</ul>
+<blockquote>
+<p>修改dns的步骤</p>
+<ol>
+<li>按下 <code>Win + R</code> 键，输入 <code>ncpa.cpl</code> 并回车（打开网络连接窗口）。</li>
+<li>找到你连接校园网的网卡（例如 <strong>以太网</strong> 或 <strong>WLAN / Wi-Fi</strong>），右键点击选择 <strong>属性</strong>。</li>
+<li>在列表中双击 <strong>Internet 协议版本 4 (TCP/IPv4)</strong>。</li>
+<li>IP 地址保持“自动获得 IP 地址”不变。</li>
+<li>下半部分勾选 <strong>使用下面的 DNS 服务器地址</strong>：<strong>首选 DNS 服务器</strong>：<code>8.8.8.8</code>（Google 公共 DNS）<strong>备用 DNS 服务器</strong>：<code>1.1.1.1</code>（Cloudflare DNS）</li>
+<li>点击 <strong>确定</strong> 保存。</li>
+</ol>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cmd" data-lang="cmd"><span style="display:flex;"><span># 刷新本地 DNS 缓存
+</span></span><span style="display:flex;"><span>ipconfig /flushdns
+</span></span></code></pre></div><h5 id="4linux-exit-node-转发配置"  id="4linux-exit-node-转发配置">
+  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#4linux-exit-node-%e8%bd%ac%e5%8f%91%e9%85%8d%e7%bd%ae">4.<strong>Linux Exit Node 转发配置</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<ul>
+<li><strong>现象</strong>：默认开启 Exit Node 并不足以支撑完整的网页浏览。</li>
+<li><strong>解决</strong>：
+<ul>
+<li><strong>内核转发</strong>：<code>ip_forward = 1</code> 允许数据包穿透系统。</li>
+<li><strong>NAT 伪装</strong>：<code>iptables MASQUERADE</code> 让内网数据包伪装成东京公网 IP 出海。</li>
+<li><strong>MSS 裁剪</strong>：<code>TCPMSS --clamp-mss-to-pmtu</code> 解决了 VPN 隧道特有的 MTU 溢出问题，防止大流量数据包被中途丢弃。</li>
+</ul>
+</li>
+</ul>
+
     <footer>
       
       <ul class="small">
@@ -110,6 +334,8 @@ p code, li code {
     
     <span class="previous"><a href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/">&laquo; Previous Post</a></span>
     
+    
+    <span class="next"><a href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--4/">Next Post &raquo;</a></span>
     
   </div>
 </section>

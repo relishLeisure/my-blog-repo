@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="cn-zh">
 
-<head>
+<head><script src="/my-blog-repo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=my-blog-repo/livereload" data-no-instant defer></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>软件 : Truman&#39;s blog</title>
@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet" type="text/css">
 
-  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="https://relishleisure.github.io/my-blog-repo/feed.xml">
+  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="http://localhost:1313/my-blog-repo/feed.xml">
 
 
 <style>
@@ -74,10 +74,12 @@ p code, li code {
     <h2><a class="post-title" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/">Tailscale使用记录</a> <abbr class="small postDate" title="2026-08-28">August 28, 2026</abbr></h2>
     
     <div class="summary">
-      <h3 id="作为流量转发节点"  id="作为流量转发节点">
-  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#%e4%bd%9c%e4%b8%ba%e6%b5%81%e9%87%8f%e8%bd%ac%e5%8f%91%e8%8a%82%e7%82%b9">作为流量转发节点<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+      <h3 id="设置流量转发节点"  id="设置流量转发节点">
+  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#%e8%ae%be%e7%bd%ae%e6%b5%81%e9%87%8f%e8%bd%ac%e5%8f%91%e8%8a%82%e7%82%b9">设置流量转发节点<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h3>
-<p><strong>Linux下载安装Tailscale</strong></p>
+<h5 id="linux下载安装tailscale"  id="linux下载安装tailscale">
+  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#linux%e4%b8%8b%e8%bd%bd%e5%ae%89%e8%a3%85tailscale"><strong>Linux下载安装Tailscale</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo mkdir -p /etc/apt/sources.list.d/
 </span></span><span style="display:flex;"><span>curl -fsSL https://tailscale.com/install.sh | sh
 </span></span></code></pre></div><p><strong>登录</strong></p>
@@ -86,7 +88,10 @@ p code, li code {
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;net.ipv4.ip_forward = 1&#39;</span> | sudo tee -a /etc/sysctl.d/99-tailscale.conf
 </span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;net.ipv6.conf.all.forwarding = 1&#39;</span> | sudo tee -a /etc/sysctl.d/99-tailscale.conf
 </span></span><span style="display:flex;"><span>sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
-</span></span></code></pre></div><p><strong>设置流量出口节点 Exit Node</strong>，其他机器流量经过这个设备转发</p>
+</span></span></code></pre></div><h5 id="设置流量出口节点-exit-node"  id="设置流量出口节点-exit-node">
+  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#%e8%ae%be%e7%bd%ae%e6%b5%81%e9%87%8f%e5%87%ba%e5%8f%a3%e8%8a%82%e7%82%b9-exit-node"><strong>设置流量出口节点 Exit Node</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p>其他机器流量经过这个设备转发</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>sudo tailscale up <span style="color:#f92672">--</span>advertise<span style="color:#f92672">-</span>exit<span style="color:#f92672">-</span>node
 </span></span></code></pre></div><p><strong>在 Tailscale 控制面板中批准 Authorization</strong></p>
 <p>出于安全考虑，宣告后并不会立刻生效，必须在后台手工允许：</p>
@@ -97,7 +102,10 @@ p code, li code {
 <li>勾选 <strong>Use as exit node</strong>。</li>
 <li>点击 <strong>Save</strong>。</li>
 </ol>
-<p><strong>其他设备配置</strong></p>
+<h5 id="其他设备配置"  id="其他设备配置">
+  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#%e5%85%b6%e4%bb%96%e8%ae%be%e5%a4%87%e9%85%8d%e7%bd%ae"><strong>其他设备配置</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p>Windows</p>
       
       <p><a href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/">Read more...</a></p>
       

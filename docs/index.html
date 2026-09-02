@@ -67,40 +67,6 @@ p code, li code {
   
   
   <article class="post">
-    <h2><a class="post-title" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/">Tailscale使用记录</a></h2>
-    <abbr class="small postDate" title="2026-08-28">August 28, 2026</abbr>
-    <h3 id="作为流量转发节点"  id="作为流量转发节点">
-  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#%e4%bd%9c%e4%b8%ba%e6%b5%81%e9%87%8f%e8%bd%ac%e5%8f%91%e8%8a%82%e7%82%b9">作为流量转发节点<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p><strong>Linux下载安装Tailscale</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo mkdir -p /etc/apt/sources.list.d/
-</span></span><span style="display:flex;"><span>curl -fsSL https://tailscale.com/install.sh | sh
-</span></span></code></pre></div><p><strong>登录</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo tailscale up
-</span></span></code></pre></div><p><strong>开启ip转发</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;net.ipv4.ip_forward = 1&#39;</span> | sudo tee -a /etc/sysctl.d/99-tailscale.conf
-</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;net.ipv6.conf.all.forwarding = 1&#39;</span> | sudo tee -a /etc/sysctl.d/99-tailscale.conf
-</span></span><span style="display:flex;"><span>sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
-</span></span></code></pre></div><p><strong>设置流量出口节点 Exit Node</strong>，其他机器流量经过这个设备转发</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>sudo tailscale up <span style="color:#f92672">--</span>advertise<span style="color:#f92672">-</span>exit<span style="color:#f92672">-</span>node
-</span></span></code></pre></div><p><strong>在 Tailscale 控制面板中批准 Authorization</strong></p>
-<p>出于安全考虑，宣告后并不会立刻生效，必须在后台手工允许：</p>
-<ol>
-<li>打开 <a href="https://login.tailscale.com/admin/machines">Tailscale Admin Console (Machines 页面)</a>。</li>
-<li>找到你刚配置的这台 Linux 设备。</li>
-<li>点击设备右侧的 <strong><code>...</code></strong> (更多选项) -&gt; 选择 <strong>Edit route settings</strong>。</li>
-<li>勾选 <strong>Use as exit node</strong>。</li>
-<li>点击 <strong>Save</strong>。</li>
-</ol>
-<p><strong>其他设备配置</strong></p>
-<p>Windows</p>
-<p>右键 &ndash; Exit Node &ndash; 选择设备</p>
-<p>Linux</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo tailscale up --exit-node<span style="color:#f92672">=</span>&lt;这台Linux的Tailscale IP或设备名&gt;
-</span></span></code></pre></div>
-  </article>
-  
-  <article class="post">
     <h2><a class="post-title" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/">CUDA学习--2简单运算</a></h2>
     <abbr class="small postDate" title="2026-08-28">August 28, 2026</abbr>
     <h3 id="目录"  id="目录">
@@ -111,6 +77,7 @@ p code, li code {
 <p><a href="https://leetgpu.com/challenges/sigmoid-linear-unit">Sigmoid Linear Unit</a></p>
 <p><a href="https://leetgpu.com/challenges/matrix-transpose">Matrix Transpose</a></p>
 <p><a href="https://leetgpu.com/challenges/swish-gated-linear-unit">Swish-Gated Linear Unit</a></p>
+<p><a href="https://leetgpu.com/challenges/matrix-multiplication">Matrix Multiplication</a></p>
 <h4 id="1d-convolution"  id="1d-convolution">
   <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#1d-convolution">1D Convolution<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h4>
@@ -318,7 +285,39 @@ p code, li code {
 </span></span><span style="display:flex;"><span>    swiglu_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(input, output, halfN);
 </span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div>
+</span></span></code></pre></div><h4 id="matrix-multiplication"  id="matrix-multiplication">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#matrix-multiplication">Matrix Multiplication<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p><strong>naive</strong></p>
+<p>CUDA</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">matrix_multiplication_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> A, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> B, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> C, <span style="color:#66d9ef">int</span> M, <span style="color:#66d9ef">int</span> N,
+</span></span><span style="display:flex;"><span>                                             <span style="color:#66d9ef">int</span> K) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> y <span style="color:#f92672">=</span> blockIdx.y <span style="color:#f92672">*</span> blockDim.y <span style="color:#f92672">+</span> threadIdx.y;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> temp <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (y <span style="color:#f92672">&lt;</span> M <span style="color:#f92672">&amp;&amp;</span> x <span style="color:#f92672">&lt;</span> K) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> N; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 错误：B 矩阵的列固定(x不变)，行变化
+</span></span></span><span style="display:flex;"><span>            <span style="color:#75715e">// temp += A[y * N + i] * B[x * K + i];      
+</span></span></span><span style="display:flex;"><span>            temp <span style="color:#f92672">+=</span> A[y <span style="color:#f92672">*</span> N <span style="color:#f92672">+</span> i] <span style="color:#f92672">*</span> B[i <span style="color:#f92672">*</span> K <span style="color:#f92672">+</span> x];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        C[y <span style="color:#f92672">*</span> K <span style="color:#f92672">+</span> x] <span style="color:#f92672">=</span> temp;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// A, B, C are device pointers (i.e. pointers to memory on the GPU)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> A, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> B, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> C, <span style="color:#66d9ef">int</span> M, <span style="color:#66d9ef">int</span> N, <span style="color:#66d9ef">int</span> K) {
+</span></span><span style="display:flex;"><span>    dim3 <span style="color:#a6e22e">threadsPerBlock</span>(<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">16</span>);
+</span></span><span style="display:flex;"><span>    dim3 <span style="color:#a6e22e">blocksPerGrid</span>((K <span style="color:#f92672">+</span> threadsPerBlock.x <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock.x,
+</span></span><span style="display:flex;"><span>                       (M <span style="color:#f92672">+</span> threadsPerBlock.y <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock.y);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    matrix_multiplication_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(A, B, C, M, N, K);
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Triton</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"></code></pre></div>
   </article>
   
   <article class="post">
@@ -1870,6 +1869,19 @@ $$</p>
 <blockquote>
 <p>世界很平凡，每个人都撒谎，与自己和解吧</p>
 <p>接纳自己，相信自己，守护自己的本心</p>
+</blockquote>
+
+  </article>
+  
+  <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/1/01/"></a></h2>
+    <abbr class="small postDate" title="0001-01-01">January 1, 0001</abbr>
+    <p>20260830</p>
+<blockquote>
+<p>1,2,&hellip;,n 的排列，单调栈问题，通过用例92.86%，不知道为什么</p>
+</blockquote>
+<blockquote>
+<p>图题目：双向图，城市之间的边，油耗，时间 两种限制，应该是背包问题</p>
 </blockquote>
 
   </article>

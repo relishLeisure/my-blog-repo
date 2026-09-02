@@ -67,6 +67,1416 @@ p code, li code {
   
   
   <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/cuda/">CUDA学习--1加法</a></h2>
+    <abbr class="small postDate" title="2026-08-27">August 27, 2026</abbr>
+    <p><strong>文件位置</strong></p>
+<p><a href="https://github.com/Tony-Tan/CUDA_Freshman">https://github.com/Tony-Tan/CUDA_Freshman</a></p>
+<h3 id="加法代码"  id="加法代码">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#%e5%8a%a0%e6%b3%95%e4%bb%a3%e7%a0%81">加法代码<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="1代码结构"  id="1代码结构">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#1%e4%bb%a3%e7%a0%81%e7%bb%93%e6%9e%84">1代码结构<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>这段代码很好地说明了结构</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">* https://github.com/Tony-Tan/CUDA_Freshman
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">* 3_sum_arrays
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;freshman.h&#34;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// cpu 流水线 计算向量之和
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sumArrays</span>(<span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span> a,<span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span> b,<span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span> res,<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> size)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span>size;i<span style="color:#f92672">+=</span><span style="color:#ae81ff">4</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        res[i]<span style="color:#f92672">=</span>a[i]<span style="color:#f92672">+</span>b[i];
+</span></span><span style="display:flex;"><span>        res[i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">=</span>a[i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">+</span>b[i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>        res[i<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>]<span style="color:#f92672">=</span>a[i<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>]<span style="color:#f92672">+</span>b[i<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>];
+</span></span><span style="display:flex;"><span>        res[i<span style="color:#f92672">+</span><span style="color:#ae81ff">3</span>]<span style="color:#f92672">=</span>a[i<span style="color:#f92672">+</span><span style="color:#ae81ff">3</span>]<span style="color:#f92672">+</span>b[i<span style="color:#f92672">+</span><span style="color:#ae81ff">3</span>];
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// gpu 计算向量之和，每个线程并行执行，根据自己所处的位置（id）执行不同的操作
+</span></span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sumArraysGPU</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>a,<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>b,<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>res)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>threadIdx.x;
+</span></span><span style="display:flex;"><span>    res[i]<span style="color:#f92672">=</span>a[i]<span style="color:#f92672">+</span>b[i];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// main 函数，程序的入口
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc,<span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>argv)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// cuda 设备
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> dev <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    cudaSetDevice(dev);									
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 尺寸计算
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> nElem<span style="color:#f92672">=</span><span style="color:#ae81ff">32</span>;
+</span></span><span style="display:flex;"><span>    printf(<span style="color:#e6db74">&#34;Vector size:%d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,nElem);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> nByte<span style="color:#f92672">=</span><span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">float</span>)<span style="color:#f92672">*</span>nElem;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// cpu分配内存
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>a_h<span style="color:#f92672">=</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>)malloc(nByte);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>b_h<span style="color:#f92672">=</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>)malloc(nByte);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>res_h<span style="color:#f92672">=</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>)malloc(nByte);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>res_from_gpu_h<span style="color:#f92672">=</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>)malloc(nByte);
+</span></span><span style="display:flex;"><span>    memset(res_h,<span style="color:#ae81ff">0</span>,nByte);
+</span></span><span style="display:flex;"><span>    memset(res_from_gpu_h,<span style="color:#ae81ff">0</span>,nByte);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 检查gpu内存分配
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>a_d,<span style="color:#f92672">*</span>b_d,<span style="color:#f92672">*</span>res_d;
+</span></span><span style="display:flex;"><span>    CHECK(cudaMalloc((<span style="color:#66d9ef">float</span><span style="color:#f92672">**</span>)<span style="color:#f92672">&amp;</span>a_d,nByte));
+</span></span><span style="display:flex;"><span>    CHECK(cudaMalloc((<span style="color:#66d9ef">float</span><span style="color:#f92672">**</span>)<span style="color:#f92672">&amp;</span>b_d,nByte));
+</span></span><span style="display:flex;"><span>    CHECK(cudaMalloc((<span style="color:#66d9ef">float</span><span style="color:#f92672">**</span>)<span style="color:#f92672">&amp;</span>res_d,nByte));
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// cpu内存数据：初始化赋值
+</span></span></span><span style="display:flex;"><span>    initialData(a_h,nElem);
+</span></span><span style="display:flex;"><span>    initialData(b_h,nElem);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 数据从cpu/host拷贝到gpu/device
+</span></span></span><span style="display:flex;"><span>    CHECK(cudaMemcpy(a_d,a_h,nByte,cudaMemcpyHostToDevice));
+</span></span><span style="display:flex;"><span>    CHECK(cudaMemcpy(b_d,b_h,nByte,cudaMemcpyHostToDevice));
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 核函数
+</span></span></span><span style="display:flex;"><span>    dim3 block(nElem);
+</span></span><span style="display:flex;"><span>    dim3 grid(nElem<span style="color:#f92672">/</span>block.x);
+</span></span><span style="display:flex;"><span>    sumArraysGPU<span style="color:#f92672">&lt;&lt;&lt;</span>grid,block<span style="color:#f92672">&gt;&gt;&gt;</span>(a_d,b_d,res_d);
+</span></span><span style="display:flex;"><span>    printf(<span style="color:#e6db74">&#34;Execution configuration&lt;&lt;&lt;%d,%d&gt;&gt;&gt;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,block.x,grid.x);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 数据从device拷贝到host
+</span></span></span><span style="display:flex;"><span>    CHECK(cudaMemcpy(res_from_gpu_h,res_d,nByte,cudaMemcpyDeviceToHost));
+</span></span><span style="display:flex;"><span>    sumArrays(a_h,b_h,res_h,nElem);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 核验计算结果
+</span></span></span><span style="display:flex;"><span>    checkResult(res_h,res_from_gpu_h,nElem);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 释放cuda内存
+</span></span></span><span style="display:flex;"><span>    cudaFree(a_d);
+</span></span><span style="display:flex;"><span>    cudaFree(b_d);
+</span></span><span style="display:flex;"><span>    cudaFree(res_d);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 释放cpu内存
+</span></span></span><span style="display:flex;"><span>    free(a_h);
+</span></span><span style="display:flex;"><span>    free(b_h);
+</span></span><span style="display:flex;"><span>    free(res_h);
+</span></span><span style="display:flex;"><span>    free(res_from_gpu_h);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="2线程管理"  id="2线程管理">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#2%e7%ba%bf%e7%a8%8b%e7%ae%a1%e7%90%86"><strong>2线程管理</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>上面代码的核函数出现<code>&lt;&lt;&lt;grid,block&gt;&gt;&gt;</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// 核函数
+</span></span></span><span style="display:flex;"><span>dim3 <span style="color:#a6e22e">block</span>(nElem);									<span style="color:#75715e">// 
+</span></span></span><span style="display:flex;"><span>dim3 <span style="color:#a6e22e">grid</span>(nElem<span style="color:#f92672">/</span>block.x);
+</span></span><span style="display:flex;"><span>sumArraysGPU<span style="color:#f92672">&lt;&lt;&lt;</span>grid,block<span style="color:#f92672">&gt;&gt;&gt;</span>(a_d,b_d,res_d);
+</span></span></code></pre></div><ul>
+<li>1个kernel 对应 1个grid</li>
+<li>1个grid对应多个block</li>
+<li>1个block里面有多个线程（每个block里的thread数量是32的整数倍）</li>
+</ul>
+<p><strong>形象化————复述</strong></p>
+<ul>
+<li>每个Grid是一个大厂房</li>
+<li>每个Block是一个车间，整齐排布在Grid中</li>
+<li>每个Thread是一个工人，以 32 为一组，每个Block中的工人数量都是 32 的整数倍，最少 32 个，最多 1024 个线程。</li>
+<li>每个Block中的线程同步，共享内存</li>
+</ul>
+<p><strong>线程标号</strong></p>
+<p>区分线程拿到不同数据</p>
+<ul>
+<li>
+<p>blockIdx（block 在 grid 中的位置索引）</p>
+</li>
+<li>
+<p>threadIdx（thread 在 block 中的位置索引）</p>
+</li>
+<li>
+<p>blockIdx.x    blockIdx.y    blockIdx.z</p>
+</li>
+<li>
+<p>threadIdx.x   threadIdx.y   threadIdx.z</p>
+</li>
+</ul>
+<p><strong>标号的方向</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15         --&gt; x 
+</span></span><span style="display:flex;"><span>|
+</span></span><span style="display:flex;"><span>| y
+</span></span><span style="display:flex;"><span>V 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>[         ] [         ] [         ] [         ]    
+</span></span><span style="display:flex;"><span>[00 01 02 03]                                        blockDim:(4,1,1)
+</span></span><span style="display:flex;"><span>   	                                                 threadIdx:  thread 位于 grid 的位置索引
+</span></span><span style="display:flex;"><span>[[ block0 ] [ block1 ]] 					       gridDim:(2,2,1)				
+</span></span><span style="display:flex;"><span>[[ block2 ] [ block3 ]] 	     				   blockIdx: block 位于 grid 的位置索引
+</span></span></code></pre></div><p><strong>线程的全局索引</strong></p>
+<p>线程的全局索引 == 数据在数组中的索引 == 指针指向内存空间的偏置
+一维数组</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;  
+</span></span></code></pre></div><p>二维矩阵</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// 内核内
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x; <span style="color:#75715e">// 全局列号
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> y <span style="color:#f92672">=</span> blockIdx.y <span style="color:#f92672">*</span> blockDim.y <span style="color:#f92672">+</span> threadIdx.y; <span style="color:#75715e">// 全局行号
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (x <span style="color:#f92672">&lt;</span> W <span style="color:#f92672">&amp;&amp;</span> y <span style="color:#f92672">&lt;</span> H) { <span style="color:#75715e">// W=总列数(宽度)，H=总行数(高度)
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> y <span style="color:#f92672">*</span> W <span style="color:#f92672">+</span> x; <span style="color:#75715e">// 行优先转线性索引
+</span></span></span><span style="display:flex;"><span>    C[tid] <span style="color:#f92672">=</span> A[tid] <span style="color:#f92672">+</span> B[tid];
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>三维张量</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// 内核内
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x; <span style="color:#75715e">// 列
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> y <span style="color:#f92672">=</span> blockIdx.y <span style="color:#f92672">*</span> blockDim.y <span style="color:#f92672">+</span> threadIdx.y; <span style="color:#75715e">// 行
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> z <span style="color:#f92672">=</span> blockIdx.z <span style="color:#f92672">*</span> blockDim.z <span style="color:#f92672">+</span> threadIdx.z; <span style="color:#75715e">// 深度/批次
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (x <span style="color:#f92672">&lt;</span> W <span style="color:#f92672">&amp;&amp;</span> y <span style="color:#f92672">&lt;</span> H <span style="color:#f92672">&amp;&amp;</span> z <span style="color:#f92672">&lt;</span> D) { <span style="color:#75715e">// W=宽, H=高, D=深度
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> z <span style="color:#f92672">*</span> (H <span style="color:#f92672">*</span> W) <span style="color:#f92672">+</span> y <span style="color:#f92672">*</span> W <span style="color:#f92672">+</span> x; <span style="color:#75715e">// 三维转线性索引
+</span></span></span><span style="display:flex;"><span>    C[tid] <span style="color:#f92672">=</span> A[tid] <span style="color:#f92672">+</span> B[tid];
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="3维度表示"  id="3维度表示">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#3%e7%bb%b4%e5%ba%a6%e8%a1%a8%e7%a4%ba"><strong>3维度表示</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>注意：这里是一维排布！</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// 1. 每个 Block 里的线程数量
+</span></span></span><span style="display:flex;"><span>dim3 <span style="color:#a6e22e">block</span>(<span style="color:#ae81ff">256</span>);  							
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 2. 设置 Grid 里需要多少个 Block
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// 计算方式：总数据量 / 每个 Block 的容量。
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// (通常写成 (nElem + block.x - 1) / block.x 向上取整，防止除不尽)
+</span></span></span><span style="display:flex;"><span>dim3 <span style="color:#a6e22e">grid</span>(nElem <span style="color:#f92672">/</span> block.x); 				
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 3. 启动内核函数（Kernel Launch）
+</span></span></span><span style="display:flex;"><span>sumArraysGPU<span style="color:#f92672">&lt;&lt;&lt;</span>grid, block<span style="color:#f92672">&gt;&gt;&gt;</span>(a_d, b_d, res_d);
+</span></span></code></pre></div><p>二维写法（仍然表示一维）</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// 1. 每个 Block 里的线程数量
+</span></span></span><span style="display:flex;"><span>dim3 <span style="color:#a6e22e">block</span>(<span style="color:#ae81ff">256</span>,<span style="color:#ae81ff">1</span>);  							
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 2. 设置 Grid 里需要多少个 Block
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// (通常写成 (nElem + block.x - 1) / block.x 向上取整，防止除不尽)
+</span></span></span><span style="display:flex;"><span>dim3 <span style="color:#a6e22e">grid</span>((nElem <span style="color:#f92672">+</span> block.x <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> block.x, <span style="color:#ae81ff">1</span>); 				
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 3. 启动内核函数（Kernel Launch）
+</span></span></span><span style="display:flex;"><span>sumArraysGPU<span style="color:#f92672">&lt;&lt;&lt;</span>grid, block<span style="color:#f92672">&gt;&gt;&gt;</span>(a_d, b_d, res_d);
+</span></span></code></pre></div><p><strong>核函数</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sumArraysGPU</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>a,<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>b,<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>res)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>threadIdx.x;		<span style="color:#75715e">// 在这个场景中，一维向量加法，线程id就等于数组的索引，因为blockIdx.x等于0
+</span></span></span><span style="display:flex;"><span>    res[i]<span style="color:#f92672">=</span>a[i]<span style="color:#f92672">+</span>b[i];
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="4在leetgpu上刷一道向量加法"  id="4在leetgpu上刷一道向量加法">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#4%e5%9c%a8leetgpu%e4%b8%8a%e5%88%b7%e4%b8%80%e9%81%93%e5%90%91%e9%87%8f%e5%8a%a0%e6%b3%95"><strong>4在LeetGPU上刷一道向量加法</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p><a href="https://leetgpu.com/challenges/vector-addition">https://leetgpu.com/challenges/vector-addition</a></p>
+<blockquote>
+<p>int 范围 32位</p>
+<ul>
+<li>最大值：<code>2^31 - 1 = 2147483647</code></li>
+<li>最小值：<code>-2^31 = -2147483648</code></li>
+</ul>
+</blockquote>
+<p>CUDA</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">vector_add</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> A, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> B, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> C, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> id <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (id <span style="color:#f92672">&lt;</span> N) {
+</span></span><span style="display:flex;"><span>        C[id] <span style="color:#f92672">=</span> A[id] <span style="color:#f92672">+</span> B[id];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// A, B, C are device pointers (i.e. pointers to memory on the GPU)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> A, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> B, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> C, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> threadsPerBlock <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> blocksPerGrid <span style="color:#f92672">=</span> (N <span style="color:#f92672">+</span> threadsPerBlock <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    vector_add<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(A, B, C, N);
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Triton</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> triton
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> triton.language <span style="color:#66d9ef">as</span> tl
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@triton.jit</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">vector_add_kernel</span>(a, b, c, n_elements, BLOCK_SIZE: tl<span style="color:#f92672">.</span>constexpr):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 1. 获取当前 Block (Program) 的 ID</span>
+</span></span><span style="display:flex;"><span>    pid <span style="color:#f92672">=</span> tl<span style="color:#f92672">.</span>program_id(axis<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 2. 计算当前 Block 需要处理的全局索引 (offsets)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># tl.arange(0, BLOCK_SIZE) 生成 [0, 1, ..., BLOCK_SIZE-1]</span>
+</span></span><span style="display:flex;"><span>    block_start <span style="color:#f92672">=</span> pid <span style="color:#f92672">*</span> BLOCK_SIZE
+</span></span><span style="display:flex;"><span>    offsets <span style="color:#f92672">=</span> block_start <span style="color:#f92672">+</span> tl<span style="color:#f92672">.</span>arange(<span style="color:#ae81ff">0</span>, BLOCK_SIZE)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 3. 边界保护，防止最后一个 Block 越界</span>
+</span></span><span style="display:flex;"><span>    mask <span style="color:#f92672">=</span> offsets <span style="color:#f92672">&lt;</span> n_elements
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 4. 加载数据</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 注意：这里的 a 和 b 实际上是显存指针，a + offsets 得到一批地址</span>
+</span></span><span style="display:flex;"><span>    x <span style="color:#f92672">=</span> tl<span style="color:#f92672">.</span>load(a <span style="color:#f92672">+</span> offsets, mask<span style="color:#f92672">=</span>mask)
+</span></span><span style="display:flex;"><span>    y <span style="color:#f92672">=</span> tl<span style="color:#f92672">.</span>load(b <span style="color:#f92672">+</span> offsets, mask<span style="color:#f92672">=</span>mask)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 5. 执行加法并写回显存</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 这里用 x + y，避免覆盖传进来的同名变量 a 和 b</span>
+</span></span><span style="display:flex;"><span>    tl<span style="color:#f92672">.</span>store(c <span style="color:#f92672">+</span> offsets, x <span style="color:#f92672">+</span> y, mask<span style="color:#f92672">=</span>mask)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># a, b, c are tensors on the GPU</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">solve</span>(a: torch<span style="color:#f92672">.</span>Tensor, b: torch<span style="color:#f92672">.</span>Tensor, c: torch<span style="color:#f92672">.</span>Tensor, N: int):
+</span></span><span style="display:flex;"><span>    BLOCK_SIZE <span style="color:#f92672">=</span> <span style="color:#ae81ff">1024</span>
+</span></span><span style="display:flex;"><span>    grid <span style="color:#f92672">=</span> (triton<span style="color:#f92672">.</span>cdiv(N, BLOCK_SIZE),)					<span style="color:#75715e"># N 分配的内存空间，BLOCK_SIZE block的尺寸</span>
+</span></span><span style="display:flex;"><span>    vector_add_kernel[grid](a, b, c, N, BLOCK_SIZE)
+</span></span></code></pre></div><h4 id="5矩阵加法"  id="5矩阵加法">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#5%e7%9f%a9%e9%98%b5%e5%8a%a0%e6%b3%95">5矩阵加法<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>CUDA</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 解法1：二维矩阵坐标
+</span></span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">matrix_add_2d</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> A, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> B, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> C, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> y <span style="color:#f92672">=</span> blockIdx.y <span style="color:#f92672">*</span> blockDim.y <span style="color:#f92672">+</span> threadIdx.y;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> y <span style="color:#f92672">*</span> gridDim.x <span style="color:#f92672">+</span> x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (x <span style="color:#f92672">&lt;</span> N <span style="color:#f92672">&amp;&amp;</span> y <span style="color:#f92672">&lt;</span> N) {
+</span></span><span style="display:flex;"><span>        C[tid] <span style="color:#f92672">=</span> A[tid] <span style="color:#f92672">+</span> B[tid];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 解法2：在内存空间中，实际上本来就是一维矩阵
+</span></span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">matrix_add_1d</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> A, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> B, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> C, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (tid <span style="color:#f92672">&lt;</span> N <span style="color:#f92672">*</span> N) {
+</span></span><span style="display:flex;"><span>        C[tid] <span style="color:#f92672">=</span> A[tid] <span style="color:#f92672">+</span> B[tid];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// A, B, C are device pointers (i.e. pointers to memory on the GPU)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> A, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> B, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> C, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> threadsPerBlock <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> blocksPerGrid <span style="color:#f92672">=</span> (N <span style="color:#f92672">*</span> N <span style="color:#f92672">+</span> threadsPerBlock <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 一维的 grid/block 配置
+</span></span></span><span style="display:flex;"><span>    matrix_add<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(A, B, C, N);
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Triton</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> triton
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> triton.language <span style="color:#66d9ef">as</span> tl
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 代码和向量加法完全一样</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@triton.jit</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">matrix_add_kernel</span>(a, b, c, n_elements, BLOCK_SIZE: tl<span style="color:#f92672">.</span>constexpr):
+</span></span><span style="display:flex;"><span>    pid <span style="color:#f92672">=</span> tl<span style="color:#f92672">.</span>program_id(axis<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>    block_start <span style="color:#f92672">=</span> pid <span style="color:#f92672">*</span> BLOCK_SIZE
+</span></span><span style="display:flex;"><span>    offsets <span style="color:#f92672">=</span> block_start <span style="color:#f92672">+</span> tl<span style="color:#f92672">.</span>arange(<span style="color:#ae81ff">0</span>, BLOCK_SIZE)
+</span></span><span style="display:flex;"><span>    mask <span style="color:#f92672">=</span> offsets <span style="color:#f92672">&lt;</span> n_elements
+</span></span><span style="display:flex;"><span>    x <span style="color:#f92672">=</span> tl<span style="color:#f92672">.</span>load(a <span style="color:#f92672">+</span> offsets, mask<span style="color:#f92672">=</span>mask)
+</span></span><span style="display:flex;"><span>    y <span style="color:#f92672">=</span> tl<span style="color:#f92672">.</span>load(b <span style="color:#f92672">+</span> offsets, mask<span style="color:#f92672">=</span>mask)
+</span></span><span style="display:flex;"><span>    tl<span style="color:#f92672">.</span>store(c <span style="color:#f92672">+</span> offsets, x <span style="color:#f92672">+</span> y, mask<span style="color:#f92672">=</span>mask)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># a, b, c are tensors on the GPU</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">solve</span>(a: torch<span style="color:#f92672">.</span>Tensor, b: torch<span style="color:#f92672">.</span>Tensor, c: torch<span style="color:#f92672">.</span>Tensor, N: int):
+</span></span><span style="display:flex;"><span>    BLOCK_SIZE <span style="color:#f92672">=</span> <span style="color:#ae81ff">1024</span>
+</span></span><span style="display:flex;"><span>    n_elements <span style="color:#f92672">=</span> N <span style="color:#f92672">*</span> N
+</span></span><span style="display:flex;"><span>    grid <span style="color:#f92672">=</span> (triton<span style="color:#f92672">.</span>cdiv(n_elements, BLOCK_SIZE),)
+</span></span><span style="display:flex;"><span>    matrix_add_kernel[grid](a, b, c, n_elements, BLOCK_SIZE)
+</span></span></code></pre></div>
+  </article>
+  
+  <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/">van_den_Ende DDCN 笔记</a></h2>
+    <abbr class="small postDate" title="2026-08-26">August 26, 2026</abbr>
+    <h3 id="项目地址"  id="项目地址">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e9%a1%b9%e7%9b%ae%e5%9c%b0%e5%9d%80">项目地址<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><strong>对应论文</strong></p>
+<p>Deep Deconvolution for Traffic Analysis With Distributed Acoustic Sensing Data</p>
+<p><strong>文件地址</strong></p>
+<p>D:\study\graduate\code\python\van-den-Ende-DDCN</p>
+<p><strong>doi地址</strong></p>
+<p><a href="https://ieeexplore.ieee.org/document/9966323/">https://ieeexplore.ieee.org/document/9966323/</a></p>
+<p><a href="https://doi.org/10.1109/TITS.2022.3223084">https://doi.org/10.1109/TITS.2022.3223084</a></p>
+<p><strong>数据与代码仓库地址</strong></p>
+<p><a href="doi.org/10.6084/m9.figshare.16653163.">doi.org/10.6084/m9.figshare.16653163</a>    * 用的这个</p>
+<p><a href="https://github.com/Juanx65/DeepDeconvV2.git">https://github.com/Juanx65/DeepDeconvV2.git</a></p>
+<hr>
+<h3 id="项目结构"  id="项目结构">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e9%a1%b9%e7%9b%ae%e7%bb%93%e6%9e%84">项目结构<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<ul>
+<li>
+<p>绘图jupyter notebook</p>
+</li>
+<li>
+<p>模型</p>
+</li>
+<li>
+<p>数据</p>
+</li>
+<li>
+<p>波束成形和对比算法</p>
+</li>
+</ul>
+<h4 id="原理"  id="原理">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e5%8e%9f%e7%90%86">原理<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<ol>
+<li>认为车致信号为脉冲信号，与信道产生卷积</li>
+<li>通过UNet恢复稀疏信号X，波束成形 + Music 滤波</li>
+<li>稀疏信号X与固定的冲激函数进行反卷积，恢复车辆信号</li>
+<li>损失函数 = MSE + X的L1正则</li>
+</ol>
+<h4 id="1-这个仓库是什么"  id="1-这个仓库是什么">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#1-%e8%bf%99%e4%b8%aa%e4%bb%93%e5%ba%93%e6%98%af%e4%bb%80%e4%b9%88">1. 这个仓库是什么<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>这是 van den Ende 等人 DAS 交通监测论文的代码（仓库名 van-den-Ende-DDCN）。DAS = 分布式光纤声学传感：埋在路边的光纤记
+录车辆经过时的应变率信号。论文的核心问题是稀疏反卷积（Deep Deconvolution）：光纤记录到的是“车辆脉冲序列 × 光纤冲激响应</p>
+<ul>
+<li><strong>训练一个 UNet 把观测信号还原成稀疏脉冲，再做波束形成估计车速、恢复车辆轨迹。</strong></li>
+</ul>
+<h4 id="2-项目结构"  id="2-项目结构">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#2-%e9%a1%b9%e7%9b%ae%e7%bb%93%e6%9e%84">2. 项目结构<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<ul>
+<li>
+<p>models.py — 核心：UNet/ResNet 反卷积模型、DataGenerator 数据增强、CallBacks 回调</p>
+</li>
+<li>
+<p>beamforming.py — 多锥度（multitaper）协方差估计 + MUSIC/常规波束形成，在慢度网格上扫描</p>
+</li>
+<li>
+<p>ISTA.py — 经典稀疏反卷积基线：FISTA 迭代软阈值（JAX 实现）</p>
+</li>
+<li>
+<p>utils.py — FFT_roll（慢度时移对齐）、peak_projection（峰值检测）、match_peaks（与人工拾取匹配评估）</p>
+</li>
+<li>
+<p>Fig*.ipynb — 论文全部插图，同时是使用示例：Fig2_impulse_response（冲激响应）、Fig4_architecture（网络结构）、
+FigS1_training_curves（训练曲线）、Fig10/11、Figs6-9（评估）</p>
+</li>
+<li>
+<p>requirements.txt — numpy/scipy/tensorflow&gt;=2.3/jax/numba/spectrum/h5py 等</p>
+</li>
+<li>
+<p>data.tar\data\ — 实际数据目录：DAS_data.h5（1.6 GB 主记录）、kernel.npy（冲激响应）、saved-model.h5（预训练权重）、
+multicars_extract.npy、picks_forward/backward.npy（人工拾取的车辆轨迹）、coords_Teil.npy（光纤几何坐标）、logs/（训
+练 TensorBoard 日志）</p>
+</li>
+</ul>
+<h4 id="3-核心模型与训练方法"  id="3-核心模型与训练方法">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#3-%e6%a0%b8%e5%bf%83%e6%a8%a1%e5%9e%8b%e4%b8%8e%e8%ae%ad%e7%bb%83%e6%96%b9%e6%b3%95">3. 核心模型与训练方法<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>观测模型：y = h ⊛ x + n，其中 h 是已知的冲激响应（kernel.npy，实测自单辆车经过）。</p>
+<ul>
+<li>网络前向（models.py:280）：UNet 输出稀疏脉冲图 x_hat，再用固定卷积 h 得到重建观测 y_hat。训练时只有 y_hat 参与监督，
+这就是“物理约束自监督”反卷积。<strong>（意思是：UNet 输出稀疏信息 x_hat，也就是车致信号，通过固定卷积 h 得到 y_hat; 训练时只有 y_hat 参与监督意思是 损失函数计算 y_hat 和 y）</strong></li>
+<li>损失（models.py:290）：total = ‖y − y_hat‖² + λ·‖x_hat‖₁，即拟合项 + 稀疏项。论文里 λ = 10（代码中叫 rho/lam），训练
+曲线按 rho·l1 绘制以体现贡献占比。<strong>（正则化）</strong></li>
+<li>结构：kernel=(3,5)、激活 swish、正交初始化、Adam lr=5e-4；推理用配置 f0=8, blocks=3, AA=False, bn=False,
+dropout=1.0（dropout 实际是 GaussianNoise，见 models.py:356）。下采样用 MaxBlurPool（抗混叠），上采样双线性 + skip
+连接，最后 relu 输出保证非负脉冲。</li>
+<li>数据：DataGenerator（models.py:17）从长记录里随机截 win 宽窗口，并做时间/通道翻转增强；每个 epoch 重新采样。</li>
+<li>训练流程：约 1000 epoch，ModelCheckpoint 按 val_loss 保存最佳权重 → saved-model.h5，TensorBoard 记录 loss/l2/l1（见
+FigS1_training_curves 与 logs/）。</li>
+</ul>
+<hr>
+<h3 id="我的理解修正版"  id="我的理解修正版">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e6%88%91%e7%9a%84%e7%90%86%e8%a7%a3%e4%bf%ae%e6%ad%a3%e7%89%88">我的理解（修正版）<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<pre tabindex="0"><code>y (观测) → UNet → x_hat (稀疏脉冲图)
+                   │
+                   ├─ 与已知冲激响应 h 卷积 → y_hat (重建观测)
+                   │     损失 = MSE(y, y_hat) + λ·‖x_hat‖₁
+                   │
+                   └─ 推理时只取 x_hat → FFT_roll 慢度对齐 → 波束形成扫描 → 轨迹
+</code></pre><p>三处小修正：</p>
+<ul>
+<li>UNet 输出在代码里叫 <code>x_hat</code>。</li>
+<li><strong>L1 正则加在输出信号 <code>x_hat</code> 上，不是网络权重上</strong>——它不是“参数稀疏化”，而是物理先验“车辆事件在时空上是稀疏的”。模型学的是“去卷积”，因为只有把脉冲放在车辆事件位置，<code>h⊛x̂</code> 才能匹配 <code>y</code>。</li>
+<li><strong>波束形成是对 <code>x_hat</code> 做的</strong>，不是 <code>y_hat</code>。<code>Fig10</code> cell 10 把 UNet 输出 <code>x</code> 存入 <code>&quot;deep&quot;</code> 类别，之后才做 <code>FFT_roll</code> + <code>Beamformer</code>。</li>
+</ul>
+<h4 id="q1你的数据是-1000-hz"  id="q1你的数据是-1000-hz">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#q1%e4%bd%a0%e7%9a%84%e6%95%b0%e6%8d%ae%e6%98%af-1000-hz">Q1：你的数据是 1000 Hz<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>采样率会影响三处，都需要对齐：</p>
+<ul>
+<li><strong>时间窗</strong>：模型推理用 <code>win=1024</code>，50 Hz 时是 20.5 s，足够覆盖一次完整过车（24 通道 × 3.2 m ≈ 77 m，80 km/h 约 3.5 s）。</li>
+<li><strong>冲激响应 <code>h</code></strong>：<code>kernel.npy</code> 有 866 个采样点，50/80 Hz 下约 10–17 s 的物理响应。<strong>【可以改进的地方：将冲激响应换成自己建模的冲激响应。】</strong></li>
+<li><strong>波束形成频带</strong>：论文用 <code>(0.5, 2.0) Hz</code> 频段，车辆 DAS 信号能量集中在这附近；1000 Hz 的奈奎斯特频段大部分是噪声。</li>
+</ul>
+<p><strong>建议：低通滤波 + 降采样到 50–100 Hz</strong>，例如 <code>scipy.signal.decimate(x, 10)</code>（先滤后抽，避免混叠）。这样 <code>win=1024</code> 对应 10–20 s，论文的模型和 pipeline 几乎原样可用。坚持 1000 Hz 需要把窗口放到 ~20000 点、kernel 重采样到 ~17000 点，卷积成本高且没有信息增益。</p>
+<p>另外两点：模型输入是 24 通道（<code>data_shape=(24, 1024, 1)</code>）【24是所有的通道数量】，你的光纤通道数不同需要按自己的 <code>Nch</code> 重训；<code>gauge=3.2 m</code> 是他们的道间距，也要换成你自己的。<code>3.2*24=76.8</code>m.</p>
+<h4 id="q2需要人工标注轨迹吗"  id="q2需要人工标注轨迹吗">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#q2%e9%9c%80%e8%a6%81%e4%ba%ba%e5%b7%a5%e6%a0%87%e6%b3%a8%e8%bd%a8%e8%bf%b9%e5%90%97">Q2：需要人工标注轨迹吗？<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p><strong>训练不需要。</strong> 这个方法是自监督/物理约束的：只需要原始 DAS 记录 <code>y</code> 和已知的 <code>h</code>，损失在观测域比较 <code>y</code> 与 <code>h⊛x̂</code>，全程没有标签参与。</p>
+<p><code>picks_forward.npy</code> / <code>picks_backward.npy</code>（人工拾取的车辆轨迹）<strong>只用于评估</strong>：<code>Fig10/11</code> 里用 <code>match_peaks</code> 把算法检测结果和人工拾取对比，画 ROC 和检测统计。</p>
+<hr>
+<h3 id="复现代码仓库"  id="复现代码仓库">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e5%a4%8d%e7%8e%b0%e4%bb%a3%e7%a0%81%e4%bb%93%e5%ba%93">复现代码仓库<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><strong>激活环境</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cmd" data-lang="cmd"><span style="display:flex;"><span># conda 新环境
+</span></span><span style="display:flex;"><span>conda create -n tf python=3.10 -y
+</span></span><span style="display:flex;"><span>conda activate tf
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span># 安装库
+</span></span><span style="display:flex;"><span>pip list
+</span></span><span style="display:flex;"><span>pip install tensorflow==2.10.0 numpy==1.25.3 scipy jax h5py matplotlib seaborn numba spectrum notebook ipympl	
+</span></span></code></pre></div><p><code>requirements.txt</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>numpy					# 
+</span></span><span style="display:flex;"><span>scipy					
+</span></span><span style="display:flex;"><span>tensorflow==2.10.0		# 
+</span></span><span style="display:flex;"><span>jax						# 
+</span></span><span style="display:flex;"><span>numba
+</span></span><span style="display:flex;"><span>spectrum
+</span></span><span style="display:flex;"><span>seaborn
+</span></span><span style="display:flex;"><span>matplotlib
+</span></span><span style="display:flex;"><span>ipympl
+</span></span><span style="display:flex;"><span>cartopy
+</span></span><span style="display:flex;"><span>osmnx
+</span></span><span style="display:flex;"><span>h5py
+</span></span><span style="display:flex;"><span>notebook
+</span></span></code></pre></div><p><strong>目录链接</strong></p>
+<p>Notebook 写死数据放在 .\data , 实际数据放在 .\data.tar\data</p>
+<p>不建议用目录链接（永久保存在 NTFS 磁盘，重启不掉），实际做法把data.tar文件夹改名</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span>New-Item -ItemType Junction -Path .\data -Target .\data.tar\data
+</span></span></code></pre></div><p><strong>跑通模型</strong></p>
+<p>Fig10_performance_statistics.ipynb</p>
+<hr>
+<h3 id="qa"  id="qa">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#qa"><strong>Q&amp;A</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<blockquote>
+<p>ModuleNotFoundError: No module named &lsquo;beamforming&rsquo;</p>
+<p>jupyter notebook 报错，实际上 beamforming.py 与 ipynb 文件在同一目录下，我在 vscode 中运行 notebook，如何解决</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> sys
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 将当前 Notebook 所在目录加入搜索路径</span>
+</span></span><span style="display:flex;"><span>sys<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;D:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">study</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">graduate</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">code</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">python</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">van-den-Ende-DDCN&#34;</span>)
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 带来的附属问题，jupyter notebook 当前目录是 jupyter notebook 命令启动目录</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># FileNotFoundError: [Errno 2] Unable to synchronously open file (unable to open file: name = &#39;C:\Users\72950\data\DAS_data.h5&#39;)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># r&#34;&#34; 原始字符串，直接写单反斜杠</span>
+</span></span><span style="display:flex;"><span>os<span style="color:#f92672">.</span>chdir(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;D:\study\graduate\code\python\van-den-Ende-DDCN&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 获取当前工作目录绝对路径，加入模块搜索路径</span>
+</span></span><span style="display:flex;"><span>current_dir <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>abspath(<span style="color:#e6db74">&#34;.&#34;</span>)
+</span></span><span style="display:flex;"><span>sys<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>append(current_dir)
+</span></span></code></pre></div><hr>
+<blockquote>
+<p>numpy 版本过高，如何降级？</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>pip install <span style="color:#e6db74">&#34;numpy&lt;1.24.0&#34;</span> <span style="color:#f92672">--</span>force<span style="color:#f92672">-</span>reinstall
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 或者直接指定推荐版本：</span>
+</span></span><span style="display:flex;"><span>pip install numpy<span style="color:#f92672">==</span><span style="color:#ae81ff">1.23.5</span>
+</span></span></code></pre></div><hr>
+<blockquote>
+<p>tensorflow 和 numpy 版本不冲突，但是其他包可能导致 numpy 版本冲突而报错</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>codex: 已解决，tf（tensorflow）环境的依赖冲突处理完成。做了什么
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">-</span> 定位冲突根源：tensorflow 2.10.0 要求 numpy 1.23.x，而 jax 0.6.2/jaxlib 0.6.2（需 numpy≥1.26）和 ml-dtypes 0.6.0（需 numpy≥2.0）把环境搞冲突，甚至导致 import tensorflow 直接报错。
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">-</span> 已卸载 jax、jaxlib、ml-dtypes（环境内无其他包依赖它们）。
+</span></span></code></pre></div><hr>
+<blockquote>
+<p>兼容的版本 <code>requirements.txt</code></p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span># Verified combo on Windows (Python 3.10, conda env: tf)
+</span></span><span style="display:flex;"><span># jax 0.4.30 is the newest version still compatible with numpy 1.23.x
+</span></span><span style="display:flex;"><span># (jax 0.4.31+ requires numpy&gt;=1.24; ml-dtypes 0.6.0 requires numpy&gt;=2.0).
+</span></span><span style="display:flex;"><span># tensorflow 2.10 breaks with numpy&gt;=1.24 (np.bool removal), so keep numpy==1.23.5.
+</span></span><span style="display:flex;"><span>numpy==1.23.5
+</span></span><span style="display:flex;"><span>tensorflow==2.10.0
+</span></span><span style="display:flex;"><span>jax==0.4.30
+</span></span><span style="display:flex;"><span>jaxlib==0.4.30
+</span></span><span style="display:flex;"><span>ml-dtypes==0.4.1
+</span></span><span style="display:flex;"><span>scipy==1.15.3
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span><span style="color:#75715e"># 查看某包的版本</span>
+</span></span><span style="display:flex;"><span>pip show &lt;包名&gt;
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 或</span>
+</span></span><span style="display:flex;"><span>conda list &lt;包名&gt;
+</span></span></code></pre></div><hr>
+<h3 id="模型结构"  id="模型结构">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e6%a8%a1%e5%9e%8b%e7%bb%93%e6%9e%84">模型结构<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><code>models.py</code></p>
+<p><strong>结构</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DataGenerator</span>(keras<span style="color:#f92672">.</span>utils<span style="color:#f92672">.</span>Sequence):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 相当于 pytorch 的data_loader</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 定义了回调方法，分别记录日志、保存最佳模型</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CallBacks</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@staticmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">tensorboard</span>(logdir):
+</span></span><span style="display:flex;"><span>        tensorboard_callback <span style="color:#f92672">=</span> keras<span style="color:#f92672">.</span>callbacks<span style="color:#f92672">.</span>TensorBoard(
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> tensorboard_callback
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@staticmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">checkpoint</span>(savefile):
+</span></span><span style="display:flex;"><span>        checkpoint_callback <span style="color:#f92672">=</span> keras<span style="color:#f92672">.</span>callbacks<span style="color:#f92672">.</span>ModelCheckpoint(
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> checkpoint_callback
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 模型</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ResNet</span>(keras<span style="color:#f92672">.</span>Model):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__init__</span>(self, impulse_response, lam<span style="color:#f92672">=</span><span style="color:#ae81ff">0.0</span>, f0<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>, data_shape<span style="color:#f92672">=</span>(<span style="color:#ae81ff">24</span>, <span style="color:#ae81ff">1024</span>, <span style="color:#ae81ff">1</span>), blocks<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>, AA<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, bn<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>, dropout<span style="color:#f92672">=</span><span style="color:#ae81ff">0.0</span>):
+</span></span><span style="display:flex;"><span>        super()<span style="color:#f92672">.</span><span style="color:#a6e22e">__init__</span>()
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 初始化模型，指定参数</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 前向过程</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">call</span>(self, x):
+</span></span><span style="display:flex;"><span>        x_hat <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>ResNet(x)
+</span></span><span style="display:flex;"><span>        y_hat <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>nn<span style="color:#f92672">.</span>conv2d(x_hat, self<span style="color:#f92672">.</span>impulse_response, padding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;SAME&#34;</span>, strides<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> x_hat, y_hat
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 重写 compile()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">compile</span>(self, opt):
+</span></span><span style="display:flex;"><span>        super()<span style="color:#f92672">.</span>compile()
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>opt <span style="color:#f92672">=</span> opt						<span style="color:#75715e"># 指定 optimizer </span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 计算损失函数</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">compute_loss</span>(self, Y, Y_hat, X):
+</span></span><span style="display:flex;"><span>        l1 <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reduce_mean(tf<span style="color:#f92672">.</span>abs(X))
+</span></span><span style="display:flex;"><span>        l2 <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reduce_mean(tf<span style="color:#f92672">.</span>square(Y <span style="color:#f92672">-</span> Y_hat))
+</span></span><span style="display:flex;"><span>        total_loss <span style="color:#f92672">=</span> l2 <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>lam <span style="color:#f92672">*</span> l1
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> total_loss, l2, l1
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 正向传播：X, Y_hat = self.call(Y) (对应 PyTorch 里的 output = model(data))</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 计算损失：total_loss, ... = self.compute_loss(...) (对应 loss = criterion(...))</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 反向传播求梯度：grads = tape.gradient(total_loss, RN_vars) (对应 loss.backward())</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 更新权重：self.opt.apply_gradients(zip(grads, RN_vars))</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">train_step</span>(self, Y):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> isinstance(data, tuple):
+</span></span><span style="display:flex;"><span>            Y <span style="color:#f92672">=</span> Y[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        RN <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>ResNet
+</span></span><span style="display:flex;"><span>        RN_vars <span style="color:#f92672">=</span> RN<span style="color:#f92672">.</span>trainable_variables
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> tf<span style="color:#f92672">.</span>GradientTape() <span style="color:#66d9ef">as</span> tape:
+</span></span><span style="display:flex;"><span>            X, Y_hat <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>call(Y)
+</span></span><span style="display:flex;"><span>            total_loss, l2_loss, l1_loss <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>compute_loss(Y, Y_hat, X)
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        grads <span style="color:#f92672">=</span> tape<span style="color:#f92672">.</span>gradient(total_loss, RN_vars)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>opt<span style="color:#f92672">.</span>apply_gradients(zip(grads, RN_vars))
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>compiled_metrics<span style="color:#f92672">.</span>update_state(Y, Y_hat)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;loss&#34;</span>: total_loss,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;l2&#34;</span>: l2_loss,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;l1&#34;</span>: l1_loss,
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_step</span>(self, Y):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> isinstance(data, tuple):
+</span></span><span style="display:flex;"><span>            Y <span style="color:#f92672">=</span> Y[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        X, Y_hat <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>call(Y)
+</span></span><span style="display:flex;"><span>        total_loss, l2_loss, l1_loss <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>compute_loss(Y, Y_hat, X)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>compiled_metrics<span style="color:#f92672">.</span>update_state(Y, Y_hat)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;loss&#34;</span>: total_loss,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;l2&#34;</span>: l2_loss,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;l1&#34;</span>: l1_loss,
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 模块</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">conv_layer</span>(self, x, filters, kernel_size, dilation,
+</span></span><span style="display:flex;"><span>                   use_bn<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>, use_dropout<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>, use_bias<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, activ<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        Convolution layer &gt; batch normalisation &gt; activation &gt; dropout
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> x
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 模块</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">residual_block</span>(self, x, f0):
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> x0 <span style="color:#f92672">+</span> x
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 拼接卷积层和</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">construct</span>(self):
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        Construct ResNet model
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>ResNet <span style="color:#f92672">=</span> Model(inputs, x)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>ResNet
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 模型</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UNet</span>(keras<span style="color:#f92672">.</span>Model):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 同上</span>
+</span></span></code></pre></div><p><strong>前向过程和损失函数</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">call</span>(self, x):
+</span></span><span style="display:flex;"><span>    x_hat <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>ResNet(x) 			<span style="color:#75715e"># 神经网络预测源信号 X</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 将预测结果与已知的物理脉冲响应进行卷积，得到重建信号</span>
+</span></span><span style="display:flex;"><span>    y_hat <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>nn<span style="color:#f92672">.</span>conv2d(x_hat, self<span style="color:#f92672">.</span>impulse_response, padding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;SAME&#34;</span>, strides<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>) 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> x_hat, y_hat
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">compute_loss</span>(self, Y, Y_hat, X):
+</span></span><span style="display:flex;"><span>    l1 <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reduce_mean(tf<span style="color:#f92672">.</span>abs(X)) 				<span style="color:#75715e"># 强制预测信号稀疏 (大部分为0)</span>
+</span></span><span style="display:flex;"><span>    l2 <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reduce_mean(tf<span style="color:#f92672">.</span>square(Y <span style="color:#f92672">-</span> Y_hat)) 	<span style="color:#75715e"># 保证重建信号与原观测信号一致</span>
+</span></span><span style="display:flex;"><span>    total_loss <span style="color:#f92672">=</span> l2 <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>lam <span style="color:#f92672">*</span> l1
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> total_loss, l2, l1
+</span></span></code></pre></div><p><strong><code>ResNet</code> 和 <code>UNet</code></strong></p>
+<p>在这个代码中，<code>ResNet</code> 和 <code>UNet</code> 是<strong>分别使用的</strong></p>
+<hr>
+<h3 id="代码阅读"  id="代码阅读">
+  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e4%bb%a3%e7%a0%81%e9%98%85%e8%af%bb"><strong>代码阅读</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><code>Beamforming.py</code></p>
+<p><strong>它的数据流</strong></p>
+<p><code>输入阵列时间序列数据 X</code> -&gt; <code>多窗频域变换 (CMTM)</code> -&gt; <code>并行计算通道间的协方差矩阵 (Cxy)</code> -&gt; <code>结合空间物理模型 (dt -&gt; A)</code> -&gt; <code>使用 MUSIC 或 传统 Beamforming 算法寻找信号到达方向</code>。</p>
+<p><strong>CMTM多窗频域变换</strong></p>
+<p>标准的 FFT 会产生频谱泄漏和高方差，先用多个正交的 Slepian 窗对信号进行加窗处理，再对多个加窗后的频谱求平均，得到稳定、低方差的协方差矩阵，这对于嘈杂信号（如脑电波、微弱地震波）极其重要。</p>
+<p><strong>多窗法计算协方差矩阵</strong></p>
+<p><strong>MUSIC算法</strong></p>
+<p><strong>一维信号 <code>MUSIC</code> 算法</strong></p>
+<p>一维时序信号的 MUSIC 算法估计的是：信号中包含的“频率成分“</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>求一维信号的协方差矩阵————滑动窗口延时构建矩阵
+</span></span><span style="display:flex;"><span>矩阵求自相关————得到协方差矩阵，怎么求的？
+</span></span><span style="display:flex;"><span>正交分解，按特征值大小分为信号空间和噪声空间
+</span></span><span style="display:flex;"><span>通过信号空间与噪声空间正交，确定特征值和特征向量
+</span></span><span style="display:flex;"><span>噪声空间对应特征值置为0，再恢复信号
+</span></span></code></pre></div><blockquote>
+<p>一维阵列采集的二维信号怎么计算协方差矩阵？</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>频域法
+</span></span><span style="display:flex;"><span>转为频域  &gt;&gt;  多次快拍(多个短窗口)的频域平均  &gt;&gt; 求外积并平均
+</span></span></code></pre></div><p><strong>求外积并平均</strong>：在特定频率 f 下，空间协方差矩阵是这样算出来的：
+$$
+R_{xx}(f)=\frac{1}{K}\sum_{k=1}^{K} X_k(f),X_k(f)^H
+$$</p>
+<ul>
+<li>
+<p>Xk(f) 是一个列向量 (M×1)。</p>
+</li>
+<li>
+<p>Xk(f)H 是一个行向量 (1×M)。</p>
+</li>
+<li>
+<p>它们相乘（外积）恰好得到一个 M×M 的复数矩阵。</p>
+</li>
+<li>
+<p>把 K 个短窗口算出来的矩阵加起来求平均。</p>
+</li>
+</ul>
+<p><strong>信号到达方向</strong></p>
+<p>MUSIC 或 传统 Beamforming 算法寻找信号到达方向（信号到达方向对应车辆速度）</p>
+<p>对一维阵列，根据阵列传感器的间距和角度关系，计算对应的延时量，截取多个快拍，从而计算二维信号的协方差矩阵</p>
+<p><strong>结合空间物理模型</strong></p>
+<p><code>结合空间物理模型 (dt -&gt; A)</code> 就是依据车辆的速度范围，限制搜索的慢度区间</p>
+
+  </article>
+  
+  <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/2608%E9%9A%8F%E4%BE%BF%E5%86%99/">2608随便写</a></h2>
+    <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr>
+    <h3 id="2026-08-24"  id="2026-08-24">
+  <a class="heading-link" href="/my-blog-repo/2026/08/2608%E9%9A%8F%E4%BE%BF%E5%86%99/#2026-08-24">2026-08-24<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p>眼睛是心灵的窗户，我的眼睛总是怨恨、痛苦、悲观，现实是这是我自己造成的，自己懒得努力，通过自我欺骗来自我安慰。</p>
+<p>知足吧，现代社会的生活其实很富足，是我自己觉得自己缺少、不公，嫉妒别人，散发恶臭的负能量。</p>
+<p>现代的食物很便宜，鸡蛋、肉类等能负担得起；</p>
+<p>文化体育设施、公园、道路、交通工具等很便利；</p>
+<p>视频、游戏、音乐、软件等资源，互联网上的免费资源都很丰富；</p>
+<p>对比之下，古代简直是地狱难度，现代是天堂；</p>
+<p>都是他人的劳动创造的商品，提供服务，为他人提供，我间接享受到了；</p>
+<p>我不该有什么怨恨，我也没资格怨恨！</p>
+<p>我甚至从没有付出过多少劳动，我应该改变。</p>
+<h3 id="2026-08-26"  id="2026-08-26">
+  <a class="heading-link" href="/my-blog-repo/2026/08/2608%E9%9A%8F%E4%BE%BF%E5%86%99/#2026-08-26">2026-08-26<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<blockquote>
+<p>“不想担惊受怕，那就去战斗。” 								——奎桑提</p>
+</blockquote>
+<p>与其骗自己还不错，不如接受自己是个辣鸡；</p>
+
+  </article>
+  
+  <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">RDMA 学习笔记</a></h2>
+    <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr>
+    <h3 id="术语"  id="术语">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e6%9c%af%e8%af%ad">术语<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><strong>NIC</strong> : Network Interface Card, 网络适配器 / 网卡。 <strong>解释：</strong> 连接计算机与网络的硬件组件。在 AI 数据中心，普通 NIC 已无法满足需求，通常需要支持高吞吐和低延迟协议（如 RoCE）的专用高性能网卡。</p>
+<p><strong>SmartNIC / DPU</strong> : Smart Network Interface Card / Data Processing Unit, 智能网卡 / 数据处理器。 <strong>解释：</strong> 带有独立处理器的网卡。它能卸载原本由 CPU 处理的网络、存储和安全任务，让昂贵的计算资源完全服务于 AI 模型。</p>
+<p><strong>RDMA</strong> : Remote Direct Memory Access, 远程直接内存访问。 <strong>解释：</strong> 允许计算机直接访问远程内存的技术，绕过操作系统内核和 CPU 干扰。它是实现多 GPU 集群超低延迟通信的底层基石。</p>
+<p><strong>RoCE</strong> : RDMA over Converged Ethernet, 基于融合以太网的 RDMA。 <strong>解释：</strong> 在标准以太网上运行 RDMA 的协议。它让数据中心能在不更换昂贵专用网络设备的前提下，获得接近无限带宽技术的传输性能。</p>
+<p><strong>NCCL</strong> : NVIDIA Collective Communications Library, 英伟达集合通信库。 <strong>解释：</strong> 专门优化英伟达 GPU 间数据交换的算法库。它定义了多卡如何高效同步数据，是分布式训练的“通信翻译官”。</p>
+<p><strong>K8s (Kubernetes)</strong> : Kubernetes, 容器编排平台。 <strong>解释：</strong> AI 云平台的“大脑”。负责自动调度算力任务、管理容器化应用，并对 GPU 硬件资源进行统一分配与回收。</p>
+<p><strong>SDN</strong> : Software Defined Networking, 软件定义网络。 <strong>解释：</strong> 将网络控制权收归软件的技术。允许 AI 平台像调配内存一样，通过代码动态调节网络带宽和路径，提升集群灵活性。</p>
+<p><strong>InfiniBand (IB)</strong> : InfiniBand, 无限带宽技术。 <strong>解释：</strong> 一种专为高性能计算设计的互联标准。提供物理层级的极低延迟和极高带宽，常用于顶级大模型训练集群。</p>
+<p><strong>VPC</strong> : Virtual Private Cloud, 虚拟私有云。 <strong>解释：</strong> 在公有云中为用户划分的私有网络区域。通过逻辑隔离，保证不同租户的 AI 训练数据和算力环境互不干扰。</p>
+<p>RDMA本身指的是一种技术，具体协议层面，包含<a href="https://zhida.zhihu.com/search?content_id=118992942&amp;content_type=Article&amp;match_order=1&amp;q=Infiniband&amp;zhida_source=entity">Infiniband</a>（IB），RDMA over Converged Ethernet（RoCE）和internet Wide Area RDMA Protocol（iWARP）。</p>
+<h3 id="某岗位信息"  id="某岗位信息">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e6%9f%90%e5%b2%97%e4%bd%8d%e4%bf%a1%e6%81%af">某岗位信息<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h5 id="岗位关联小结"  id="岗位关联小结">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e5%b2%97%e4%bd%8d%e5%85%b3%e8%81%94%e5%b0%8f%e7%bb%93">岗位关联小结<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<ul>
+<li>KVM/QEMU/Xen：<strong>底层虚拟机虚拟化</strong>，DPU 智能网卡需适配虚拟网络、硬件直通；</li>
+<li>OpenStack：<strong>云集群管控</strong>，对应大规模云环境测试场景；</li>
+<li>Docker：<strong>容器虚拟化</strong>，云原生业务场景，也是 DPU 当下重点适配的云化场景。</li>
+</ul>
+<p>职位要求</p>
+<p>1.全栈技术测试：涵盖GPU驱动层、AI编译器、高性能算子库、深度学习框架，工具链等AI技术栈的质量保障工作；</p>
+<p>2.稳定性与兼容性验证：验证系统在大模型场景下的稳定性，确保各组件功能正确性和跨平台兼容性；</p>
+<p>3.测试用例设计与执行：设计覆盖各类边界条件和异常场景的测试用例，确保功能正确性和系统稳定性；</p>
+<p>4.性能分析与优化：使用专业工具进行性能瓶颈分析，输出数据驱动的优化建议和性能趋势报告；</p>
+<p>5.精度验证与对比：验证各种数据类型下的数值精度，对比不同版本间的功能和性能差异；</p>
+<p>6.自动化开发：使用Python（pytest）/ GoogleTest开发自动化测试脚本，集成CI流水线；</p>
+<p>7.问题定位与分析：通过日志分析工具（GDB/Valgrind/Profiling）进行问题复现，精准定位缺陷根因；</p>
+<p>8.工具开发：参与测试工具开发（自动化测试数据生成脚本库等），提升测试效率。</p>
+<h3 id="优秀作者知乎文章索引"  id="优秀作者知乎文章索引">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e4%bc%98%e7%a7%80%e4%bd%9c%e8%80%85%e7%9f%a5%e4%b9%8e%e6%96%87%e7%ab%a0%e7%b4%a2%e5%bc%95">优秀作者知乎文章索引<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><a href="https://zhuanlan.zhihu.com/p/164908617">《RDMA杂谈》专栏索引</a></p>
+<h3 id="学习笔记"  id="学习笔记">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e5%ad%a6%e4%b9%a0%e7%ac%94%e8%ae%b0">学习笔记<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p>上述知乎文章的学习笔记</p>
+<h4 id="一-rdma-概念篇"  id="一-rdma-概念篇">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e4%b8%80-rdma-%e6%a6%82%e5%bf%b5%e7%af%87">一 RDMA 概念篇<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<h5 id="1-rdma概述"  id="1-rdma概述">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#1-rdma%e6%a6%82%e8%bf%b0">1. RDMA概述<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p>RDMA</p>
+<p>DMA，传统网卡发送接收数据需要经过CPU，非常耗时，而且还需要linux切换内核态和用户态</p>
+<p>0拷贝：不需要在用户空间和内核空间中来回复制数据</p>
+<p>内核Bypass：IO（数据）流程可以绕过内核，即在用户层就可以把数据准备好并通知硬件准备发送和接收。避免了系统调用和上下文切换的开销。</p>
+<p>CPU卸载：指的是可以在远端节点CPU不参与通信的情况下（当然要持有访问远端某段内存的“钥匙”才行）对内存进行读写</p>
+<p>协议：RDMA的具体实现</p>
+<p><a href="https://zhida.zhihu.com/search?content_id=118992942&amp;content_type=Article&amp;match_order=1&amp;q=Infiniband&amp;zhida_source=entity">Infiniband</a>（IB），RDMA over Converged Ethernet（RoCE）和internet Wide Area RDMA Protocol（iWARP）</p>
+<h5 id="2-比较基于传统以太网与rdma技术的通信"  id="2-比较基于传统以太网与rdma技术的通信">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#2-%e6%af%94%e8%be%83%e5%9f%ba%e4%ba%8e%e4%bc%a0%e7%bb%9f%e4%bb%a5%e5%a4%aa%e7%bd%91%e4%b8%8erdma%e6%8a%80%e6%9c%af%e7%9a%84%e9%80%9a%e4%bf%a1">2. 比较基于传统以太网与RDMA技术的通信<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p>RDMA的分层模型分成两部分“控制通路”和“数据通路”，控制通路需要进入内核态准备通信所需的内存资源，而数据通路指的是实际数据交互过程中的流程。</p>
+<p><img src="https://pica.zhimg.com/v2-8ef2b015ba9d111fc2d42983cd5fe152_1440w.jpg" alt="img"></p>
+<h5 id="3-rdma基本元素"  id="3-rdma基本元素">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#3-rdma%e5%9f%ba%e6%9c%ac%e5%85%83%e7%b4%a0">3 RDMA基本元素<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p><img src="https://pic3.zhimg.com/v2-b6723caa5b291ee161d94fd8fd8ce09c_1440w.jpg" alt="img"></p>
+<p>WQ，Work Queue  软件给硬件的任务队列，WQE, Work Queue Element</p>
+<p>RDMA技术中<strong>通信的基本单元是QP</strong>, QP Queue  Pair  一对 WQ, 也就是发送和接收。SQ, Send Queue ； RQ, Receive Queue</p>
+<p>QPN（Queue Pair Number）,QP 的唯一编号</p>
+<p>Shared Receive Queue简称SRQ，意为共享接收队列。多个SQ共享一个RQ，节省内存</p>
+<p>Completion Queue简称CQ，意为完成队列</p>
+<p><img src="https://pic2.zhimg.com/v2-a8d38721903672037b27cc7e49ecee03_1440w.jpg" alt="img"></p>
+<p>WR全称为Work Request，意为工作请求；WC全称Work Completion，意为工作完成。这两者其实是WQE和CQE在用户层的“映射”。</p>
+<p>[1]《IB Specification Vol 1-Release-1.3-2015-03-03》</p>
+<h5 id="4-rdma操作类型"  id="4-rdma操作类型">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#4-rdma%e6%93%8d%e4%bd%9c%e7%b1%bb%e5%9e%8b"><a href="https://zhuanlan.zhihu.com/p/142175657">4. RDMA操作类型</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<h6 id="send--recv"  id="send--recv">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#send--recv">SEND &amp; RECV<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h6>
+<h6 id="read--write"  id="read--write">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#read--write">READ &amp; WRITE***<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h6>
+<p>看原帖，图画的非常好</p>
+<p>个人想法&gt; 我们不生产数据，我们只是数据的搬运工，CV工程师</p>
+<p><strong>[1] part1-OFA_Training_Sept_2016.pdf</strong> 是<strong>2016 年 9 月发布的 OFA（OpenFabrics Alliance，开放架构联盟）官方培训资料第一部分</strong>，是 RDMA（远程直接内存访问）领域的经典入门 / 培训文档。</p>
+<h5 id="5-rdma基本服务类型"  id="5-rdma基本服务类型">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#5-rdma%e5%9f%ba%e6%9c%ac%e6%9c%8d%e5%8a%a1%e7%b1%bb%e5%9e%8b"><a href="https://zhuanlan.zhihu.com/p/144099636">5. RDMA基本服务类型</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p><a href="https://zhida.zhihu.com/search?content_id=120154436&amp;content_type=Article&amp;match_order=1&amp;q=IB%E5%8D%8F%E8%AE%AE&amp;zhida_source=entity">IB协议</a>中通过“可靠”和“连接”两个维度来描述一种服务类型。</p>
+<h6 id="可靠不可靠"  id="可靠不可靠">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e5%8f%af%e9%9d%a0%e4%b8%8d%e5%8f%af%e9%9d%a0">可靠/不可靠<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h6>
+<p>可靠需要保证数据<strong>无损和有序</strong></p>
+<p>三个机制来保证可靠性：ACK,数据校验，保序性</p>
+<h6 id="连接与数据报datagram"  id="连接与数据报datagram">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e8%bf%9e%e6%8e%a5%e4%b8%8e%e6%95%b0%e6%8d%ae%e6%8a%a5datagram">连接与数据报（Datagram）<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h6>
+<h5 id="服务类型"  id="服务类型">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e6%9c%8d%e5%8a%a1%e7%b1%bb%e5%9e%8b">服务类型<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<table>
+	<thead>
+			<tr>
+					<th></th>
+					<th>可靠（Reliable）</th>
+					<th>不可靠 (Unreliable)</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>连接（Connection）</td>
+					<td>RC（Reliable Connection）</td>
+					<td>UC（Unreliable Connection）</td>
+			</tr>
+			<tr>
+					<td>数据报（Datagram）</td>
+					<td>RD（Reliable Datagram）</td>
+					<td>UD（Unreliable Datagram）</td>
+			</tr>
+	</tbody>
+</table>
+<p>RC和<a href="https://zhida.zhihu.com/search?content_id=120154436&amp;content_type=Article&amp;match_order=1&amp;q=UD&amp;zhida_source=entity">UD</a>是应用最多的两种，可以类比成TCP和UDP。</p>
+<h5 id="6-rdma之memory-region"  id="6-rdma之memory-region">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#6-rdma%e4%b9%8bmemory-region"><a href="https://zhuanlan.zhihu.com/p/156975042">6. RDMA之Memory Region</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<h4 id="mrmemory-region"  id="mrmemory-region">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#mrmemory-region">MR，Memory Region<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<h6 id="地址映射"  id="地址映射">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e5%9c%b0%e5%9d%80%e6%98%a0%e5%b0%84">地址映射<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h6>
+<p>1.为保证安全，防止软件读取关键物理地址Phisical Address，</p>
+<p><strong>MMU 全称：内存管理单元（Memory Management Unit）</strong>，用于虚拟地址与物理地址的映射</p>
+<p>IB协议中，用户在申请完用于存放数据的内存区域之后，都需要通过调用IB框架提供的API注册MR，才能让RDMA网卡访问这片内存区域。</p>
+<p>我们通常称RDMA硬件为**<a href="https://zhida.zhihu.com/search?content_id=123016342&amp;content_type=Article&amp;match_order=1&amp;q=HCA&amp;zhida_source=entity">HCA</a>（Host Channel Adapter， 宿主通道适配器）**</p>
+<h6 id="权限控制"  id="权限控制">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e6%9d%83%e9%99%90%e6%8e%a7%e5%88%b6">权限控制<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h6>
+<h6 id="避免换页"  id="避免换页">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e9%81%bf%e5%85%8d%e6%8d%a2%e9%a1%b5">避免换页<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h6>
+<p>换页：内存为分页存储/读取，操作系统为提高内存使用效率，会将使用频率低的内存搬运。影响VA-PA的映射关系</p>
+<h5 id="7-rdma之protection-domain"  id="7-rdma之protection-domain">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#7-rdma%e4%b9%8bprotection-domain"><a href="https://zhuanlan.zhihu.com/p/159493100">7. RDMA之Protection Domain</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p>PD, Protection Domain, 包括 QP 和 MR，（工作队列对 和 内存区域），就像分组一样</p>
+<h5 id="8-rdma之address-handle"  id="8-rdma之address-handle">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#8-rdma%e4%b9%8baddress-handle"><a href="https://zhuanlan.zhihu.com/p/163552044">8. RDMA之Address Handle</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p>IB协议中的这个标识被称为GID（Global Identifier，全局ID）**，是一个128 bits的序列。</p>
+<p>AH全称为Address Handle，理解为一组定位节点和存储地址的句柄，并且对用户隐藏信息</p>
+<h5 id="9-rdma之queue-pair"  id="9-rdma之queue-pair">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#9-rdma%e4%b9%8bqueue-pair"><a href="https://zhuanlan.zhihu.com/p/195757767">9. RDMA之Queue Pair</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p>QPC全称是Queue Pair Context，用于存储QP相关属性。如SQ Address, RQ Address, SQ size等</p>
+<p>QP Number， QPN， 编号</p>
+<p>QP 状态机</p>
+<h5 id="10-rdma之completion-queue"  id="10-rdma之completion-queue">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#10-rdma%e4%b9%8bcompletion-queue">10 RDMA之Completion Queue<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p>WQ和CQ的对应关系——每个WQ都必须关联一个CQ，而每个CQ可以关联多个SQ和RQ。</p>
+<p>CQE</p>
+<p>CQC: （Completion Queue Context），存储CQ对应的详细信息的一段内存结构。</p>
+<p>CQN: CQ Number</p>
+<h6 id="完成错误"  id="完成错误">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e5%ae%8c%e6%88%90%e9%94%99%e8%af%af">完成错误<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h6>
+<p><a href="https://zhida.zhihu.com/search?content_id=145830961&amp;content_type=Article&amp;match_order=1&amp;q=IB%E5%8D%8F%E8%AE%AE&amp;zhida_source=entity">IB协议</a>中有三种错误类型，立即错误（immediate error）、完成错误（Completion Error）以及异步错误（Asynchronous Errors)。</p>
+<p>立即错误的是“立即停止当前操作，并返回错误给上层用户”；</p>
+<p>完成错误指的是“通过CQE将错误信息返回给上层用户”；</p>
+<p>异步错误指的是“通过中断事件的方式上报给上层用户”。</p>
+<h5 id="11-rdma之shared-receive-queue"  id="11-rdma之shared-receive-queue">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#11-rdma%e4%b9%8bshared-receive-queue"><a href="https://zhuanlan.zhihu.com/p/279904125">11. RDMA之Shared Receive Queue</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<h6 id="为什么"  id="为什么">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e4%b8%ba%e4%bb%80%e4%b9%88">为什么<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h6>
+<p>为什么要用SRQ？SQ中下发任务的数量要远远超过向RQ中下发任务的数量，这是因为</p>
+<p>SEND/WRITE/READ都需要通信发起方向SQ中下发一个WR，而只有和SEND配合的RECV操作才需要通信响应方下发WR到RQ中（带立即数的Write操作也会消耗Receive WR，我们还没讲到）。</p>
+<p><img src="https://pica.zhimg.com/v2-7aa714891aa161db06800440c64d01da_1440w.jpg" alt="img"></p>
+<p>sge（Scatter/Gather Element）组成的，每个sge由一个内存地址，长度和秘钥组成。sge指向一块连续的内存区域；</p>
+<p>多个sge就可以表示多个彼此离散的连续内存块，我们称多个sge为sgl（Scatter/Gather List）。</p>
+<h6 id="异步事件"  id="异步事件">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e5%bc%82%e6%ad%a5%e4%ba%8b%e4%bb%b6">异步事件<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h6>
+<p>SRQ有一个特殊的异步事件，用来及时通知上层用户SRQ的状态，即SRQ Limit Reached事件。</p>
+<p>SRQ Limit：SRQ可以设置一个水线/阈值，当队列中剩余的WQE数量小于水线时，这个SRQ会就上报一个异步事件。提醒用户“队列中的WQE快用完了，请下发更多WQE以防没有地方接收新的数据”。这个水线/阈值就被称为SRQ Limit，这个上报的事件就被称为SRQ Limit Reached。</p>
+<p>“我这里空间挺大的（小于limit），快多放些东西在我这吧，免得货物太多了”</p>
+<h6 id="用户接口"  id="用户接口">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e7%94%a8%e6%88%b7%e6%8e%a5%e5%8f%a3">用户接口<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h6>
+<h5 id="12-rdma之memory-window"  id="12-rdma之memory-window">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#12-rdma%e4%b9%8bmemory-window"><a href="https://zhuanlan.zhihu.com/p/353590347">12 RDMA之Memory Window</a>***<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p>Memory Window 由用户申请的，用于让远端节点访问本端内存区域的RDMA资源。</p>
+<h6 id="mrmw的权限配置"  id="mrmw的权限配置">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#mrmw%e7%9a%84%e6%9d%83%e9%99%90%e9%85%8d%e7%bd%ae">MR/MW的权限配置<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h6>
+<table>
+	<thead>
+			<tr>
+					<th style="text-align: center"></th>
+					<th style="text-align: center">本端</th>
+					<th style="text-align: center">对端</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td style="text-align: center"><strong>读</strong></td>
+					<td style="text-align: center">Local Read</td>
+					<td style="text-align: center">Remote Read</td>
+			</tr>
+			<tr>
+					<td style="text-align: center"><strong>写</strong></td>
+					<td style="text-align: center">Local Write</td>
+					<td style="text-align: center">Remote Write</td>
+			</tr>
+	</tbody>
+</table>
+<h6 id="memory-key"  id="memory-key">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#memory-key">Memory Key<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h6>
+<p>一块内存区域的标识；Key是一串数字，由两部分组成：24bit的Index以及8bit的Key：Index用于映射MR，key校验整个字段的合法性。</p>
+<p>一块内存区域有 Local Key和Remote Key 两种（都有），Local Key和Remote Key：</p>
+<p>L_Key: 本地HCA会校验传递的L_Key。并且利用L_Key中的索引查找地址转换表，把虚拟地址翻译成物理地址然后访问内存。</p>
+<p>R_Key: 类似，只是本地HCA提供给远端HCA的访问标识，</p>
+<h6 id="为什么要有mw"  id="为什么要有mw">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e6%9c%89mw">为什么要有MW<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h6>
+<p><a href="https://zhuanlan.zhihu.com/p/156975042">Memory Region</a>一文中介绍过用户注册MR的过程，需要从用户态陷入内核态</p>
+<p><strong>MW在创建好之后，可以通过数据路径（即通过用户态直接下发WR到硬件的方式）动态的绑定到一个已经注册的MR上，并同时设置或者更改其访问权限，这个过程的速度远远超过重新注册MR的过程。</strong></p>
+<p>这里内容很多——跳过了***</p>
+<h4 id="二-rdma软件栈篇"  id="二-rdma软件栈篇">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e4%ba%8c-rdma%e8%bd%af%e4%bb%b6%e6%a0%88%e7%af%87">二 RDMA软件栈篇<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>TODO</p>
+<h5 id="1-3rdma之verbs"  id="1-3rdma之verbs">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#1-3rdma%e4%b9%8bverbs"><a href="https://zhuanlan.zhihu.com/p/329198771">1 3RDMA之Verbs</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p><a href="https://zhuanlan.zhihu.com/p/346708569">14RDMA之用户态与内核态交互</a></p>
+<h5 id="15-rdma之roce--soft-roce"  id="15-rdma之roce--soft-roce">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#15-rdma%e4%b9%8broce--soft-roce">15. RDMA之RoCE &amp; Soft-RoCE<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<h6 id="roce"  id="roce">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#roce">RoCE<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h6>
+<p>RoCE全称是RDMA over Converged Ethernet，即基于融合以太网的RDMA。用通俗的话讲，就是基于传统以太网的部分下层协议，在其基础上实现Infiniband的部分上层协议。这里的RoCE特指RoCE v2;</p>
+<h5 id="roce层次"  id="roce层次">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#roce%e5%b1%82%e6%ac%a1">RoCE层次<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p><img src="https://pic3.zhimg.com/v2-17e04efb14c550ad0be456b7b71209b4_1440w.jpg" alt="img"></p>
+<h6 id="roce协议的优势"  id="roce协议的优势">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#roce%e5%8d%8f%e8%ae%ae%e7%9a%84%e4%bc%98%e5%8a%bf">RoCE协议的优势<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h6>
+<p>RoCE v2协议的出现解决了这一问题，如果用户想要从以太网切换到RoCE，那么只需要购买支持RoCE的网卡就可以了，线缆、交换机和路由器（RoCE v1不支持以太网路由器）等网络设备都是兼容的——因为我们只是在以太网传输层基础上又定义了一套协议而已。</p>
+<h6 id="soft-roce"  id="soft-roce">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#soft-roce">Soft-RoCE<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h6>
+<p>RXE（Software RDMA over Ethernet, Soft-RoCE）是 RoCEv2 的软件实现，Linux内核模块名 <code>rdma_rxe</code>，让普通以太网卡也能跑 RDMA 应用。</p>
+<h5 id="16-pyverbspython-verbs"  id="16-pyverbspython-verbs">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#16-pyverbspython-verbs">16 Pyverbs（Python Verbs）<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<h5 id="17内存地址基础知识"  id="17内存地址基础知识">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#17%e5%86%85%e5%ad%98%e5%9c%b0%e5%9d%80%e5%9f%ba%e7%a1%80%e7%9f%a5%e8%af%86">17内存地址基础知识<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<h6 id="18queue-buffer"  id="18queue-buffer">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#18queue-buffer">18Queue Buffer<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h6>
+<h5 id="19用户态memory-region-buffer"  id="19用户态memory-region-buffer">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#19%e7%94%a8%e6%88%b7%e6%80%81memory-region-buffer">19用户态Memory Region Buffer<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<h3 id="相关技术"  id="相关技术">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e7%9b%b8%e5%85%b3%e6%8a%80%e6%9c%af">相关技术<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p>RMDA/RoCE v2/DPDK</p>
+<p>UVX (UCloud Virtual eXchange)</p>
+<p>KVM 底层虚拟机虚拟化</p>
+<h4 id="">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#"><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+
+  </article>
+  
+  <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/">WSL 测试 RoCE</a></h2>
+    <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr>
+    <h3 id="wsl-架构-debian-环境-soft-roce-rdma-开发环境"  id="wsl-架构-debian-环境-soft-roce-rdma-开发环境">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#wsl-%e6%9e%b6%e6%9e%84-debian-%e7%8e%af%e5%a2%83-soft-roce-rdma-%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83">WSL 架构 Debian 环境 Soft-RoCE RDMA 开发环境<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="第零步检测-rxe-是否安装"  id="第零步检测-rxe-是否安装">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#%e7%ac%ac%e9%9b%b6%e6%ad%a5%e6%a3%80%e6%b5%8b-rxe-%e6%98%af%e5%90%a6%e5%ae%89%e8%a3%85">第零步：检测 RXE 是否安装<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>zcat /proc/config.gz | grep -i RXE
+</span></span></code></pre></div><h4 id="第一步安装-debian-编译依赖"  id="第一步安装-debian-编译依赖">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#%e7%ac%ac%e4%b8%80%e6%ad%a5%e5%ae%89%e8%a3%85-debian-%e7%bc%96%e8%af%91%e4%be%9d%e8%b5%96">第一步：安装 Debian 编译依赖<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd ~			<span style="color:#75715e"># 先回到 Linux 用户主目录并安装依赖 codeBash  downloadcontent_copy   expand_less</span>
+</span></span><span style="display:flex;"><span>sudo apt update
+</span></span><span style="display:flex;"><span>sudo apt install build-essential flex bison dwarves libssl-dev libelf-dev bc libncurses-dev pkg-config
+</span></span></code></pre></div><p>下载源码</p>
+<p><a href="https://kernel.org/">https://kernel.org/</a>   下载LTS版本</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd ~
+</span></span><span style="display:flex;"><span>truman@pcofcg:~$ pwd
+</span></span><span style="display:flex;"><span>/home/truman
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 1. 从官方下载 Linux Kernel 6.1 系列源码 (这里以 6.1.84 为例)</span>
+</span></span><span style="display:flex;"><span>wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.6.135.tar.xz
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 或者手动  https://kernel.org/   下载LTS版本</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>tar -xf linux-6.6.135.tar.xz
+</span></span><span style="display:flex;"><span>cd linux-6.6.135/
+</span></span></code></pre></div><h4 id="第三步下载-wsl-配置文件并启用-soft-roce"  id="第三步下载-wsl-配置文件并启用-soft-roce">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#%e7%ac%ac%e4%b8%89%e6%ad%a5%e4%b8%8b%e8%bd%bd-wsl-%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e5%b9%b6%e5%90%af%e7%94%a8-soft-roce">第三步：下载 WSL 配置文件并启用 Soft-RoCE<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 1. 下载微软官方内核配置文件</span>
+</span></span><span style="display:flex;"><span>wget https://raw.githubusercontent.com/microsoft/WSL2-Linux-Kernel/linux-msft-wsl-6.6.y/arch/x86/configs/config-wsl -O arch/x86/configs/config-wsl
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 2. 打开图形化内核配置菜单</span>
+</span></span><span style="display:flex;"><span>make menuconfig KCONFIG_CONFIG<span style="color:#f92672">=</span>arch/x86/configs/config-wsl
+</span></span></code></pre></div><p>图形化操作说明</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>1.操作
+</span></span><span style="display:flex;"><span>在弹出的蓝色图形化界面中，您需要做以下操作来开启 RDMA：
+</span></span><span style="display:flex;"><span>按键盘的 / 键打开搜索框，输入 RDMA_RXE 并回车。
+</span></span><span style="display:flex;"><span>找到 Software RDMA over Ethernet (RoCE) driver 选项。
+</span></span><span style="display:flex;"><span>按照提示路径，进入菜单（一般在 Device Drivers -&gt; InfiniBand support 下）。
+</span></span><span style="display:flex;"><span>2.修改
+</span></span><span style="display:flex;"><span>将以下几项选中（按空格键，使其前面变成 &lt;*&gt; 或 [*]）：
+</span></span><span style="display:flex;"><span>InfiniBand support (开启 InfiniBand 支持)
+</span></span><span style="display:flex;"><span>InfiniBand userspace MAD support
+</span></span><span style="display:flex;"><span>InfiniBand userspace access (verbs and CM) (对应教程里的 InfiniBand userspace, RDMA verbs transport library)
+</span></span><span style="display:flex;"><span>Software RDMA over Ethernet (RoCE) driver (对应 Soft RoCE)
+</span></span><span style="display:flex;"><span>3.注意
+</span></span><span style="display:flex;"><span>配置完成后，利用左右方向键选中底部的 &lt;Save&gt; 并回车保存（默认保存为 arch/x86/configs/config-wsl，不要改名字），然后一直 &lt;Exit&gt; 退出。
+</span></span></code></pre></div><h4 id="第四步编译内核并拷贝到-windows"  id="第四步编译内核并拷贝到-windows">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#%e7%ac%ac%e5%9b%9b%e6%ad%a5%e7%bc%96%e8%af%91%e5%86%85%e6%a0%b8%e5%b9%b6%e6%8b%b7%e8%b4%9d%e5%88%b0-windows">第四步：编译内核并拷贝到 Windows<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 1. 编译内核（时间较长，取决于您的 CPU 性能，-j 后面的参数会自动利用全核心）</span>
+</span></span><span style="display:flex;"><span>make KCONFIG_CONFIG<span style="color:#f92672">=</span>arch/x86/configs/config-wsl -j<span style="color:#66d9ef">$(</span>nproc<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 2. 将编译好的内核文件直接拷贝到您的 Windows 桌面上</span>
+</span></span><span style="display:flex;"><span>cp arch/x86/boot/bzImage /mnt/c/Users/72950/Desktop/kernel_rxe
+</span></span></code></pre></div><h4 id="第五步修改-wslconfig-替换内核"  id="第五步修改-wslconfig-替换内核">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#%e7%ac%ac%e4%ba%94%e6%ad%a5%e4%bf%ae%e6%94%b9-wslconfig-%e6%9b%bf%e6%8d%a2%e5%86%85%e6%a0%b8">第五步：修改 .wslconfig 替换内核<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<ol>
+<li>在 Windows 系统中，打开 <code>C:\Users\&lt;username&gt;</code> 文件夹。</li>
+<li>新建一个文本文件，命名为 <code>.wslconfig</code>（注意前面有个点）。如果已有该文件，直接编辑即可。</li>
+<li>在里面填入以下内容并保存（注意路径中的反斜杠需要双写 \）：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>[wsl2]
+</span></span><span style="display:flex;"><span>kernel=D:\\enviroment\\linux\\kernel_rxe
+</span></span></code></pre></div><h4 id="第六步重启-wsl-并验证"  id="第六步重启-wsl-并验证">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#%e7%ac%ac%e5%85%ad%e6%ad%a5%e9%87%8d%e5%90%af-wsl-%e5%b9%b6%e9%aa%8c%e8%af%81">第六步：重启 WSL 并验证<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>在 <strong>Windows 侧的 PowerShell</strong> 中运行以下命令彻底关闭 WSL：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>wsl --shutdown
+</span></span></code></pre></div><p>再次打开您的 Debian 终端，输入命令检查内核：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>uname -a		<span style="color:#75715e"># 如果看到编译日期是今天的时间戳，并且内核名称没有带 -microsoft 标准后缀，说明内核替换成功</span>
+</span></span><span style="display:flex;"><span>truman@pcofcg:/mnt/c/Users/72950$ uname -a
+</span></span><span style="display:flex;"><span>Linux pcofcg 6.6.135-microsoft-standard-WSL2 <span style="color:#75715e">#3 SMP PREEMPT_DYNAMIC Tue Apr 28 10:30:49 CST 2026 x86_64 GNU/Linux</span>
+</span></span></code></pre></div><p>检验RXE(Soft-RoCE)</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-BASH" data-lang="BASH"><span style="display:flex;"><span>truman@pcofcg:/mnt/c/Users/72950$ zcat /proc/config.gz | grep -i RXE
+</span></span><span style="display:flex;"><span>CONFIG_RDMA_RXE<span style="color:#f92672">=</span>y
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>truman@pcofcg:/mnt/c/Users/72950$ zcat /proc/config.gz | grep -i RXE
+</span></span><span style="display:flex;"><span>CONFIG_RDMA_RXE<span style="color:#f92672">=</span>m
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 是模块 m， 所以手动加载</span>
+</span></span><span style="display:flex;"><span>truman@pcofcg:/mnt/c/Users/72950$ sudo modprobe rdma_rxe
+</span></span><span style="display:flex;"><span>modprobe: FATAL: Module rdma_rxe not found in directory /lib/modules/6.6.135-microsoft-standard-WSL2
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 模块没有安装的话</span>
+</span></span><span style="display:flex;"><span>truman@pcofcg:~/linux-6.6.135$ make modules_prepare
+</span></span><span style="display:flex;"><span>***
+</span></span><span style="display:flex;"><span>*** Configuration file <span style="color:#e6db74">&#34;.config&#34;</span> not found!
+</span></span><span style="display:flex;"><span>***
+</span></span><span style="display:flex;"><span>*** Please run some configurator <span style="color:#f92672">(</span>e.g. <span style="color:#e6db74">&#34;make oldconfig&#34;</span> or
+</span></span><span style="display:flex;"><span>*** <span style="color:#e6db74">&#34;make menuconfig&#34;</span> or <span style="color:#e6db74">&#34;make xconfig&#34;</span><span style="color:#f92672">)</span>.
+</span></span><span style="display:flex;"><span>***
+</span></span><span style="display:flex;"><span>make<span style="color:#f92672">[</span>1<span style="color:#f92672">]</span>: *** <span style="color:#f92672">[</span>/home/truman/linux-6.6.135/Makefile:784: .config<span style="color:#f92672">]</span> Error <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>make: *** <span style="color:#f92672">[</span>Makefile:234: __sub-make<span style="color:#f92672">]</span> Error <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>truman@pcofcg:~/linux-6.6.135$ rm -rf .config
+</span></span><span style="display:flex;"><span>truman@pcofcg:~/linux-6.6.135$ zcat /proc/config.gz &gt; .config
+</span></span><span style="display:flex;"><span>truman@pcofcg:~/linux-6.6.135$ ls -la .config
+</span></span><span style="display:flex;"><span>-rw-r--r-- <span style="color:#ae81ff">1</span> truman truman <span style="color:#ae81ff">212542</span> Apr <span style="color:#ae81ff">28</span> 10:22 .config
+</span></span><span style="display:flex;"><span>truman@pcofcg:~/linux-6.6.135$ nano .config
+</span></span><span style="display:flex;"><span>truman@pcofcg:~/linux-6.6.135$ make modules_prepare
+</span></span></code></pre></div><h4 id="第七步配置虚拟网卡和-soft-roce"  id="第七步配置虚拟网卡和-soft-roce">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#%e7%ac%ac%e4%b8%83%e6%ad%a5%e9%85%8d%e7%bd%ae%e8%99%9a%e6%8b%9f%e7%bd%91%e5%8d%a1%e5%92%8c-soft-roce">第七步：配置虚拟网卡和 Soft-RoCE<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 1. 安装 RDMA 核心工具</span>
+</span></span><span style="display:flex;"><span>sudo apt install rdma-core perftest infiniband-diags ibverbs-utils
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 2. 配置虚拟网卡并分配 IP</span>
+</span></span><span style="display:flex;"><span>sudo ip link add veth0 type veth peer name veth1
+</span></span><span style="display:flex;"><span>sudo ip addr add 192.168.96.110/24 dev veth0
+</span></span><span style="display:flex;"><span>sudo ip addr add 192.168.96.111/24 dev veth1
+</span></span><span style="display:flex;"><span>sudo ip link set veth0 up
+</span></span><span style="display:flex;"><span>sudo ip link set veth1 up
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>truman@pcofcg:/mnt/c/Users/72950$ ip link show
+</span></span><span style="display:flex;"><span>1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">65536</span> qdisc noqueue state UNKNOWN mode DEFAULT group default qlen <span style="color:#ae81ff">1000</span>
+</span></span><span style="display:flex;"><span>    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+</span></span><span style="display:flex;"><span>2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">1500</span> qdisc mq state UP mode DEFAULT group default qlen <span style="color:#ae81ff">1000</span>
+</span></span><span style="display:flex;"><span>    link/ether 00:15:5d:96:a9:dd brd ff:ff:ff:ff:ff:ff
+</span></span><span style="display:flex;"><span>    altname enx00155d96a9dd
+</span></span><span style="display:flex;"><span>3: veth1@veth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">1500</span> qdisc noqueue state UP mode DEFAULT group default qlen <span style="color:#ae81ff">1000</span>
+</span></span><span style="display:flex;"><span>    link/ether 26:ba:35:07:2b:f8 brd ff:ff:ff:ff:ff:ff
+</span></span><span style="display:flex;"><span>4: veth0@veth1: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">1500</span> qdisc noqueue state UP mode DEFAULT group default qlen <span style="color:#ae81ff">1000</span>
+</span></span><span style="display:flex;"><span>    link/ether de:4a:ab:d3:06:fd brd ff:ff:ff:ff:ff:ff
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 3. 允许回环测试</span>
+</span></span><span style="display:flex;"><span>sudo sysctl -w net.ipv4.conf.veth0.accept_local<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>sudo sysctl -w net.ipv4.conf.veth1.accept_local<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 4. 将 RXE(Soft-RoCE) 挂载到网卡上</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 将 rxe 设备附加到 veth0 上，命名为 rxe0</span>
+</span></span><span style="display:flex;"><span>sudo rdma link add rxe0 type rxe netdev veth0
+</span></span><span style="display:flex;"><span>sudo rdma link add rxe1 type rxe netdev veth1
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 5. 检查 RDMA 状态</span>
+</span></span><span style="display:flex;"><span>rdma link		<span style="color:#75715e"># 有结果就成功</span>
+</span></span><span style="display:flex;"><span>ibstat			<span style="color:#75715e"># 有结果就成功</span>
+</span></span><span style="display:flex;"><span>truman@pcofcg:/mnt/c/Users/72950$ ibv_devices
+</span></span><span style="display:flex;"><span>    device                 node GUID
+</span></span><span style="display:flex;"><span>    ------              ----------------
+</span></span><span style="display:flex;"><span>    rxe0                dc4aabfffed306fd
+</span></span><span style="display:flex;"><span>    rxe1                24ba35fffe072bf8
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>SSGP:    拷贝数据的包，ip地址到ip地址，主机之间拷贝数据
+</span></span><span style="display:flex;"><span>IGMP:    局域网之间的ARP
+</span></span><span style="display:flex;"><span>ICMPv6:  类似ARP，进行局域网内的ARP
+</span></span><span style="display:flex;"><span>MDNS:    ？
+</span></span></code></pre></div><p>windows抓包都是垃圾包，设备之间的服务发现等包，没真实抓到RoCEv2的包</p>
+<h3 id="wsl内抓包"  id="wsl内抓包">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#wsl%e5%86%85%e6%8a%93%e5%8c%85">WSL内抓包<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="rocev2"  id="rocev2">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#rocev2">RoCEv2<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 查看 RDMA 绑定的网口</span>
+</span></span><span style="display:flex;"><span>truman@pcofcg:~/dump$ rdma link show
+</span></span><span style="display:flex;"><span>link rxe0/1 state ACTIVE physical_state LINK_UP netdev veth0
+</span></span><span style="display:flex;"><span>link rxe1/1 state ACTIVE physical_state LINK_UP netdev veth1
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 虚拟网口绑定的 ip 地址</span>
+</span></span><span style="display:flex;"><span>truman@pcofcg:~/dump$ ip addr show veth0
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 给 veth 配 IP（直接点对点，不需要网关）</span>
+</span></span><span style="display:flex;"><span>sudo ip addr add 10.0.0.1/24 dev veth0
+</span></span><span style="display:flex;"><span>sudo ip addr add 10.0.0.2/24 dev veth1
+</span></span></code></pre></div><p><strong>服务端</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># </span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 3. 服务端循环</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> true; <span style="color:#66d9ef">do</span> rping -s -a 10.0.0.1; <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>truman@pcofcg:/mnt/c/Users/72950$ rping -s -a 10.0.0.1 -v
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-0: ABCDEFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqr
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-1: BCDEFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrs
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-2: CDEFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrst
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-3: DEFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstu
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-4: EFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuv
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-5: FGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvw
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-6: GHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvwx
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-7: HIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvwxy
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-8: IJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvwxyz
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-9: JKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvwxyzA
+</span></span><span style="display:flex;"><span>server DISCONNECT EVENT...
+</span></span><span style="display:flex;"><span>wait <span style="color:#66d9ef">for</span> RDMA_READ_ADV state <span style="color:#ae81ff">10</span>
+</span></span></code></pre></div><p><strong>监听端</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># </span>
+</span></span><span style="display:flex;"><span>truman@pcofcg:~/dump$ sudo tcpdump -i any udp port <span style="color:#ae81ff">4791</span> -n
+</span></span><span style="display:flex;"><span>tcpdump: WARNING: any: That device doesn<span style="color:#960050;background-color:#1e0010">&#39;</span>t support promiscuous mode
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>Promiscuous mode not supported on the <span style="color:#e6db74">&#34;any&#34;</span> device<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>tcpdump: verbose output suppressed, use -v<span style="color:#f92672">[</span>v<span style="color:#f92672">]</span>... <span style="color:#66d9ef">for</span> full protocol decode
+</span></span><span style="display:flex;"><span>listening on any, link-type LINUX_SLL2 <span style="color:#f92672">(</span>Linux cooked v2<span style="color:#f92672">)</span>, snapshot length <span style="color:#ae81ff">262144</span> bytes
+</span></span><span style="display:flex;"><span>14:11:56.574299 veth1 Out IP 10.0.0.2.55410 &gt; 10.0.0.1.4791: UDP, length <span style="color:#ae81ff">280</span>
+</span></span><span style="display:flex;"><span>14:11:56.574304 veth0 In  IP 10.0.0.2.55410 &gt; 10.0.0.1.4791: UDP, length <span style="color:#ae81ff">280</span>
+</span></span><span style="display:flex;"><span>14:11:56.574441 veth0 Out IP 10.0.0.1.55410 &gt; 10.0.0.2.4791: UDP, length <span style="color:#ae81ff">280</span>
+</span></span><span style="display:flex;"><span>14:11:56.574442 veth1 In  IP 10.0.0.1.55410 &gt; 10.0.0.2.4791: UDP, length <span style="color:#ae81ff">280</span>
+</span></span><span style="display:flex;"><span>14:12:06.430103 veth1 Out IP 10.0.0.2.55410 &gt; 10.0.0.1.4791: UDP, length <span style="color:#ae81ff">280</span>
+</span></span><span style="display:flex;"><span>14:12:06.430106 veth0 In  IP 10.0.0.2.55410 &gt; 10.0.0.1.4791: UDP, length <span style="color:#ae81ff">280</span>
+</span></span><span style="display:flex;"><span>14:12:06.430522 veth0 Out IP 10.0.0.1.55410 &gt; 10.0.0.2.4791: UDP, length <span style="color:#ae81ff">280</span>
+</span></span><span style="display:flex;"><span>14:12:06.430526 veth1 In  IP 10.0.0.1.55410 &gt; 10.0.0.2.4791: UDP, length <span style="color:#ae81ff">280</span>
+</span></span><span style="display:flex;"><span>14:12:06.430818 veth1 Out IP 10.0.0.2.55410 &gt; 10.0.0.1.4791: UDP, length <span style="color:#ae81ff">280</span>
+</span></span><span style="display:flex;"><span>14:12:06.430819 veth0 In  IP 10.0.0.2.55410 &gt; 10.0.0.1.4791: UDP, length <span style="color:#ae81ff">280</span>
+</span></span><span style="display:flex;"><span>^C
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">146</span> packets captured
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">146</span> packets received by filter
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0</span> packets dropped by kernel
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 保存抓包</span>
+</span></span><span style="display:flex;"><span>truman@pcofcg:~/dump$ sudo tcpdump -i veth0 udp port <span style="color:#ae81ff">4791</span> -n -v -w ./rdma.pcap
+</span></span><span style="display:flex;"><span>tcpdump: listening on veth0, link-type EN10MB <span style="color:#f92672">(</span>Ethernet<span style="color:#f92672">)</span>, snapshot length <span style="color:#ae81ff">262144</span> bytes
+</span></span><span style="display:flex;"><span>^C125 packets captured
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">125</span> packets received by filter
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">0</span> packets dropped by kernel
+</span></span></code></pre></div><p><strong>客户端</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>truman@pcofcg:~/dump$ rping -c -a 10.0.0.1 -I 10.0.0.2 -v -C <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-0: ABCDEFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqr
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-1: BCDEFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrs
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-2: CDEFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrst
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-3: DEFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstu
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-4: EFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuv
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-5: FGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvw
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-6: GHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvwx
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-7: HIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvwxy
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-8: IJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvwxyz
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-9: JKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvwxyzA
+</span></span><span style="display:flex;"><span>client DISCONNECT EVENT...
+</span></span></code></pre></div><h4 id="iwarp测试"  id="iwarp测试">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#iwarp%e6%b5%8b%e8%af%95">iWARP测试<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p><strong>注意</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 为了避免Soft-RoCE可能造成的干扰，建议先删除RXE设备</span>
+</span></span><span style="display:flex;"><span>sudo rdma link del rxe0
+</span></span><span style="display:flex;"><span>sudo rdma link del rxe1
+</span></span></code></pre></div><p><strong>配置</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 1. 配置虚拟网卡并分配 IP</span>
+</span></span><span style="display:flex;"><span>sudo ip link add veth2 type veth peer name veth3
+</span></span><span style="display:flex;"><span>sudo ip addr add 10.1.0.1/24 dev veth2
+</span></span><span style="display:flex;"><span>sudo ip addr add 10.1.0.2/24 dev veth3
+</span></span><span style="display:flex;"><span>sudo ip link set veth2 up
+</span></span><span style="display:flex;"><span>sudo ip link set veth3 up
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 2. 绑定 iWARP 设备</span>
+</span></span><span style="display:flex;"><span>sudo rdma link add siw_0 type siw netdev veth2
+</span></span><span style="display:flex;"><span>sudo rdma link add siw_1 type siw netdev veth3
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 3. 查看设备</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 设备</span>
+</span></span><span style="display:flex;"><span>truman@pcofcg:~/dump$ ibv_devices
+</span></span><span style="display:flex;"><span>    device                 node GUID
+</span></span><span style="display:flex;"><span>    ------              ----------------
+</span></span><span style="display:flex;"><span>    rxe0                dc4aabfffed306fd
+</span></span><span style="display:flex;"><span>    rxe1                24ba35fffe072bf8
+</span></span><span style="display:flex;"><span>    siw_0               648a11fffe6d9f0b
+</span></span><span style="display:flex;"><span>    siw_1               e02999fffe16377a
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 链路</span>
+</span></span><span style="display:flex;"><span>truman@pcofcg:~/dump$ rdma link
+</span></span><span style="display:flex;"><span>link siw_0/1 state ACTIVE physical_state LINK_UP netdev veth2
+</span></span><span style="display:flex;"><span>link siw_1/1 state ACTIVE physical_state LINK_UP netdev veth3
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 详细信息</span>
+</span></span><span style="display:flex;"><span>truman@pcofcg:~/dump$ ibv_devinfo -d siw_0
+</span></span><span style="display:flex;"><span>hca_id: siw_0
+</span></span><span style="display:flex;"><span>        transport:                      iWARP <span style="color:#f92672">(</span>1<span style="color:#f92672">)</span>			<span style="color:#75715e"># 看到传输层协议是 iWARP</span>
+</span></span></code></pre></div><h4 id="perftest"  id="perftest">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#perftest">perftest<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p><strong>服务端</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># -R 表示使用 rdma_cm 建立连接，这是 iWARP 的标准方式。</span>
+</span></span><span style="display:flex;"><span>truman@pcofcg:~/dump$ ib_write_bw -d siw_0 -R
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>************************************
+</span></span><span style="display:flex;"><span>* Waiting <span style="color:#66d9ef">for</span> client to connect... *
+</span></span><span style="display:flex;"><span>************************************
+</span></span><span style="display:flex;"><span>---------------------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>                    RDMA_Write BW Test
+</span></span><span style="display:flex;"><span> Dual-port       : OFF          Device         : siw_0
+</span></span><span style="display:flex;"><span> Number of qps   : <span style="color:#ae81ff">1</span>            Transport type : IW
+</span></span><span style="display:flex;"><span> Connection type : RC           Using SRQ      : OFF
+</span></span><span style="display:flex;"><span> PCIe relax order: ON           Lock-free      : OFF
+</span></span><span style="display:flex;"><span> ibv_wr* API     : OFF          Using DDP      : OFF
+</span></span><span style="display:flex;"><span> CQ Moderation   : <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span> Mtu             : 1024<span style="color:#f92672">[</span>B<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span> Link type       : Ethernet
+</span></span><span style="display:flex;"><span> GID index       : <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span> Max inline data : 0<span style="color:#f92672">[</span>B<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span> rdma_cm QPs     : ON
+</span></span><span style="display:flex;"><span> Data ex. method : rdma_cm
+</span></span><span style="display:flex;"><span>---------------------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span> Waiting <span style="color:#66d9ef">for</span> client rdma_cm QP to connect
+</span></span><span style="display:flex;"><span> Please run the same command with the IB/RoCE interface IP
+</span></span><span style="display:flex;"><span>---------------------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span> local address: LID <span style="color:#ae81ff">0000</span> QPN 0x0004 PSN 0x5e3e06
+</span></span><span style="display:flex;"><span> GID: 102:138:17:109:159:11:00:00:00:00:00:00:00:00:00:00
+</span></span><span style="display:flex;"><span> remote address: LID <span style="color:#ae81ff">0000</span> QPN 0x0003 PSN 0x67ef40
+</span></span><span style="display:flex;"><span> GID: 102:138:17:109:159:11:00:00:00:00:00:00:00:00:00:00
+</span></span><span style="display:flex;"><span>---------------------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span> <span style="color:#75715e">#bytes     #iterations    BW peak[MiB/sec]    BW average[MiB/sec]   MsgRate[Mpps]</span>
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">65536</span>      <span style="color:#ae81ff">5000</span>             8609.87            6595.36              0.105526
+</span></span><span style="display:flex;"><span>---------------------------------------------------------------------------------------
+</span></span></code></pre></div><p><strong>客户端</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>truman@pcofcg:~/dump$ ib_write_bw -d siw_0 10.1.0.1 -R
+</span></span><span style="display:flex;"><span>---------------------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>                    RDMA_Write BW Test
+</span></span><span style="display:flex;"><span> Dual-port       : OFF          Device         : siw_0
+</span></span><span style="display:flex;"><span> Number of qps   : <span style="color:#ae81ff">1</span>            Transport type : IW
+</span></span><span style="display:flex;"><span> Connection type : RC           Using SRQ      : OFF
+</span></span><span style="display:flex;"><span> PCIe relax order: ON           Lock-free      : OFF
+</span></span><span style="display:flex;"><span> ibv_wr* API     : OFF          Using DDP      : OFF
+</span></span><span style="display:flex;"><span> TX depth        : <span style="color:#ae81ff">128</span>
+</span></span><span style="display:flex;"><span> CQ Moderation   : <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span> Mtu             : 1024<span style="color:#f92672">[</span>B<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span> Link type       : Ethernet
+</span></span><span style="display:flex;"><span> GID index       : <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span> Max inline data : 0<span style="color:#f92672">[</span>B<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span> rdma_cm QPs     : ON
+</span></span><span style="display:flex;"><span> Data ex. method : rdma_cm
+</span></span><span style="display:flex;"><span>---------------------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span> local address: LID <span style="color:#ae81ff">0000</span> QPN 0x0003 PSN 0x67ef40
+</span></span><span style="display:flex;"><span> GID: 102:138:17:109:159:11:00:00:00:00:00:00:00:00:00:00
+</span></span><span style="display:flex;"><span> remote address: LID <span style="color:#ae81ff">0000</span> QPN 0x0004 PSN 0x5e3e06
+</span></span><span style="display:flex;"><span> GID: 102:138:17:109:159:11:00:00:00:00:00:00:00:00:00:00
+</span></span><span style="display:flex;"><span>---------------------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span> <span style="color:#75715e">#bytes     #iterations    BW peak[MiB/sec]    BW average[MiB/sec]   MsgRate[Mpps]</span>
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">65536</span>      <span style="color:#ae81ff">5000</span>             8609.87            6595.36              0.105526
+</span></span><span style="display:flex;"><span>---------------------------------------------------------------------------------------
+</span></span></code></pre></div><p><strong>监听端</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># iWARP 抓包（TCP 层）</span>
+</span></span><span style="display:flex;"><span>sudo tcpdump -i veth2 tcp -n -v
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 更精确：iWARP 默认端口是 TCP 5000（rdma_cm）</span>
+</span></span><span style="display:flex;"><span>sudo tcpdump -i veth2 tcp port <span style="color:#ae81ff">5000</span> -n -v
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># </span>
+</span></span><span style="display:flex;"><span>sudo tcpdump -i any tcp -n
+</span></span><span style="display:flex;"><span>sudo tcpdump -i any tcp -n -v -w ./iwarp_perftest.pcap
+</span></span></code></pre></div><h4 id="rping"  id="rping">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#rping">rping<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p><strong>看注意</strong></p>
+<p><strong>服务端</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>truman@pcofcg:~/dump$ rping -s -a 10.1.0.1 -v
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-0: ABCDEFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqr
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-1: BCDEFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrs
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-2: CDEFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrst
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-3: DEFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstu
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-4: EFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuv
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-5: FGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvw
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-6: GHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvwx
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-7: HIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvwxy
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-8: IJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvwxyz
+</span></span><span style="display:flex;"><span>server ping data: rdma-ping-9: JKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvwxyzA
+</span></span><span style="display:flex;"><span>server DISCONNECT EVENT...
+</span></span><span style="display:flex;"><span>wait <span style="color:#66d9ef">for</span> RDMA_READ_ADV state <span style="color:#ae81ff">10</span>
+</span></span></code></pre></div><p><strong>客户端</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>truman@pcofcg:~/dump$ rping -c -a 10.1.0.1 -I 10.1.0.2 -v -C <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-0: ABCDEFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqr
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-1: BCDEFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrs
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-2: CDEFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrst
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-3: DEFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstu
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-4: EFGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuv
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-5: FGHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvw
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-6: GHIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvwx
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-7: HIJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvwxy
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-8: IJKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvwxyz
+</span></span><span style="display:flex;"><span>ping data: rdma-ping-9: JKLMNOPQRSTUVWXYZ<span style="color:#f92672">[</span><span style="color:#ae81ff">\]</span>^_<span style="color:#e6db74">`</span>abcdefghijklmnopqrstuvwxyzA
+</span></span><span style="display:flex;"><span>client DISCONNECT EVENT...
+</span></span></code></pre></div><p><strong>监听端</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>truman@pcofcg:~/dump$ sudo tcpdump -i any tcp -n -v -w ./iwarp_rping.pcap
+</span></span><span style="display:flex;"><span>tcpdump: WARNING: any: That device doesn<span style="color:#960050;background-color:#1e0010">&#39;</span>t support promiscuous mode
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>Promiscuous mode not supported on the <span style="color:#e6db74">&#34;any&#34;</span> device<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>tcpdump: listening on any, link-type LINUX_SLL2 <span style="color:#f92672">(</span>Linux cooked v2<span style="color:#f92672">)</span>, snapshot length <span style="color:#ae81ff">262144</span> bytes
+</span></span><span style="display:flex;"><span>Got <span style="color:#ae81ff">90</span>
+</span></span></code></pre></div><h3 id="抓包结果"  id="抓包结果">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#%e6%8a%93%e5%8c%85%e7%bb%93%e6%9e%9c">抓包结果<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="rocev2-1"  id="rocev2-1">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#rocev2-1">RoCEv2<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<img src="/my-blog-repo/img/2026/08/WSL%20%e6%b5%8b%e8%af%95%20RoCE/RDMA%20%e6%8a%93%e5%8c%851.png" alt="图片">
+
+<h4 id="iwarp-perftest"  id="iwarp-perftest">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#iwarp-perftest">iWARP perftest<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<img src="/my-blog-repo/img/2026/08/WSL%20%e6%b5%8b%e8%af%95%20RoCE/iwarp_perftest%20%e6%8a%93%e5%8c%851.png" alt="图片">
+
+<p><strong>1. DDP</strong></p>
+<ul>
+<li><strong>直接数据放置协议(DDP, Direct Data Placement Protocol)</strong></li>
+</ul>
+<p>相当于RDMA，作用和RDMA一致</p>
+<p><strong>2. MPA</strong></p>
+<ul>
+<li><strong>标记 PDU 对齐帧协议（MPA，Marker PDU Aligned Framing Protocol）</strong></li>
+</ul>
+<p><strong>核心作用</strong>：TCP 是有序的，如果发现包乱序到达，会抛弃新到达的包，要求发送端从丢失的位置开始重传。RoCE 要求是无损的，因此使用MPA弥补这个问题。</p>
+<p>MPA 夹在 TCP 和 DDP 之间，负责在 TCP 字节流中插入固定间隔的“标记”（Marker）、添加长度头以及 CRC32 校验码。这使得接收端网卡即便遇到 <strong>Out-of-Order（乱序）到达的 TCP 报文</strong>，也能迅速定位并解析出独立的 DDP 帧。</p>
+<h4 id="iwarp-rping"  id="iwarp-rping">
+  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#iwarp-rping">iWARP rping<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<img src="/my-blog-repo/img/2026/08/WSL%20%e6%b5%8b%e8%af%95%20RoCE/iwarp_rping%20%e6%8a%93%e5%8c%851.png" alt="图片">
+
+
+  </article>
+  
+  <article class="post">
     <h2><a class="post-title" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/">《后会无期》———— 每个人的平凡之路</a></h2>
     <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr>
     <h3 id="家乡在东极岛"  id="家乡在东极岛">
@@ -262,48 +1672,13 @@ p code, li code {
   <article class="post">
     <h2><a class="post-title" href="/my-blog-repo/1/01/"></a></h2>
     <abbr class="small postDate" title="0001-01-01">January 1, 0001</abbr>
-    <h3 id="研究记录"  id="研究记录">
-  <a class="heading-link" href="/my-blog-repo/1/01/#%e7%a0%94%e7%a9%b6%e8%ae%b0%e5%bd%95">研究记录<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<ol>
-<li>论文阅读笔记</li>
-<li>代码学习笔记</li>
-<li>数据处理记录</li>
-<li>模型与方法创新</li>
-<li>实验</li>
-</ol>
-<p><strong>文件地址</strong></p>
-<p>D:\study\graduate\code\python\ResearchDAS</p>
-<p><strong>配置文件</strong></p>
-<p>D:\study\graduate\code\python\ResearchDAS\src\python\test\test_yaml.yaml</p>
-<p><strong>读取配置文件</strong></p>
-<h3 id="数据处理记录"  id="数据处理记录">
-  <a class="heading-link" href="/my-blog-repo/1/01/#%e6%95%b0%e6%8d%ae%e5%a4%84%e7%90%86%e8%ae%b0%e5%bd%95">数据处理记录<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<h4 id="文件地址"  id="文件地址">
-  <a class="heading-link" href="/my-blog-repo/1/01/#%e6%96%87%e4%bb%b6%e5%9c%b0%e5%9d%80">文件地址<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h4>
-<p><strong>重车连续行驶</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">date0722</span>:
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">folder_path</span>: <span style="color:#e6db74">&#34;K:\\DAS\\验证数据\\新建文件夹\\20250722-0.5m-不含水-渣土车行驶1小时\\&#34;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">files_info</span>:
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">zhatu</span>:
-</span></span><span style="display:flex;"><span>        - <span style="color:#e6db74">&#34;空洞验证不含水_20240722-030000.264443461_300-2100_渣土车行驶.dat&#34;</span>
-</span></span><span style="display:flex;"><span>        - <span style="color:#e6db74">&#34;空洞验证不含水_20240722-030100.261659328_300-2100_渣土车行驶.dat&#34;</span>
-</span></span><span style="display:flex;"><span>        - <span style="color:#e6db74">&#34;空洞验证不含水_20240722-030200.258873637_300-2100_渣土车行驶.dat&#34;</span>
-</span></span></code></pre></div><p><strong>数据查看</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"></code></pre></div><p><strong>瀑布图</strong></p>
-<h3 id="模型与方法创新"  id="模型与方法创新">
-  <a class="heading-link" href="/my-blog-repo/1/01/#%e6%a8%a1%e5%9e%8b%e4%b8%8e%e6%96%b9%e6%b3%95%e5%88%9b%e6%96%b0">模型与方法创新<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<h4 id="方法"  id="方法">
-  <a class="heading-link" href="/my-blog-repo/1/01/#%e6%96%b9%e6%b3%95">方法<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h4>
-<ol>
-<li>稀疏恢复降噪：F-K 谱 + Radon 变换 + 波束成形 融合</li>
-<li>信号建模：取代作者的冲激响应函数</li>
-</ol>
-<p>降噪</p>
+    <p>20260830</p>
+<blockquote>
+<p>1,2,&hellip;,n 的排列，单调栈问题，通过用例92.86%，不知道为什么</p>
+</blockquote>
+<blockquote>
+<p>图题目：双向图，城市之间的边，油耗，时间 两种限制，应该是背包问题</p>
+</blockquote>
 
   </article>
   
@@ -313,6 +1688,8 @@ p code, li code {
     
     <span class="previous"><a href="/my-blog-repo/">&laquo; Newer Posts</a></span>
     
+    
+    <span class="next"><a href="/my-blog-repo/page/3/">Older Posts &raquo;</a></span>
     
   </div>
   

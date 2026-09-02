@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="cn-zh">
+
+<head><script src="/my-blog-repo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=my-blog-repo/livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CUDA学习--3规约运算 : Truman&#39;s blog</title>
+  <link rel="icon" href="/my-blog-repo/favicon.ico">
+
+  <link rel="stylesheet" href="/my-blog-repo/css/style.css" type="text/css" media="screen">
+  <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet" type="text/css">
+
+  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="http://localhost:1313/my-blog-repo/feed.xml">
+
+
+<style>
+ 
+pre {
+    margin-left: 0;
+    padding: 1em;
+    background: var(--code-bg);
+    overflow-x: auto;
+    font-family: 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--code-text);
+}
+
+code {
+    font-family: 'Ubuntu Mono', monospace;
+}
+
+ 
+p code, li code {
+    background: var(--code-bg);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+@media screen and (min-width: 640px) {
+    pre {
+        margin-left: 3em;
+    }
+}
+</style>
+<meta name="generator" content="Hugo 0.165.0">
+</head>
+
+<body class="single">
+
+<header>
+  <h1 class="vcard author"><a href="/my-blog-repo/" title="Home">Truman&#39;s blog</a></h1>
+  <p>
+    God helps those who help themselves.
+    <ul class="pages">
+      <li><a href="/my-blog-repo/archives/">archives</a></li>
+      <li><a href="/my-blog-repo/feed.xml">subscribe</a></li>
+    </ul>
+  </p>
+</header>
+
+<div class="content wrap">
+  
+<section class="posts">
+  <article class="post">
+    <h2>CUDA学习--3规约运算</h2>
+    <abbr class="small postDate" title="2026-08-30">August 30, 2026</abbr>
+    <h3 id="目录"  id="目录">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--3%E8%A7%84%E7%BA%A6%E8%BF%90%E7%AE%97/#%e7%9b%ae%e5%bd%95">目录<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><a href="https://leetgpu.com/challenges/reduction">Reduction</a></p>
+<p><a href="https://leetgpu.com/challenges/softmax">Softmax</a></p>
+<p>Reduction</p>
+<p>教程</p>
+<p><a href="https://zhuanlan.zhihu.com/p/7818317945">知乎文章&ndash;CUDA代码实战-reduce优化</a></p>
+<p>LeetGPU</p>
+<p>CUDA</p>
+<p>while循环，在每个block 内做reduce</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#define BLOCK_SIZE 256
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 每个 block 求reduce的sum，将结果存储到blockIdx对应的位置
+</span></span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">reduce_block_kernel</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> block_sum, <span style="color:#66d9ef">int</span> N) 
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 每个线程的 id, 在每个 block 内部进行 reduce ，不需要全局id
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 每个 block 第一个的 id
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> blockId <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 全局id，global_id, thread 在数组中的位置
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> gid <span style="color:#f92672">=</span> blockId <span style="color:#f92672">+</span> tid;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 求和
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> offset <span style="color:#f92672">=</span> blockDim.x <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">1</span>; offset <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>; offset <span style="color:#f92672">&gt;&gt;=</span> <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (tid <span style="color:#f92672">&lt;</span> offset)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (gid <span style="color:#f92672">+</span> offset <span style="color:#f92672">&lt;</span> N) {
+</span></span><span style="display:flex;"><span>                input[gid] <span style="color:#f92672">+=</span> input[gid <span style="color:#f92672">+</span> offset];
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        __syncthreads();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 只有每个block第一个复制
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(tid <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>        block_sum[blockIdx.x] <span style="color:#f92672">=</span> input[blockId];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> N)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>cur_dev <span style="color:#f92672">=</span> <span style="color:#66d9ef">nullptr</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 拷贝原始输入到可读写缓冲区（保护const只读输入）
+</span></span></span><span style="display:flex;"><span>    cudaMalloc(<span style="color:#f92672">&amp;</span>cur_dev, <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">float</span>)<span style="color:#f92672">*</span>N);
+</span></span><span style="display:flex;"><span>    cudaMemcpy(cur_dev, input, <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">float</span>)<span style="color:#f92672">*</span>N, cudaMemcpyDeviceToDevice);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> cur_N <span style="color:#f92672">=</span> N;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>tmp <span style="color:#f92672">=</span> <span style="color:#66d9ef">nullptr</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span>(true)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> grid_size <span style="color:#f92672">=</span> (cur_N <span style="color:#f92672">+</span> BLOCK_SIZE <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> BLOCK_SIZE;
+</span></span><span style="display:flex;"><span>        cudaMalloc(<span style="color:#f92672">&amp;</span>tmp, <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">float</span>)<span style="color:#f92672">*</span>grid_size);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        reduce_block_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>grid_size, BLOCK_SIZE<span style="color:#f92672">&gt;&gt;&gt;</span>(cur_dev, tmp, cur_N);
+</span></span><span style="display:flex;"><span>        cudaFree(cur_dev);
+</span></span><span style="display:flex;"><span>        cur_dev <span style="color:#f92672">=</span> tmp;
+</span></span><span style="display:flex;"><span>        cur_N <span style="color:#f92672">=</span> grid_size;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(cur_N <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// cur_dev[0] 拷贝到 output[0]
+</span></span></span><span style="display:flex;"><span>            cudaMemcpy(output, cur_dev, <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">float</span>), cudaMemcpyDeviceToDevice);
+</span></span><span style="display:flex;"><span>            cudaFree(cur_dev);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>共享内存优化</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// 使用共享内存
+</span></span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">reduce_block_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> block_sum, <span style="color:#66d9ef">int</span> N) 
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 每个 block 内部 thread 的索引
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 每个 block 第一个的 id
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> blockId <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 使用共享内存
+</span></span></span><span style="display:flex;"><span>    __shared__ <span style="color:#66d9ef">float</span> f[BLOCK_SIZE];
+</span></span><span style="display:flex;"><span>    f[tid] <span style="color:#f92672">=</span> (blockId <span style="color:#f92672">+</span> tid) <span style="color:#f92672">&lt;</span> N <span style="color:#f92672">?</span> input[blockId <span style="color:#f92672">+</span> tid] <span style="color:#f92672">:</span> <span style="color:#ae81ff">0.0f</span>;
+</span></span><span style="display:flex;"><span>    __syncthreads();														<span style="color:#75715e">// 级同步
+</span></span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 求和
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> offset <span style="color:#f92672">=</span> blockDim.x <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">1</span>; offset <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>; offset <span style="color:#f92672">&gt;&gt;=</span> <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (tid <span style="color:#f92672">&lt;</span> offset)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            f[tid] <span style="color:#f92672">+=</span> f[tid <span style="color:#f92672">+</span> offset];	
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        __syncthreads();													<span style="color:#75715e">// 级同步
+</span></span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    block_sum[blockIdx.x] <span style="color:#f92672">=</span> f[<span style="color:#ae81ff">0</span>];   
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>解决bank confilct</p>
+<p>什么bank，什么是bank confilct?</p>
+<p>首先，为了实现高带宽，共享内存被分为大小相等的内存模块(32个)，称为存储体(bank)，<strong>可以同时访问</strong>。因此，由落入<em>n 个</em>不同存储体的<em>n 个</em>地址发出的任何存储器读或写请求都可以同时得到服务，从而产生比单个模块的带宽高<em>n</em>倍的总带宽。</p>
+<p>Softmax</p>
+<p>PyTorch</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">softmax</span>(x):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 如果输入是一维向量，确保维度对齐</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 针对二维数组（如包含多个样本的 batch 数据），在最后一个维度上求最大值并保持维度</span>
+</span></span><span style="display:flex;"><span>    x_max <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>max(x, axis<span style="color:#f92672">=-</span><span style="color:#ae81ff">1</span>, keepdims<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 减去最大值以防止上溢（减去常数不改变 softmax 的输出值）</span>
+</span></span><span style="display:flex;"><span>    exp_x <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>exp(x <span style="color:#f92672">-</span> x_max)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 计算概率分布</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> exp_x <span style="color:#f92672">/</span> np<span style="color:#f92672">.</span>sum(exp_x, axis<span style="color:#f92672">=-</span><span style="color:#ae81ff">1</span>, keepdims<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 示例调用</span>
+</span></span><span style="display:flex;"><span>x <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([<span style="color:#ae81ff">2.0</span>, <span style="color:#ae81ff">1.0</span>, <span style="color:#ae81ff">0.1</span>])
+</span></span><span style="display:flex;"><span>print(softmax(x))
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 输出: [0.65900114, 0.24243297, 0.09856589]</span>
+</span></span></code></pre></div><p><strong>CUDA</strong></p>
+<p>需要三个核函数</p>
+<ol>
+<li>最大值</li>
+<li>求减去最大值的exp_sum</li>
+<li>除以exp_sum（归一化输出）</li>
+</ol>
+<h5 id="一维softmax简单版本"  id="一维softmax简单版本">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--3%E8%A7%84%E7%BA%A6%E8%BF%90%E7%AE%97/#%e4%b8%80%e7%bb%b4softmax%e7%ae%80%e5%8d%95%e7%89%88%e6%9c%ac"><strong>一维softmax简单版本</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;float.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;math.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// CUDA 原生不支持 float 的 atomicMax，这里使用 atomicCAS 实现线程安全的全局最大值更新
+</span></span></span><span style="display:flex;"><span>__device__ __forceinline__ <span style="color:#66d9ef">float</span> <span style="color:#a6e22e">atomicMaxFloat</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> addr, <span style="color:#66d9ef">float</span> value) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> old <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>addr, assumed;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(old <span style="color:#f92672">&gt;=</span> value) <span style="color:#66d9ef">return</span> old;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">do</span> {
+</span></span><span style="display:flex;"><span>        assumed <span style="color:#f92672">=</span> old;
+</span></span><span style="display:flex;"><span>        old <span style="color:#f92672">=</span> __int_as_float(atomicCAS((<span style="color:#66d9ef">int</span><span style="color:#f92672">*</span>)addr, 
+</span></span><span style="display:flex;"><span>                                       __float_as_int(assumed), 
+</span></span><span style="display:flex;"><span>                                       __float_as_int(fmaxf(value, assumed))));
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">while</span> (assumed <span style="color:#f92672">!=</span> old);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> old;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// kernel 1 : reduce_max : 寻找全局最大值
+</span></span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">reduce_max_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> d_max, <span style="color:#66d9ef">int</span> N)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> stride <span style="color:#f92672">=</span> blockDim.x <span style="color:#f92672">*</span> gridDim.x; <span style="color:#75715e">// Grid-Stride 步长
+</span></span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 每个线程处理多个元素（处理 N 大于 线程总数 的情况）
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> tid; i <span style="color:#f92672">&lt;</span> N; i <span style="color:#f92672">+=</span> stride) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 直接使用原子操作更新全局最大值（最简单，但效率低于共享内存）
+</span></span></span><span style="display:flex;"><span>        atomicMaxFloat(d_max, input[i]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// kernel 2 : sum_exp : 计算 exp 并累加求和
+</span></span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sum_exp_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> d_max, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> d_sum, <span style="color:#66d9ef">int</span> N)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> stride <span style="color:#f92672">=</span> blockDim.x <span style="color:#f92672">*</span> gridDim.x;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 提前把全局最大值读到寄存器，避免在循环里重复读全局内存
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> max_val <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>d_max; 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> tid; i <span style="color:#f92672">&lt;</span> N; i <span style="color:#f92672">+=</span> stride) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 注意：host端传入的 input 是 const，不能修改，所以把 exp 结果存入 output
+</span></span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">float</span> exp_val <span style="color:#f92672">=</span> expf(input[i] <span style="color:#f92672">-</span> max_val);
+</span></span><span style="display:flex;"><span>        output[i] <span style="color:#f92672">=</span> exp_val; 
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 多线程同时累加全局变量，必须使用原子操作(atomicAdd)
+</span></span></span><span style="display:flex;"><span>        atomicAdd(d_sum, exp_val);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// kernel 3 : div : 计算最终的 softmax 概率
+</span></span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">div_kernel</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> d_sum, <span style="color:#66d9ef">int</span> N)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> stride <span style="color:#f92672">=</span> blockDim.x <span style="color:#f92672">*</span> gridDim.x;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> sum_val <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>d_sum;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> tid; i <span style="color:#f92672">&lt;</span> N; i <span style="color:#f92672">+=</span> stride) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 将第二步存在 output 里的 exp 值除以总和
+</span></span></span><span style="display:flex;"><span>        output[i] <span style="color:#f92672">/=</span> sum_val;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// ==========================================
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Host 端调度逻辑
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// ==========================================
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> N) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 1. 在 Device 端分配并初始化全局变量
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>d_max, <span style="color:#f92672">*</span>d_sum;
+</span></span><span style="display:flex;"><span>    cudaMalloc(<span style="color:#f92672">&amp;</span>d_max, <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">float</span>));
+</span></span><span style="display:flex;"><span>    cudaMalloc(<span style="color:#f92672">&amp;</span>d_sum, <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">float</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> h_init_max <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>FLT_MAX;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> h_init_sum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0f</span>;
+</span></span><span style="display:flex;"><span>    cudaMemcpy(d_max, <span style="color:#f92672">&amp;</span>h_init_max, <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">float</span>), cudaMemcpyHostToDevice);
+</span></span><span style="display:flex;"><span>    cudaMemcpy(d_sum, <span style="color:#f92672">&amp;</span>h_init_sum, <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">float</span>), cudaMemcpyHostToDevice);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 2. 线程与网格配置
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> threads <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 限制最大 Block 数量，利用 Grid-Stride Loop 处理任意长度 N
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> blocks <span style="color:#f92672">=</span> (N <span style="color:#f92672">+</span> threads <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threads;
+</span></span><span style="display:flex;"><span>    blocks <span style="color:#f92672">=</span> blocks <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1024</span> <span style="color:#f92672">?</span> <span style="color:#ae81ff">1024</span> <span style="color:#f92672">:</span> blocks; 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 3. 依次启动三个 Kernel
+</span></span></span><span style="display:flex;"><span>    reduce_max_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocks, threads<span style="color:#f92672">&gt;&gt;&gt;</span>(input, d_max, N);
+</span></span><span style="display:flex;"><span>    sum_exp_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocks, threads<span style="color:#f92672">&gt;&gt;&gt;</span>(input, output, d_max, d_sum, N);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 第三步只需 output 和 d_sum
+</span></span></span><span style="display:flex;"><span>    div_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocks, threads<span style="color:#f92672">&gt;&gt;&gt;</span>(output, d_sum, N);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 4. 清理内存
+</span></span></span><span style="display:flex;"><span>    cudaFree(d_max);
+</span></span><span style="display:flex;"><span>    cudaFree(d_sum);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>Grid-Stride</strong></p>
+<p>Grid-Stride的作用：限制最大 Block 数量，如果block过多，就进入下一个grid</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> grid_stride <span style="color:#f92672">=</span> blockDim.x <span style="color:#f92672">*</span> gridDim.x; <span style="color:#75715e">// Grid-Stride 步长，表示 grid x轴方向上的长度，一维数据下等于跨grid访问的步长
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// 二维 (rows,cols)
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> stride_x <span style="color:#f92672">=</span> blockDim.x <span style="color:#f92672">*</span> gridDim.x;	  <span style="color:#75715e">// 行列各自跨步
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> stride_y <span style="color:#f92672">=</span> blockDim.y <span style="color:#f92672">*</span> gridDim.y;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> grid_stride <span style="color:#f92672">=</span> stride_x <span style="color:#f92672">*</span> stride_y;	  <span style="color:#75715e">// 只有在数据是数组存储
+</span></span></span></code></pre></div><p>限制最大 Block 数量:  不合理的大量 Block 会带来性能下降、资源浪费，极端情况触发调度 / 内存开销问题；真正的瓶颈是硬件调度、资源占用、负载均衡。</p>
+<blockquote>
+<p>好像明白了 ，grid_stride 是限制了线程的数量，这些线程分批处理input数据，就像机械手一样，分批并行处理工厂流水线上的任务</p>
+</blockquote>
+<p><strong>对比下面两个版本的block数量</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// 简单版本
+</span></span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">reduce_max_kernel_1</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> d_max, <span style="color:#66d9ef">int</span> N)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (tid <span style="color:#f92672">&lt;</span> N) {
+</span></span><span style="display:flex;"><span>        atomicMaxFloat(d_max, input[tid]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Grid-Stride  版本
+</span></span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">reduce_max_kernel_2</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> d_max, <span style="color:#66d9ef">int</span> N)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> stride <span style="color:#f92672">=</span> blockDim.x <span style="color:#f92672">*</span> gridDim.x; 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> tid; i <span style="color:#f92672">&lt;</span> N; i <span style="color:#f92672">+=</span> stride) {
+</span></span><span style="display:flex;"><span>        atomicMaxFloat(d_max, input[i]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>参数的形状</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// kernel&lt;&lt;&lt;gridDim, blockDim&gt;&gt;&gt;(...);    指定 grid 和 block 切分的尺寸，至少有一个 block 一个 grid，如果数据量比较多会根据形状计算
+</span></span></span><span style="display:flex;"><span>kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocks, threads<span style="color:#f92672">&gt;&gt;&gt;</span>(...);
+</span></span></code></pre></div><h5 id="二维softmax简单版本"  id="二维softmax简单版本">
+  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--3%E8%A7%84%E7%BA%A6%E8%BF%90%E7%AE%97/#%e4%ba%8c%e7%bb%b4softmax%e7%ae%80%e5%8d%95%e7%89%88%e6%9c%ac">二维softmax简单版本<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+
+    <footer>
+      
+      <ul class="small">
+        <li><a href="/my-blog-repo/categories/cuda/">CUDA</a>, <a href="/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/">笔记</a></li>
+      </ul>
+      
+      
+    </footer>
+  </article>
+
+<div class="pagination p">
+    
+    <span class="previous"><a href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--4/">&laquo; Previous Post</a></span>
+    
+    
+    <span class="next"><a href="/my-blog-repo/2026/09/%E6%88%91%E7%9A%84%E6%80%A8%E5%BF%B5/">Next Post &raquo;</a></span>
+    
+  </div>
+</section>
+
+</div>
+
+<footer class="bottom small wrap">
+  <p class="small">&copy; Truman&#39;s blog. Powered by <a href="https://gohugo.io/">Hugo</a>, theme based off of <a href="http://jxnblk.com/ashley/">Ashley</a>.</p>
+</footer>
+
+</body>
+</html>

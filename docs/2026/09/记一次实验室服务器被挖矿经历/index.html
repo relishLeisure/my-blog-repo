@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="cn-zh">
+
+<head><script src="/my-blog-repo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=my-blog-repo/livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>记一次实验室服务器被挖矿经历 : Truman&#39;s blog</title>
+  <link rel="icon" href="/my-blog-repo/favicon.ico">
+
+  <link rel="stylesheet" href="/my-blog-repo/css/style.css" type="text/css" media="screen">
+  <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet" type="text/css">
+
+  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="http://localhost:1313/my-blog-repo/feed.xml">
+
+
+<style>
+ 
+pre {
+    margin-left: 0;
+    padding: 1em;
+    background: var(--code-bg);
+    overflow-x: auto;
+    font-family: 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--code-text);
+}
+
+code {
+    font-family: 'Ubuntu Mono', monospace;
+}
+
+ 
+p code, li code {
+    background: var(--code-bg);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+@media screen and (min-width: 640px) {
+    pre {
+        margin-left: 3em;
+    }
+}
+</style>
+<meta name="generator" content="Hugo 0.165.0">
+</head>
+
+<body class="single">
+
+<header>
+  <h1 class="vcard author"><a href="/my-blog-repo/" title="Home">Truman&#39;s blog</a></h1>
+  <p>
+    God helps those who help themselves.
+    <ul class="pages">
+      <li><a href="/my-blog-repo/archives/">archives</a></li>
+      <li><a href="/my-blog-repo/feed.xml">subscribe</a></li>
+    </ul>
+  </p>
+</header>
+
+<div class="content wrap">
+  
+<section class="posts">
+  <article class="post">
+    <h2>记一次实验室服务器被挖矿经历</h2>
+    <abbr class="small postDate" title="2026-09-02">September 2, 2026</abbr>
+    <h3 id="记一次实验室服务器被挖矿经历发现排查与解决"  id="记一次实验室服务器被挖矿经历发现排查与解决">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#%e8%ae%b0%e4%b8%80%e6%ac%a1%e5%ae%9e%e9%aa%8c%e5%ae%a4%e6%9c%8d%e5%8a%a1%e5%99%a8%e8%a2%ab%e6%8c%96%e7%9f%bf%e7%bb%8f%e5%8e%86%e5%8f%91%e7%8e%b0%e6%8e%92%e6%9f%a5%e4%b8%8e%e8%a7%a3%e5%86%b3">记一次实验室服务器被挖矿经历——发现、排查与解决<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h3 id="发现问题"  id="发现问题">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#%e5%8f%91%e7%8e%b0%e9%97%ae%e9%a2%98">发现问题<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="1异常占用"  id="1异常占用">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#1%e5%bc%82%e5%b8%b8%e5%8d%a0%e7%94%a8">1.异常占用<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>nvidia-smi
+</span></span></code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Wed Sep  <span style="color:#ae81ff">2</span> 14:38:41 <span style="color:#ae81ff">2026</span>
+</span></span><span style="display:flex;"><span>+-----------------------------------------------------------------------------------------+
+</span></span><span style="display:flex;"><span>| NVIDIA-SMI 550.120                Driver Version: 550.120        CUDA Version: 12.4     |
+</span></span><span style="display:flex;"><span>|-----------------------------------------+------------------------+----------------------+
+</span></span><span style="display:flex;"><span>| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+</span></span><span style="display:flex;"><span>| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+</span></span><span style="display:flex;"><span>|                                         |                        |               MIG M. |
+</span></span><span style="display:flex;"><span>|<span style="color:#f92672">=========================================</span>+<span style="color:#f92672">========================</span>+<span style="color:#f92672">======================</span>|
+</span></span><span style="display:flex;"><span>|   <span style="color:#ae81ff">0</span>  NVIDIA A100-SXM4-40GB          Off |   00000000:AF:00.0 Off |                    <span style="color:#ae81ff">0</span> |
+</span></span><span style="display:flex;"><span>| N/A   76C    P0            237W /  400W |    6083MiB /  40960MiB |    100%      Default |
+</span></span><span style="display:flex;"><span>|                                         |                        |             Disabled |
+</span></span><span style="display:flex;"><span>+-----------------------------------------+------------------------+----------------------+
+</span></span><span style="display:flex;"><span>|   <span style="color:#ae81ff">1</span>  NVIDIA A100-SXM4-40GB          Off |   00000000:D8:00.0 Off |                    <span style="color:#ae81ff">0</span> |
+</span></span><span style="display:flex;"><span>| N/A   64C    P0            241W /  400W |    6083MiB /  40960MiB |    100%      Default |
+</span></span><span style="display:flex;"><span>|                                         |                        |             Disabled |
+</span></span><span style="display:flex;"><span>+-----------------------------------------+------------------------+----------------------+
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>+-----------------------------------------------------------------------------------------+
+</span></span><span style="display:flex;"><span>| Processes:                                                                              |
+</span></span><span style="display:flex;"><span>|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+</span></span><span style="display:flex;"><span>|        ID   ID                                                               Usage      |
+</span></span><span style="display:flex;"><span>|<span style="color:#f92672">=========================================================================================</span>|
+</span></span><span style="display:flex;"><span>|    <span style="color:#ae81ff">0</span>   N/A  N/A      <span style="color:#ae81ff">3856</span>      G   /usr/lib/xorg/Xorg                              4MiB |
+</span></span><span style="display:flex;"><span>|    <span style="color:#ae81ff">0</span>   N/A  N/A    <span style="color:#ae81ff">513276</span>      C   python                                       6060MiB |
+</span></span><span style="display:flex;"><span>|    <span style="color:#ae81ff">1</span>   N/A  N/A      <span style="color:#ae81ff">3856</span>      G   /usr/lib/xorg/Xorg                              4MiB |
+</span></span><span style="display:flex;"><span>|    <span style="color:#ae81ff">1</span>   N/A  N/A    <span style="color:#ae81ff">513276</span>      C   python                                       6060MiB |
+</span></span><span style="display:flex;"><span>+-----------------------------------------------------------------------------------------+
+</span></span></code></pre></div></blockquote>
+<p>算力被占用100%，两张卡显存占用 6083MiB /  40960MiB</p>
+<h4 id="2隐藏命令"  id="2隐藏命令">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#2%e9%9a%90%e8%97%8f%e5%91%bd%e4%bb%a4">2.隐藏命令<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<ol>
+<li>获取进程<strong>工作目录（cwd）</strong></li>
+</ol>
+<blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pwdx <span style="color:#ae81ff">513276</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># /proc文件方式</span>
+</span></span><span style="display:flex;"><span>ls -l /proc/513276/cwd
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pwdx <span style="color:#ae81ff">513276</span>
+</span></span><span style="display:flex;"><span>513276: /tmp/.crond
+</span></span></code></pre></div></blockquote>
+<ol start="2">
+<li>读取进程启动命令行（空字符分隔，原始 cmd 被篡改）</li>
+</ol>
+<blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ tr <span style="color:#e6db74">&#39;\0&#39;</span> <span style="color:#e6db74">&#39;\n&#39;</span> &lt; /proc/513276/cmdline
+</span></span><span style="display:flex;"><span>python restarts_count 0				<span style="color:#75715e"># 启动命令被隐藏了</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ ps -o pid,args -p <span style="color:#ae81ff">513276</span>
+</span></span><span style="display:flex;"><span>    PID COMMAND
+</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">513276</span> python restarts_count <span style="color:#ae81ff">0</span>
+</span></span></code></pre></div></blockquote>
+<p>现象：真实启动脚本被覆盖，伪装名称 <code>python restarts_count 0</code>。</p>
+<blockquote>
+<p>一般训练模型不会隐藏命令，可能是被植入了恶意代码。</p>
+</blockquote>
+<h4 id="3询问"  id="3询问">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#3%e8%af%a2%e9%97%ae">3.询问<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>询问无人表示在使用</p>
+<h3 id="排查"  id="排查">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#%e6%8e%92%e6%9f%a5">排查<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="进入恶意目录查看木马文件"  id="进入恶意目录查看木马文件">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#%e8%bf%9b%e5%85%a5%e6%81%b6%e6%84%8f%e7%9b%ae%e5%bd%95%e6%9f%a5%e7%9c%8b%e6%9c%a8%e9%a9%ac%e6%96%87%e4%bb%b6">进入恶意目录查看木马文件<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<pre tabindex="0"><code>cd /tmp/.crond
+ls -la
+</code></pre><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd /tmp/.crond
+</span></span><span style="display:flex;"><span>ls -la
+</span></span><span style="display:flex;"><span>总计 <span style="color:#ae81ff">226612</span>
+</span></span><span style="display:flex;"><span>drwxr-xr-x  <span style="color:#ae81ff">2</span> user user     <span style="color:#ae81ff">4096</span>  8月 <span style="color:#ae81ff">30</span> 01:09 .
+</span></span><span style="display:flex;"><span>drwxrwxrwt <span style="color:#ae81ff">55</span> root root   <span style="color:#ae81ff">147456</span>  9月  <span style="color:#ae81ff">2</span> 16:39 ..
+</span></span><span style="display:flex;"><span>-rwxr-xr-x  <span style="color:#ae81ff">1</span> user user  <span style="color:#ae81ff">1388296</span>  3月  <span style="color:#ae81ff">1</span>  <span style="color:#ae81ff">2023</span> amdmemtweak
+</span></span><span style="display:flex;"><span>-rwxr-xr-x  <span style="color:#ae81ff">1</span> user user      <span style="color:#ae81ff">109</span>  8月 <span style="color:#ae81ff">29</span> 01:22 config.ini
+</span></span><span style="display:flex;"><span>-rw-rw-r--  <span style="color:#ae81ff">1</span> user user        <span style="color:#ae81ff">7</span>  8月 <span style="color:#ae81ff">30</span> 01:09 doos.pid
+</span></span><span style="display:flex;"><span>-rwxr-xr-x  <span style="color:#ae81ff">1</span> user user  <span style="color:#ae81ff">4612768</span>  3月  <span style="color:#ae81ff">1</span>  <span style="color:#ae81ff">2023</span> libnvrtc-builtins.so
+</span></span><span style="display:flex;"><span>-rwxr-xr-x  <span style="color:#ae81ff">1</span> user user  <span style="color:#ae81ff">5645576</span>  9月 <span style="color:#ae81ff">10</span>  <span style="color:#ae81ff">2022</span> libnvrtc-builtins.so.11.1
+</span></span><span style="display:flex;"><span>-rwxr-xr-x  <span style="color:#ae81ff">1</span> user user <span style="color:#ae81ff">20332456</span>  3月  <span style="color:#ae81ff">1</span>  <span style="color:#ae81ff">2023</span> libnvrtc.so.10.0
+</span></span><span style="display:flex;"><span>-rwxr-xr-x  <span style="color:#ae81ff">1</span> user user <span style="color:#ae81ff">32588280</span>  9月 <span style="color:#ae81ff">10</span>  <span style="color:#ae81ff">2022</span> libnvrtc.so.11.1
+</span></span><span style="display:flex;"><span>-rwxr-xr-x  <span style="color:#ae81ff">1</span> user user       <span style="color:#ae81ff">15</span> 11月 <span style="color:#ae81ff">26</span>  <span style="color:#ae81ff">2021</span> null
+</span></span><span style="display:flex;"><span>-rwxr-xr-x  <span style="color:#ae81ff">1</span> user user <span style="color:#ae81ff">89877312</span>  1月 <span style="color:#ae81ff">29</span>  <span style="color:#ae81ff">2024</span> python
+</span></span><span style="display:flex;"><span>-rwxrwxr-x  <span style="color:#ae81ff">1</span> user user <span style="color:#ae81ff">37890608</span>  3月  <span style="color:#ae81ff">1</span>  <span style="color:#ae81ff">2023</span> python3
+</span></span><span style="display:flex;"><span>-rwxr-xr-x  <span style="color:#ae81ff">1</span> user user      <span style="color:#ae81ff">347</span>  9月  <span style="color:#ae81ff">5</span>  <span style="color:#ae81ff">2021</span> Python.cfg
+</span></span><span style="display:flex;"><span>-rwxrwxr-x  <span style="color:#ae81ff">1</span> user user      <span style="color:#ae81ff">107</span>  2月 <span style="color:#ae81ff">16</span>  <span style="color:#ae81ff">2022</span> run
+</span></span><span style="display:flex;"><span>-rwxr-xr-x  <span style="color:#ae81ff">1</span> user user <span style="color:#ae81ff">38677960</span> 11月  <span style="color:#ae81ff">1</span>  <span style="color:#ae81ff">2021</span> to
+</span></span><span style="display:flex;"><span>-rwxr-xr-x  <span style="color:#ae81ff">1</span> user user   <span style="color:#ae81ff">838583</span>  9月  <span style="color:#ae81ff">5</span>  <span style="color:#ae81ff">2021</span> top
+</span></span></code></pre></div></blockquote>
+<blockquote>
+<p><strong>毫无疑问，这就是挖矿木马的“老巢”。</strong></p>
+<p>这个目录下的文件特征已经完全拼凑出了一个完整的 <strong>GPU 挖矿工具包</strong>。你的判断非常准确，这就是被植入的恶意代码文件夹。</p>
+<p>我们可以逐一“拆解”这个目录里的文件，看看黑客是怎么伪装的：</p>
+<ol>
+<li><strong><code>python</code> 和 <code>python3</code> (伪装的挖矿主程序)</strong>
+<ul>
+<li>你可以看到 <code>python</code> 文件高达 <strong>89MB</strong>，<code>python3</code> 高达 <strong>37MB</strong>。正常的系统级 Python 解释器可执行文件通常只有几兆。这其实是黑客用 Go 语言或 C++ 静态编译的<strong>挖矿主程序</strong>（如 XMRig、NBMiner 等），为了在 <code>top</code> 或 <code>ps</code> 命令中掩人耳目，故意重命名为 <code>python</code>。刚才在网络连接里查到的 <code>513276/python</code> 进程，就是它跑起来的样子。</li>
+</ul>
+</li>
+<li><strong><code>libnvrtc.so.\*</code> 和 <code>libnvrtc-builtins.so.\*</code> (NVIDIA 显卡调用库)</strong>
+<ul>
+<li>这些是 NVIDIA CUDA 运行时编译库。黑客自带这些底层运行库，是为了即使你的服务器上没有正确安装 CUDA 环境，木马也能直接暴力调用你的 GPU 算力进行挖矿。</li>
+</ul>
+</li>
+<li><strong><code>amdmemtweak</code> (AMD 显卡超频工具)</strong>
+<ul>
+<li>这是一个专门用于调整 AMD 显卡显存时序的开源工具。挖矿圈常用它来“压榨”显卡的极限算力。</li>
+</ul>
+</li>
+<li><strong><code>config.ini</code> 和 <code>Python.cfg</code> (木马配置文件)</strong>
+<ul>
+<li>这大概率是挖矿的配置文件，里面通常会写明黑客的<strong>矿池地址</strong>（比如刚才网络连接里的外网 IP）和<strong>钱包地址</strong>。</li>
+</ul>
+</li>
+<li><strong><code>run</code> (启动脚本)</strong>
+<ul>
+<li>这通常是一个包含启动命令的 bash 脚本，用来加载上述的配置文件并后台静默运行那个巨大的 <code>python</code> 假程序。</li>
+</ul>
+</li>
+<li><strong><code>top</code> (伪造的系统命令)</strong>
+<ul>
+<li>正常系统的 <code>top</code> 命令通常在 <code>/usr/bin/top</code>。黑客在这里放一个 <code>top</code>，有时候是作为 Rootkit 的一部分，如果你不小心执行了它，它可能会故意过滤掉挖矿进程，让你以为系统负载很正常。</li>
+</ul>
+</li>
+<li><strong><code>doos.pid</code> (进程锁文件)</strong>
+<ul>
+<li>用来记录当前挖矿进程的 PID（进程号），防止启动多个挖矿进程导致服务器直接死机而暴露。</li>
+</ul>
+</li>
+</ol>
+</blockquote>
+<h4 id="验证"  id="验证">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#%e9%aa%8c%e8%af%81">验证<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p><strong>隐藏运行命令</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cat /tmp/.crond/run		
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span>ARCH<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>uname -m<span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>HIDE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;python&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>./top -s $HIDE  ./python &gt;&gt;/dev/null &amp;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>echo $! &gt; doos.pid
+</span></span></code></pre></div><p><strong>配置文件</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cat /tmp/.crond/config.ini
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>wallet<span style="color:#f92672">=</span>0x001F0af9403592c11b9e07659dc2F740e3075C39  		<span style="color:#75715e"># 黑客的收款钱包地址，挖到的RVN全部打到这个地址</span>
+</span></span><span style="display:flex;"><span>coin<span style="color:#f92672">=</span>RVN                                          		<span style="color:#75715e"># 挖矿币种：渡鸦币</span>
+</span></span><span style="display:flex;"><span>rigName<span style="color:#f92672">=</span>pac1                                      		<span style="color:#75715e"># 矿机名称标识 pac1</span>
+</span></span><span style="display:flex;"><span>pool1<span style="color:#f92672">=</span>10.201.173.0:12433                          		<span style="color:#75715e"># 内网矿池服务器地址（挖矿任务提交的服务器）</span>
+</span></span><span style="display:flex;"><span>noLog<span style="color:#f92672">=</span>true                                        		<span style="color:#75715e"># 关闭日志，减少痕迹、防止被排查发现</span>
+</span></span></code></pre></div><h3 id="解决"  id="解决">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#%e8%a7%a3%e5%86%b3">解决<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="1通过定时任务定位"  id="1通过定时任务定位">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#1%e9%80%9a%e8%bf%87%e5%ae%9a%e6%97%b6%e4%bb%bb%e5%8a%a1%e5%ae%9a%e4%bd%8d">1.通过定时任务定位<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>crontab -l
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 结果</span>
+</span></span><span style="display:flex;"><span>* * * * * /var/tmp/.crond/upd &gt;/dev/null 2&gt;&amp;<span style="color:#ae81ff">1</span>
+</span></span></code></pre></div><p>这行 <code>* * * * * /var/tmp/.crond/upd &gt;/dev/null 2&gt;&amp;1</code> 的意思是：<strong>每分钟（五个星号代表每分钟）</strong> 执行一次 <code>/var/tmp/.crond/upd</code> 这个脚本，并且把所有的输出和错误信息都丢弃（<code>&gt;/dev/null 2&gt;&amp;1</code>），让你在日常使用中完全察觉不到。</p>
+<p>值得注意的是，这个脚本指向的是 <code>/var/tmp/.crond/upd</code>，这说明除了你之前发现的 <code>/tmp/.crond</code>，木马在 <code>/var/tmp/</code> 目录下还放了一个备用的执行源。</p>
+<blockquote>
+<p>这个目录下的文件结构是非常典型的自动化攻击脚本包：</p>
+<ul>
+<li><strong><code>a</code> / <code>upd</code> / <code>run</code></strong>：这些通常是 Shell 脚本，负责下载木马的更新、检查运行状态、并把自身写入 <code>crontab</code> 确保不死。</li>
+<li><strong><code>bash.pid</code></strong>：用来记录反弹 Shell 后门的进程号（PID）。</li>
+<li><strong><code>cron.d</code></strong>：伪造的定时任务目录名，可能存放了其他用于持久化的配置。</li>
+<li><strong><code>h32</code> / <code>h64</code></strong>：极其典型的恶意挖矿/后门程序二进制文件！它们通常代表针对 32 位和 64 位系统编译的木马实体。</li>
+<li><strong><code>java</code> / <code>x</code></strong>：黑客经常将恶意程序重命名为 <code>java</code> 等常见进程名，以躲避管理员的粗略检查。<code>x</code> 可能是一个隐藏的执行入口或脚本。</li>
+</ul>
+</blockquote>
+<h4 id="2处理"  id="2处理">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#2%e5%a4%84%e7%90%86">2.处理<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<h5 id="第一步删除定时任务"  id="第一步删除定时任务">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#%e7%ac%ac%e4%b8%80%e6%ad%a5%e5%88%a0%e9%99%a4%e5%ae%9a%e6%97%b6%e4%bb%bb%e5%8a%a1">第一步：删除定时任务<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p>必须先删定时任务，否则后面的操作毫无意义。</p>
+<ol>
+<li>
+<p>查看定时任务</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>crontab -l
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 输出</span>
+</span></span><span style="display:flex;"><span>* * * * * /var/tmp/.crond/upd &gt;/dev/null 2&gt;&amp;<span style="color:#ae81ff">1</span>
+</span></span></code></pre></div></li>
+<li>
+<p>输入命令编辑当前用户的定时任务：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>crontab -e
+</span></span></code></pre></div></li>
+<li>
+<p>找到 <code>* * * * * /var/tmp/.crond/upd &gt;/dev/null 2&gt;&amp;1</code> 这一行，将其彻底删除。</p>
+<ul>
+<li>如果是 <code>vi</code> 编辑器，将光标移动到该行，连续按两次 <code>d</code> 键（<code>dd</code>）即可删除。然后输入 <code>:wq</code> 按回车保存退出。</li>
+<li>如果是 <code>nano</code> 编辑器，直接用退格键删掉，然后按 <code>Ctrl+O</code> 回车保存，<code>Ctrl+X</code> 退出。</li>
+</ul>
+</li>
+<li>
+<p>再次运行 <code>crontab -l</code>，确认没有任何输出，或者该恶意行已被成功移除。</p>
+</li>
+</ol>
+<h5 id="第二步彻底击杀所有恶意进程"  id="第二步彻底击杀所有恶意进程">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#%e7%ac%ac%e4%ba%8c%e6%ad%a5%e5%bd%bb%e5%ba%95%e5%87%bb%e6%9d%80%e6%89%80%e6%9c%89%e6%81%b6%e6%84%8f%e8%bf%9b%e7%a8%8b">第二步：彻底击杀所有恶意进程<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p>现在定时任务已经不在了，木马失去了“复活甲”，我们可以放心动手杀进程了。请依次执行：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span><span style="color:#75715e"># 击杀挖矿木马主进程</span>
+</span></span><span style="display:flex;"><span>kill -9 <span style="color:#ae81ff">513276</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 击杀 IRC 僵尸网络进程</span>
+</span></span><span style="display:flex;"><span>kill -9 <span style="color:#ae81ff">299430</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 击杀反弹 Shell 进程</span>
+</span></span><span style="display:flex;"><span>kill -9 <span style="color:#ae81ff">298877</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 如果还不放心，可以用下面这条命令一键清理名为 python、crond 但在恶意路径下的漏网之鱼</span>
+</span></span><span style="display:flex;"><span>pkill -9 -f <span style="color:#e6db74">&#34;/tmp/.crond/python&#34;</span>
+</span></span><span style="display:flex;"><span>pkill -9 -f <span style="color:#e6db74">&#34;/var/tmp/.crond/&#34;</span>
+</span></span></code></pre></div><h5 id="第三步连根拔起删除所有恶意文件"  id="第三步连根拔起删除所有恶意文件">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#%e7%ac%ac%e4%b8%89%e6%ad%a5%e8%bf%9e%e6%a0%b9%e6%8b%94%e8%b5%b7%e5%88%a0%e9%99%a4%e6%89%80%e6%9c%89%e6%81%b6%e6%84%8f%e6%96%87%e4%bb%b6">第三步：连根拔起，删除所有恶意文件<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h5>
+<p>清理所有查出的木马目录：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span><span style="color:#75715e"># 删除 /tmp 下的木马主目录</span>
+</span></span><span style="display:flex;"><span>rm -rf /tmp/.crond
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 删除 /var/tmp 下的更新脚本或备份目录</span>
+</span></span><span style="display:flex;"><span>rm -rf /var/tmp/.crond
+</span></span></code></pre></div><h4 id="3检验效果"  id="3检验效果">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#3%e6%a3%80%e9%aa%8c%e6%95%88%e6%9e%9c">3.检验效果<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>nvidia-smi
+</span></span><span style="display:flex;"><span>Wed Sep  <span style="color:#ae81ff">2</span> 17:22:16 <span style="color:#ae81ff">2026</span>       
+</span></span><span style="display:flex;"><span>+-----------------------------------------------------------------------------------------+
+</span></span><span style="display:flex;"><span>| NVIDIA-SMI 550.120                Driver Version: 550.120        CUDA Version: 12.4     |
+</span></span><span style="display:flex;"><span>|-----------------------------------------+------------------------+----------------------+
+</span></span><span style="display:flex;"><span>| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+</span></span><span style="display:flex;"><span>| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+</span></span><span style="display:flex;"><span>|                                         |                        |               MIG M. |
+</span></span><span style="display:flex;"><span>|<span style="color:#f92672">=========================================</span>+<span style="color:#f92672">========================</span>+<span style="color:#f92672">======================</span>|
+</span></span><span style="display:flex;"><span>|   <span style="color:#ae81ff">0</span>  NVIDIA A100-SXM4-40GB          Off |   00000000:AF:00.0 Off |                    <span style="color:#ae81ff">0</span> |
+</span></span><span style="display:flex;"><span>| N/A   50C    P0             75W /  400W |      14MiB /  40960MiB |      0%      Default |
+</span></span><span style="display:flex;"><span>|                                         |                        |             Disabled |
+</span></span><span style="display:flex;"><span>+-----------------------------------------+------------------------+----------------------+
+</span></span><span style="display:flex;"><span>|   <span style="color:#ae81ff">1</span>  NVIDIA A100-SXM4-40GB          Off |   00000000:D8:00.0 Off |                    <span style="color:#ae81ff">0</span> |
+</span></span><span style="display:flex;"><span>| N/A   36C    P0             55W /  400W |      14MiB /  40960MiB |      0%      Default |
+</span></span><span style="display:flex;"><span>|                                         |                        |             Disabled |
+</span></span><span style="display:flex;"><span>+-----------------------------------------+------------------------+----------------------+
+</span></span><span style="display:flex;"><span>                                                                                         
+</span></span><span style="display:flex;"><span>+-----------------------------------------------------------------------------------------+
+</span></span><span style="display:flex;"><span>| Processes:                                                                              |
+</span></span><span style="display:flex;"><span>|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+</span></span><span style="display:flex;"><span>|        ID   ID                                                               Usage      |
+</span></span><span style="display:flex;"><span>|<span style="color:#f92672">=========================================================================================</span>|
+</span></span><span style="display:flex;"><span>|    <span style="color:#ae81ff">0</span>   N/A  N/A      <span style="color:#ae81ff">3856</span>      G   /usr/lib/xorg/Xorg                              4MiB |
+</span></span><span style="display:flex;"><span>|    <span style="color:#ae81ff">1</span>   N/A  N/A      <span style="color:#ae81ff">3856</span>      G   /usr/lib/xorg/Xorg                              4MiB |
+</span></span><span style="display:flex;"><span>+-----------------------------------------------------------------------------------------+
+</span></span></code></pre></div><p>恢复正常了，很清爽</p>
+<h4 id="4加固"  id="4加固">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#4%e5%8a%a0%e5%9b%ba">4.加固<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<h4 id="删除陌生公钥"  id="删除陌生公钥">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#%e5%88%a0%e9%99%a4%e9%99%8c%e7%94%9f%e5%85%ac%e9%92%a5">删除陌生公钥<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p><strong>SSH 密钥被篡改</strong>：检查 <code>cat ~/.ssh/authorized_keys</code>，删除不认识的公钥。</p>
+<ul>
+<li>
+<p>查看公钥</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cat ~/.ssh/authorized_keys
+</span></span></code></pre></div></li>
+<li>
+<p>编辑器删除陌生公钥</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>nano ~/.ssh/authorized_keys
+</span></span></code></pre></div></li>
+</ul>
+<h4 id="修改登录密码"  id="修改登录密码">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#%e4%bf%ae%e6%94%b9%e7%99%bb%e5%bd%95%e5%af%86%e7%a0%81">修改登录密码<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+
+    <footer>
+      
+      <ul class="small">
+        <li><a href="/my-blog-repo/categories/%E8%AE%B0%E5%BD%95/">记录</a>, <a href="/my-blog-repo/categories/cuda/">CUDA</a></li>
+      </ul>
+      
+      
+    </footer>
+  </article>
+
+<div class="pagination p">
+    
+    <span class="previous"><a href="/my-blog-repo/2026/09/%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%B0%E5%BD%95/">&laquo; Previous Post</a></span>
+    
+    
+  </div>
+</section>
+
+</div>
+
+<footer class="bottom small wrap">
+  <p class="small">&copy; Truman&#39;s blog. Powered by <a href="https://gohugo.io/">Hugo</a>, theme based off of <a href="http://jxnblk.com/ashley/">Ashley</a>.</p>
+</footer>
+
+</body>
+</html>
