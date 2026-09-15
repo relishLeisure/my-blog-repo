@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="cn-zh">
 
-<head>
+<head><script src="/my-blog-repo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=my-blog-repo/livereload" data-no-instant defer></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>记一次实验室服务器被挖矿经历 : Truman&#39;s blog</title>
@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet" type="text/css">
 
-  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="https://relishleisure.github.io/my-blog-repo/feed.xml">
+  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="http://localhost:1313/my-blog-repo/feed.xml">
 
 
 <style>
@@ -121,9 +121,9 @@ p code, li code {
 <li>读取进程启动命令行（空字符分隔，原始 cmd 被篡改）</li>
 </ol>
 <blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ tr <span style="color:#e6db74">&#39;\0&#39;</span> <span style="color:#e6db74">&#39;\n&#39;</span> &lt; /proc/513276/cmdline
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>tr <span style="color:#e6db74">&#39;\0&#39;</span> <span style="color:#e6db74">&#39;\n&#39;</span> &lt; /proc/513276/cmdline
 </span></span><span style="display:flex;"><span>python restarts_count 0				<span style="color:#75715e"># 启动命令被隐藏了</span>
-</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ ps -o pid,args -p <span style="color:#ae81ff">513276</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ps -o pid,args -p <span style="color:#ae81ff">513276</span>
 </span></span><span style="display:flex;"><span>    PID COMMAND
 </span></span><span style="display:flex;"><span> <span style="color:#ae81ff">513276</span> python restarts_count <span style="color:#ae81ff">0</span>
 </span></span></code></pre></div></blockquote>
@@ -349,6 +349,17 @@ ls -la
 <h4 id="修改登录密码"  id="修改登录密码">
   <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#%e4%bf%ae%e6%94%b9%e7%99%bb%e5%bd%95%e5%af%86%e7%a0%81">修改登录密码<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h4>
+<ul>
+<li>
+<p>修改用户登陆密码</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>passwd
+</span></span></code></pre></div></li>
+<li>
+<p>修改管理员密码</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>su &lt;管理员用户名&gt;
+</span></span><span style="display:flex;"><span>sudo passwd &lt;管理员用户名&gt;
+</span></span></code></pre></div></li>
+</ul>
 
     <footer>
       
@@ -364,6 +375,8 @@ ls -la
     
     <span class="previous"><a href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/">&laquo; Previous Post</a></span>
     
+    
+    <span class="next"><a href="/my-blog-repo/2026/09/python%E7%9A%84%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/">Next Post &raquo;</a></span>
     
   </div>
 </section>

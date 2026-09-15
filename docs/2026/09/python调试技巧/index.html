@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="cn-zh">
+
+<head><script src="/my-blog-repo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=my-blog-repo/livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Python调试技巧 : Truman&#39;s blog</title>
+  <link rel="icon" href="/my-blog-repo/favicon.ico">
+
+  <link rel="stylesheet" href="/my-blog-repo/css/style.css" type="text/css" media="screen">
+  <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet" type="text/css">
+
+  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="http://localhost:1313/my-blog-repo/feed.xml">
+
+
+<style>
+ 
+pre {
+    margin-left: 0;
+    padding: 1em;
+    background: var(--code-bg);
+    overflow-x: auto;
+    font-family: 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--code-text);
+}
+
+code {
+    font-family: 'Ubuntu Mono', monospace;
+}
+
+ 
+p code, li code {
+    background: var(--code-bg);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+@media screen and (min-width: 640px) {
+    pre {
+        margin-left: 3em;
+    }
+}
+</style>
+<meta name="generator" content="Hugo 0.165.0">
+</head>
+
+<body class="single">
+
+<header>
+  <h1 class="vcard author"><a href="/my-blog-repo/" title="Home">Truman&#39;s blog</a></h1>
+  <p>
+    God helps those who help themselves.
+    <ul class="pages">
+      <li><a href="/my-blog-repo/archives/">archives</a></li>
+      <li><a href="/my-blog-repo/feed.xml">subscribe</a></li>
+    </ul>
+  </p>
+</header>
+
+<div class="content wrap">
+  
+<section class="posts">
+  <article class="post">
+    <h2>Python调试技巧</h2>
+    <abbr class="small postDate" title="2026-09-15">September 15, 2026</abbr>
+    <h3 id="python-调试技巧"  id="python-调试技巧">
+  <a class="heading-link" href="/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/#python-%e8%b0%83%e8%af%95%e6%8a%80%e5%b7%a7">Python 调试技巧<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h3 id="1变量信息"  id="1变量信息">
+  <a class="heading-link" href="/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/#1%e5%8f%98%e9%87%8f%e4%bf%a1%e6%81%af">1.变量信息<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<pre tabindex="0"><code>x = 10
+print(f&#34;{x=}&#34;)		# x
+</code></pre><hr>
+<h3 id="2打印方法名"  id="2打印方法名">
+  <a class="heading-link" href="/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/#2%e6%89%93%e5%8d%b0%e6%96%b9%e6%b3%95%e5%90%8d">2.打印方法名<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-PYTHON" data-lang="PYTHON"><span style="display:flex;"><span><span style="color:#f92672">import</span> inspect
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 获取方法名</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_func_name</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> inspect<span style="color:#f92672">.</span>currentframe()<span style="color:#f92672">.</span>f_back<span style="color:#f92672">.</span>f_code<span style="color:#f92672">.</span>co_name
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">function_name</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 使用</span>
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>get_func_name()<span style="color:#e6db74">}</span><span style="color:#e6db74"> 测试完成✅&#34;</span>)
+</span></span></code></pre></div><pre tabindex="0"><code>function_name 测试完成✅
+</code></pre><hr>
+<h3 id="3快速定位"  id="3快速定位">
+  <a class="heading-link" href="/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/#3%e5%bf%ab%e9%80%9f%e5%ae%9a%e4%bd%8d">3.快速定位<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h3 id="定义位置"  id="定义位置">
+  <a class="heading-link" href="/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/#%e5%ae%9a%e4%b9%89%e4%bd%8d%e7%bd%ae">定义位置<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p>IDE 编辑器内 <code>Ctrl</code> + <code>左键</code> 定位到变量或方法的定义位置</p>
+<h3 id="打印的位置"  id="打印的位置">
+  <a class="heading-link" href="/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/#%e6%89%93%e5%8d%b0%e7%9a%84%e4%bd%8d%e7%bd%ae">打印的位置<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p>在IDE终端中快速跳转 定位函数位置</p>
+<h4 id="自定义"  id="自定义">
+  <a class="heading-link" href="/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/#%e8%87%aa%e5%ae%9a%e4%b9%89"><strong>自定义</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> inspect
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">dbg</span>(<span style="color:#f92672">*</span>vars):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 获取调用dbg这一行的代码位置</span>
+</span></span><span style="display:flex;"><span>    caller <span style="color:#f92672">=</span> inspect<span style="color:#f92672">.</span>getframeinfo(inspect<span style="color:#f92672">.</span>currentframe()<span style="color:#f92672">.</span>f_back)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 【关键格式】IDE识别：路径:行号</span>
+</span></span><span style="display:flex;"><span>    loc <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>caller<span style="color:#f92672">.</span>filename<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">{</span>caller<span style="color:#f92672">.</span>lineno<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 拼接变量打印（同时保留 {var=} 风格）</span>
+</span></span><span style="display:flex;"><span>    parts <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> v <span style="color:#f92672">in</span> vars:
+</span></span><span style="display:flex;"><span>        parts<span style="color:#f92672">.</span>append(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>v<span style="color:#e6db74">=}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>    msg <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;, &#34;</span><span style="color:#f92672">.</span>join(parts)
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[</span><span style="color:#e6db74">{</span>loc<span style="color:#e6db74">}</span><span style="color:#e6db74">] </span><span style="color:#e6db74">{</span>caller<span style="color:#f92672">.</span>function<span style="color:#e6db74">}</span><span style="color:#e6db74"> | </span><span style="color:#e6db74">{</span>msg<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test</span>():
+</span></span><span style="display:flex;"><span>	x <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>	dbg(x)
+</span></span><span style="display:flex;"><span>	x <span style="color:#f92672">=</span> [i <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">10</span>)]
+</span></span><span style="display:flex;"><span>	dbg(x)
+</span></span></code></pre></div><h4 id="logging更规范支持点击跳转"  id="logging更规范支持点击跳转">
+  <a class="heading-link" href="/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/#logging%e6%9b%b4%e8%a7%84%e8%8c%83%e6%94%af%e6%8c%81%e7%82%b9%e5%87%bb%e8%b7%b3%e8%bd%ac">logging（更规范，支持点击跳转）<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>logging 原生自带<code>pathname</code>、<code>lineno</code>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> logging
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>logging<span style="color:#f92672">.</span>basicConfig(
+</span></span><span style="display:flex;"><span>    format<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">%(pathname)s</span><span style="color:#e6db74">:</span><span style="color:#e6db74">%(lineno)d</span><span style="color:#e6db74"> | </span><span style="color:#e6db74">%(funcName)s</span><span style="color:#e6db74"> | </span><span style="color:#e6db74">%(message)s</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>log <span style="color:#f92672">=</span> logging<span style="color:#f92672">.</span>getLogger(__name__)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 使用</span>
+</span></span><span style="display:flex;"><span>x <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>log<span style="color:#f92672">.</span>debug(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>x<span style="color:#e6db74">=}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>x <span style="color:#f92672">=</span> [i <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">10</span>)]
+</span></span><span style="display:flex;"><span>log<span style="color:#f92672">.</span>debug(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>x<span style="color:#e6db74">=}</span><span style="color:#e6db74">&#34;</span>)
+</span></span></code></pre></div><p>运行无输出，<code>logging</code> 默认<strong>只输出 WARNING 及以上级别</strong>，<code>debug</code> 级别默认被过滤，所以你直接运行看不到任何打印。 有两种解决方式：</p>
+<h4 id="方案-1设置日志级别推荐"  id="方案-1设置日志级别推荐">
+  <a class="heading-link" href="/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/#%e6%96%b9%e6%a1%88-1%e8%ae%be%e7%bd%ae%e6%97%a5%e5%bf%97%e7%ba%a7%e5%88%ab%e6%8e%a8%e8%8d%90">方案 1：设置日志级别（推荐）<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<pre tabindex="0"><code>logging.basicConfig(
+    level=logging.DEBUG,  			# 加上这一行，开启debug输出,意思是对 debug 以及以上级别生效
+    format=&#34;%(pathname)s:%(lineno)d | %(funcName)s | %(message)s&#34;
+)
+</code></pre><h4 id="方案-2改用-loginfo"  id="方案-2改用-loginfo">
+  <a class="heading-link" href="/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/#%e6%96%b9%e6%a1%88-2%e6%94%b9%e7%94%a8-loginfo">方案 2：改用 log.info()<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>info 默认是打开的，但是语义上 info 不是调试信息：</p>
+<pre tabindex="0"><code>x = 10
+log.info(f&#34;{x=}&#34;)
+x = [i for i in range(10)]
+log.info(f&#34;{x=}&#34;)
+</code></pre><h4 id="结果"  id="结果">
+  <a class="heading-link" href="/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/#%e7%bb%93%e6%9e%9c">结果<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>运行输出示例（<strong>VSCode 内置终端里，路径：行号 可以 Ctrl + 左键跳转</strong>）：</p>
+<pre tabindex="0"><code>F:\PythonTemp\onlyone.py:10 | &lt;module&gt; | x=10
+F:\PythonTemp\onlyone.py:12 | &lt;module&gt; | x=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+</code></pre><h3 id="4python-多行执行"  id="4python-多行执行">
+  <a class="heading-link" href="/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/#4python-%e5%a4%9a%e8%a1%8c%e6%89%a7%e8%a1%8c">4.python 多行执行<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p>**目的：**直接将一段程序复制到 Terminal 运行，避免创建文件，python 命令执行文件，删除文件</p>
+<h4 id="python-交互式-repl-粘贴模式"  id="python-交互式-repl-粘贴模式">
+  <a class="heading-link" href="/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/#python-%e4%ba%a4%e4%ba%92%e5%bc%8f-repl-%e7%b2%98%e8%b4%b4%e6%a8%a1%e5%bc%8f"><strong>python 交互式 REPL 粘贴模式</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<blockquote>
+<p>1.敲 <code>python</code> 进入 <code>&gt;&gt;&gt;</code></p>
+<p>2.Python3.10+：<strong>F3</strong> 开启 paste 模式</p>
+<p>3.粘贴整块代码，按回车运行</p>
+</blockquote>
+<h4 id="powershell"  id="powershell">
+  <a class="heading-link" href="/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/#powershell"><strong>powershell</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<blockquote>
+<p>格式</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span><span style="color:#75715e"># python -c @&#34;多行代码&#34;</span>
+</span></span></code></pre></div><p>例子</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span>python -c <span style="color:#e6db74">@&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">import logging
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">logging.basicConfig(
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    level=logging.DEBUG,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    format=&#34;%(pathname)s:%(lineno)d | %(funcName)s | %(message)s&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">log = logging.getLogger(__name__)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">x = 10
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">log.debug(f&#34;{x=}&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">x = [i for i in range(10)]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">log.debug(f&#34;{x=}&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;@</span>
+</span></span></code></pre></div></blockquote>
+
+    <footer>
+      
+      
+    </footer>
+  </article>
+
+<div class="pagination p">
+    
+    <span class="previous"><a href="/my-blog-repo/2026/09/python%E7%9A%84%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/">&laquo; Previous Post</a></span>
+    
+    
+  </div>
+</section>
+
+</div>
+
+<footer class="bottom small wrap">
+  <p class="small">&copy; Truman&#39;s blog. Powered by <a href="https://gohugo.io/">Hugo</a>, theme based off of <a href="http://jxnblk.com/ashley/">Ashley</a>.</p>
+</footer>
+
+</body>
+</html>

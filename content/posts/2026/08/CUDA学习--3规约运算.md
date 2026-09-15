@@ -132,9 +132,11 @@ __global__ void reduce_block_kernel(const float* input, float* block_sum, int N)
 
 
 
-Softmax
+一维Softmax
 
 PyTorch
+
+适合多维
 
 ```python
 import numpy as np
@@ -312,8 +314,6 @@ __global__ void reduce_max_kernel_2(const float* input, float* d_max, int N)
 // kernel<<<gridDim, blockDim>>>(...);    指定 grid 和 block 切分的尺寸，至少有一个 block 一个 grid，如果数据量比较多会根据形状计算
 kernel<<<blocks, threads>>>(...);
 ```
-
-
 
 ### 二维softmax简单版本
 

@@ -163,8 +163,9 @@ p code, li code {
 </span></span></code></pre></div><p>解决bank confilct</p>
 <p>什么bank，什么是bank confilct?</p>
 <p>首先，为了实现高带宽，共享内存被分为大小相等的内存模块(32个)，称为存储体(bank)，<strong>可以同时访问</strong>。因此，由落入<em>n 个</em>不同存储体的<em>n 个</em>地址发出的任何存储器读或写请求都可以同时得到服务，从而产生比单个模块的带宽高<em>n</em>倍的总带宽。</p>
-<p>Softmax</p>
+<p>一维Softmax</p>
 <p>PyTorch</p>
+<p>适合多维</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">softmax</span>(x):

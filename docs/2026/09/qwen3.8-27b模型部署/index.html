@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="cn-zh">
+
+<head><script src="/my-blog-repo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=my-blog-repo/livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Qwen3.8 27B模型部署 : Truman&#39;s blog</title>
+  <link rel="icon" href="/my-blog-repo/favicon.ico">
+
+  <link rel="stylesheet" href="/my-blog-repo/css/style.css" type="text/css" media="screen">
+  <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet" type="text/css">
+
+  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="http://localhost:1313/my-blog-repo/feed.xml">
+
+
+<style>
+ 
+pre {
+    margin-left: 0;
+    padding: 1em;
+    background: var(--code-bg);
+    overflow-x: auto;
+    font-family: 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--code-text);
+}
+
+code {
+    font-family: 'Ubuntu Mono', monospace;
+}
+
+ 
+p code, li code {
+    background: var(--code-bg);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+@media screen and (min-width: 640px) {
+    pre {
+        margin-left: 3em;
+    }
+}
+</style>
+<meta name="generator" content="Hugo 0.165.0">
+</head>
+
+<body class="single">
+
+<header>
+  <h1 class="vcard author"><a href="/my-blog-repo/" title="Home">Truman&#39;s blog</a></h1>
+  <p>
+    God helps those who help themselves.
+    <ul class="pages">
+      <li><a href="/my-blog-repo/archives/">archives</a></li>
+      <li><a href="/my-blog-repo/feed.xml">subscribe</a></li>
+    </ul>
+  </p>
+</header>
+
+<div class="content wrap">
+  
+<section class="posts">
+  <article class="post">
+    <h2>Qwen3.8 27B模型部署</h2>
+    <abbr class="small postDate" title="2026-09-04">September 4, 2026</abbr>
+    <p>1</p>
+<p>模型可使用<code>SGLang</code>、<code>KTransformers</code>、<code>vLLM</code>部署引擎，社区第三方量化版可使用<code>Ollama</code>、<code>llama.cpp</code>、<code>LM Studio</code>等引擎，本文介绍常用的<code>vLLM</code>和<code>llama.cpp</code>的详细部署方式（ollama、LM Studio和unsloth底层都是基于llama.cpp，KTransformers是Sglang的分支，主打CPU内存跑模型）。</p>
+<p><code>SGLang</code>、<code>KTransformers</code>、<code>vLLM</code></p>
+<p><code>Ollama</code>、<code>llama.cpp</code>、<code>LM Studio</code>等引擎 是什么</p>
+<p>2</p>
+<p>vLLM方式</p>
+<ul>
+<li>硬件：Nvidia A30 * 2；显存24G * 2 = 48G</li>
+<li>• 效果：</li>
+<li>• 显存消耗：启动并运行后共占用20658MiB * 2 (gpu-memory-utilization 0.78 - 最大tokens 311,951)</li>
+</ul>
+<p>选择模型</p>
+<p>下载模型</p>
+<p>使用modelscope</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pip install modelscope
+</span></span><span style="display:flex;"><span>modelscope download --model cyankiwi/Qwen3.8-27B-AWQ-INT4 --local_dir ./Qwen3.8-27B-AWQ-INT4-cyankiwi
+</span></span></code></pre></div><p>使用docker部署</p>
+<blockquote>
+<p>在部署像 vLLM、SGLang 这类大模型推理引擎时，使用 Docker 主要有以下核心原因：</p>
+<ol>
+<li><strong>解决复杂的依赖与环境冲突</strong>
+<ul>
+<li>大模型推理工具对底层环境要求极高，通常依赖特定版本的 <strong>Python、PyTorch、CUDA、cuDNN、Triton、NCCL</strong> 等。</li>
+<li>直接在宿主机（物理机）安装容易遇到版本不匹配等问题。Docker 将所有依赖打包在镜像中。</li>
+</ul>
+</li>
+<li><strong>极简的一键部署与跨平台一致性</strong>
+<ul>
+<li>借助 <code>docker-compose.yml</code>，可以将模型路径、显卡分配、推理参数（如上下文长度、并行度等）全部通过配置文件固定下来。</li>
+</ul>
+</li>
+<li><strong>方便的 GPU 资源隔离与调度</strong>
+<ul>
+<li>结合 NVIDIA Container Toolkit，可以非常精准地为容器指定显卡（如指定 <code>device_ids: [&quot;0&quot;, &quot;1&quot;]</code> 运行张量并行）、设置共享内存（<code>shm_size: 32g</code>）和内存锁定限制（<code>ulimits</code>），防止不同服务抢占系统资源。</li>
+</ul>
+</li>
+</ol>
+</blockquote>
+<p>linux环境下docker清理</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 查看docker 信息</span>
+</span></span><span style="display:flex;"><span>docker --version
+</span></span><span style="display:flex;"><span>which docker
+</span></span><span style="display:flex;"><span>systemctl status docker
+</span></span><span style="display:flex;"><span>docker info
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 清理 docker</span>
+</span></span><span style="display:flex;"><span>docker system df					<span style="color:#75715e"># 磁盘占用</span>
+</span></span><span style="display:flex;"><span>docker images
+</span></span><span style="display:flex;"><span>docker system prune -f
+</span></span><span style="display:flex;"><span>docker ps -a
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 卸载 docker</span>
+</span></span><span style="display:flex;"><span>sudo systemctl stop docker docker.socket containerd
+</span></span><span style="display:flex;"><span>sudo apt-get purge docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras
+</span></span><span style="display:flex;"><span>sudo rm -rf /var/lib/docker
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 安装 docker</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 指定镜像安装目录</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 一些配置</span>
+</span></span></code></pre></div><p>部署qwen3.8</p>
+<p>docker-compose.yml</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yml" data-lang="yml"></code></pre></div><p>测试效果</p>
+
+    <footer>
+      
+      
+    </footer>
+  </article>
+
+<div class="pagination p">
+    
+    <span class="previous"><a href="/my-blog-repo/2026/09/%E5%88%9D%E5%AD%A6%E8%80%85/">&laquo; Previous Post</a></span>
+    
+    
+    <span class="next"><a href="/my-blog-repo/2026/09/python%E7%9A%84%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/">Next Post &raquo;</a></span>
+    
+  </div>
+</section>
+
+</div>
+
+<footer class="bottom small wrap">
+  <p class="small">&copy; Truman&#39;s blog. Powered by <a href="https://gohugo.io/">Hugo</a>, theme based off of <a href="http://jxnblk.com/ashley/">Ashley</a>.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="cn-zh">
+
+<head><script src="/my-blog-repo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=my-blog-repo/livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Linux系统管理 : Truman&#39;s blog</title>
+  <link rel="icon" href="/my-blog-repo/favicon.ico">
+
+  <link rel="stylesheet" href="/my-blog-repo/css/style.css" type="text/css" media="screen">
+  <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet" type="text/css">
+
+  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="http://localhost:1313/my-blog-repo/feed.xml">
+
+
+<style>
+ 
+pre {
+    margin-left: 0;
+    padding: 1em;
+    background: var(--code-bg);
+    overflow-x: auto;
+    font-family: 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--code-text);
+}
+
+code {
+    font-family: 'Ubuntu Mono', monospace;
+}
+
+ 
+p code, li code {
+    background: var(--code-bg);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+@media screen and (min-width: 640px) {
+    pre {
+        margin-left: 3em;
+    }
+}
+</style>
+<meta name="generator" content="Hugo 0.165.0">
+</head>
+
+<body class="single">
+
+<header>
+  <h1 class="vcard author"><a href="/my-blog-repo/" title="Home">Truman&#39;s blog</a></h1>
+  <p>
+    God helps those who help themselves.
+    <ul class="pages">
+      <li><a href="/my-blog-repo/archives/">archives</a></li>
+      <li><a href="/my-blog-repo/feed.xml">subscribe</a></li>
+    </ul>
+  </p>
+</header>
+
+<div class="content wrap">
+  
+<section class="posts">
+  <article class="post">
+    <h2>Linux系统管理</h2>
+    <abbr class="small postDate" title="2026-09-15">September 15, 2026</abbr>
+    <h3 id="linux-服务器硬件与系统资源检查记录"  id="linux-服务器硬件与系统资源检查记录">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#linux-%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%a1%ac%e4%bb%b6%e4%b8%8e%e7%b3%bb%e7%bb%9f%e8%b5%84%e6%ba%90%e6%a3%80%e6%9f%a5%e8%ae%b0%e5%bd%95">Linux 服务器硬件与系统资源检查记录<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h3 id="1-操作系统版本"  id="1-操作系统版本">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#1-%e6%93%8d%e4%bd%9c%e7%b3%bb%e7%bb%9f%e7%89%88%e6%9c%ac">1. 操作系统版本<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="命令"  id="命令">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#%e5%91%bd%e4%bb%a4">命令<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cat /etc/os-release
+</span></span></code></pre></div><p>查看内核版本：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>uname -a
+</span></span></code></pre></div><h4 id="输出"  id="输出">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#%e8%be%93%e5%87%ba">输出<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<pre tabindex="0"><code>PRETTY_NAME=&#34;Ubuntu 24.04.2 LTS&#34;
+NAME=&#34;Ubuntu&#34;
+VERSION_ID=&#34;24.04&#34;
+VERSION=&#34;24.04.2 LTS (Noble Numbat)&#34;
+VERSION_CODENAME=noble
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL=&#34;https://www.ubuntu.com/&#34;
+SUPPORT_URL=&#34;https://help.ubuntu.com/&#34;
+BUG_REPORT_URL=&#34;https://bugs.launchpad.net/ubuntu/&#34;
+PRIVACY_POLICY_URL=&#34;https://www.ubuntu.com/legal/terms-and-policies/privacy-policy&#34;
+UBUNTU_CODENAME=noble
+LOGO=ubuntu-logo
+</code></pre><pre tabindex="0"><code>Linux wsco-X11DAi-N 6.11.0-21-generic #21~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Mon Feb 24 16:52:15 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+</code></pre><h3 id="2-cpu-信息"  id="2-cpu-信息">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#2-cpu-%e4%bf%a1%e6%81%af">2. CPU 信息<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="命令-1"  id="命令-1">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#%e5%91%bd%e4%bb%a4-1">命令<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<pre tabindex="0"><code>lscpu
+</code></pre><h4 id="输出-1"  id="输出-1">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#%e8%be%93%e5%87%ba-1">输出<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<pre tabindex="0"><code>架构：                    x86_64
+  CPU 运行模式：          32-bit, 64-bit
+  Address sizes:          46 bits physical, 48 bits virtual
+  字节序：                Little Endian
+CPU:                      72
+  在线 CPU 列表：         0-71
+厂商 ID：                 GenuineIntel
+  型号名称：              Intel(R) Xeon(R) Gold 6151 CPU @ 3.00GHz
+    CPU 系列：            6
+    型号：                85
+    每个核的线程数：      2
+    每个座的核数：        18
+    座：                  2
+    步进：                4
+    CPU(s) scaling MHz:   94%
+</code></pre><h3 id="3-gpu-信息"  id="3-gpu-信息">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#3-gpu-%e4%bf%a1%e6%81%af">3. GPU 信息<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="命令-2"  id="命令-2">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#%e5%91%bd%e4%bb%a4-2">命令<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<pre tabindex="0"><code>nvidia-smi
+</code></pre><h3 id="4-cpu-负载"  id="4-cpu-负载">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#4-cpu-%e8%b4%9f%e8%bd%bd">4. CPU 负载<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="命令-3"  id="命令-3">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#%e5%91%bd%e4%bb%a4-3">命令<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>查看当前 CPU 使用情况：</p>
+<pre tabindex="0"><code>top
+# 更推荐：
+htop
+</code></pre><p>查看当前平均负载：</p>
+<pre tabindex="0"><code>uptime
+</code></pre><p>查看最近 1、5、15 分钟负载：</p>
+<pre tabindex="0"><code>cat /proc/loadavg
+</code></pre><h4 id="输出-2"  id="输出-2">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#%e8%be%93%e5%87%ba-2">输出<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<pre tabindex="0"><code>top - 15:47:56 up 15 days, 43 min, 15 users,  load average: 135.87, 137.26, 135.68
+任务: 946 total,   5 running, 941 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 98.4 us,  0.6 sy,  0.0 ni,  1.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st 
+MiB Mem : 450683.9 total, 333056.8 free,  30707.7 used,  90178.5 buff/cache     
+MiB Swap:   8192.0 total,   8192.0 free,      0.0 used. 419976.2 avail Mem 
+</code></pre><h3 id="5-内存"  id="5-内存">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#5-%e5%86%85%e5%ad%98">5. 内存<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="命令-4"  id="命令-4">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#%e5%91%bd%e4%bb%a4-4">命令<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<pre tabindex="0"><code>free -h
+</code></pre><p>查看更详细的内存信息：</p>
+<pre tabindex="0"><code>cat /proc/meminfo
+</code></pre><h4 id="输出-3"  id="输出-3">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#%e8%be%93%e5%87%ba-3">输出<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<pre tabindex="0"><code>               total        used        free      shared  buff/cache   available
+内存：         
+交换：         
+</code></pre><h3 id="6-硬盘--存储空间"  id="6-硬盘--存储空间">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#6-%e7%a1%ac%e7%9b%98--%e5%ad%98%e5%82%a8%e7%a9%ba%e9%97%b4">6. 硬盘 / 存储空间<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="命令-5"  id="命令-5">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#%e5%91%bd%e4%bb%a4-5">命令<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>查看磁盘空间：</p>
+<pre tabindex="0"><code>df -h
+</code></pre><p>查看磁盘和分区：</p>
+<pre tabindex="0"><code>lsblk
+</code></pre><h4 id="输出-4"  id="输出-4">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#%e8%be%93%e5%87%ba-4">输出<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<pre tabindex="0"><code>文件系统        大小  已用  可用 已用% 挂载点
+tmpfs            45G  4.0M   45G    1% /run
+/dev/nvme0n1p2  937G  775G  115G   88% /
+</code></pre><pre tabindex="0"><code>NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+loop0         7:0    0     4K  1 loop /snap/bare/5
+</code></pre><h3 id="7-网络连接"  id="7-网络连接">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#7-%e7%bd%91%e7%bb%9c%e8%bf%9e%e6%8e%a5">7. 网络连接<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="命令-6"  id="命令-6">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#%e5%91%bd%e4%bb%a4-6">命令<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>查看<strong>网卡及 IP</strong>：</p>
+<pre tabindex="0"><code>ip addr
+</code></pre><p>查看<strong>网卡状态</strong>：</p>
+<pre tabindex="0"><code>ip -br addr
+</code></pre><p>查看<strong>路由</strong>：</p>
+<pre tabindex="0"><code>ip route
+</code></pre><p>查看<strong>监听端口</strong>：</p>
+<pre tabindex="0"><code>ss -lntup
+</code></pre><p>查看当前<strong>网络连接</strong>：</p>
+<pre tabindex="0"><code>ss -ant
+</code></pre><p>查看<strong>网络接口流量统计</strong>：</p>
+<pre tabindex="0"><code>ip -s link
+</code></pre><h3 id="8-当前连接用户"  id="8-当前连接用户">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#8-%e5%bd%93%e5%89%8d%e8%bf%9e%e6%8e%a5%e7%94%a8%e6%88%b7">8. 当前连接用户<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="命令-7"  id="命令-7">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#%e5%91%bd%e4%bb%a4-7">命令<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<pre tabindex="0"><code>who
+</code></pre><h3 id="9-定时任务"  id="9-定时任务">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#9-%e5%ae%9a%e6%97%b6%e4%bb%bb%e5%8a%a1">9. 定时任务<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h4 id="当前用户-cron"  id="当前用户-cron">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#%e5%bd%93%e5%89%8d%e7%94%a8%e6%88%b7-cron">当前用户 Cron<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<pre tabindex="0"><code>crontab -l
+</code></pre><h4 id="系统-cron"  id="系统-cron">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#%e7%b3%bb%e7%bb%9f-cron">系统 Cron<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<pre tabindex="0"><code>cat /etc/crontab
+</code></pre><h4 id="systemd-定时任务"  id="systemd-定时任务">
+  <a class="heading-link" href="/my-blog-repo/2026/09/linux%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86/#systemd-%e5%ae%9a%e6%97%b6%e4%bb%bb%e5%8a%a1">systemd 定时任务<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<pre tabindex="0"><code>systemctl list-timers --all
+</code></pre>
+    <footer>
+      
+      
+    </footer>
+  </article>
+
+<div class="pagination p">
+    
+    <span class="previous"><a href="/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/">&laquo; Previous Post</a></span>
+    
+    
+  </div>
+</section>
+
+</div>
+
+<footer class="bottom small wrap">
+  <p class="small">&copy; Truman&#39;s blog. Powered by <a href="https://gohugo.io/">Hugo</a>, theme based off of <a href="http://jxnblk.com/ashley/">Ashley</a>.</p>
+</footer>
+
+</body>
+</html>

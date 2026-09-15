@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
 		<title>Categories on Truman&#39;s blog</title>
-		<link>https://relishleisure.github.io/my-blog-repo/categories/</link>
+		<link>http://localhost:1313/my-blog-repo/categories/</link>
 		<description>Recent content in Categories on Truman&#39;s blog</description>
 		<generator>Hugo</generator>
 		<language>cn-zh</language>
@@ -12,68 +12,68 @@
 		
 			<lastBuildDate>Wed, 02 Sep 2026 18:36:05 +0800</lastBuildDate>
 		
-			<atom:link href="https://relishleisure.github.io/my-blog-repo/categories/feed.xml" rel="self" type="application/rss+xml" />
+			<atom:link href="http://localhost:1313/my-blog-repo/categories/feed.xml" rel="self" type="application/rss+xml" />
 			<item>
 				<title>CUDA</title>
-				<link>https://relishleisure.github.io/my-blog-repo/categories/cuda/</link>
+				<link>http://localhost:1313/my-blog-repo/categories/cuda/</link>
 				<pubDate>Wed, 02 Sep 2026 18:36:05 +0800</pubDate>
-				<guid>https://relishleisure.github.io/my-blog-repo/categories/cuda/</guid>
+				<guid>http://localhost:1313/my-blog-repo/categories/cuda/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>记录</title>
-				<link>https://relishleisure.github.io/my-blog-repo/categories/%E8%AE%B0%E5%BD%95/</link>
+				<link>http://localhost:1313/my-blog-repo/categories/%E8%AE%B0%E5%BD%95/</link>
 				<pubDate>Wed, 02 Sep 2026 18:36:05 +0800</pubDate>
-				<guid>https://relishleisure.github.io/my-blog-repo/categories/%E8%AE%B0%E5%BD%95/</guid>
+				<guid>http://localhost:1313/my-blog-repo/categories/%E8%AE%B0%E5%BD%95/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>笔记</title>
-				<link>https://relishleisure.github.io/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/</link>
+				<link>http://localhost:1313/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/</link>
 				<pubDate>Fri, 28 Aug 2026 16:00:05 +0800</pubDate>
-				<guid>https://relishleisure.github.io/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/</guid>
+				<guid>http://localhost:1313/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>CANN</title>
-				<link>https://relishleisure.github.io/my-blog-repo/categories/cann/</link>
+				<link>http://localhost:1313/my-blog-repo/categories/cann/</link>
 				<pubDate>Thu, 27 Aug 2026 20:53:02 +0800</pubDate>
-				<guid>https://relishleisure.github.io/my-blog-repo/categories/cann/</guid>
+				<guid>http://localhost:1313/my-blog-repo/categories/cann/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>实验</title>
-				<link>https://relishleisure.github.io/my-blog-repo/categories/%E5%AE%9E%E9%AA%8C/</link>
+				<link>http://localhost:1313/my-blog-repo/categories/%E5%AE%9E%E9%AA%8C/</link>
 				<pubDate>Thu, 27 Aug 2026 20:53:02 +0800</pubDate>
-				<guid>https://relishleisure.github.io/my-blog-repo/categories/%E5%AE%9E%E9%AA%8C/</guid>
+				<guid>http://localhost:1313/my-blog-repo/categories/%E5%AE%9E%E9%AA%8C/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>AI</title>
-				<link>https://relishleisure.github.io/my-blog-repo/categories/ai/</link>
+				<link>http://localhost:1313/my-blog-repo/categories/ai/</link>
 				<pubDate>Wed, 26 Aug 2026 19:48:02 +0800</pubDate>
-				<guid>https://relishleisure.github.io/my-blog-repo/categories/ai/</guid>
+				<guid>http://localhost:1313/my-blog-repo/categories/ai/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>DAS</title>
-				<link>https://relishleisure.github.io/my-blog-repo/categories/das/</link>
+				<link>http://localhost:1313/my-blog-repo/categories/das/</link>
 				<pubDate>Wed, 26 Aug 2026 19:48:02 +0800</pubDate>
-				<guid>https://relishleisure.github.io/my-blog-repo/categories/das/</guid>
+				<guid>http://localhost:1313/my-blog-repo/categories/das/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>RDMA</title>
-				<link>https://relishleisure.github.io/my-blog-repo/categories/rdma/</link>
+				<link>http://localhost:1313/my-blog-repo/categories/rdma/</link>
 				<pubDate>Mon, 24 Aug 2026 17:38:02 +0800</pubDate>
-				<guid>https://relishleisure.github.io/my-blog-repo/categories/rdma/</guid>
+				<guid>http://localhost:1313/my-blog-repo/categories/rdma/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>电影</title>
-				<link>https://relishleisure.github.io/my-blog-repo/categories/%E7%94%B5%E5%BD%B1/</link>
+				<link>http://localhost:1313/my-blog-repo/categories/%E7%94%B5%E5%BD%B1/</link>
 				<pubDate>Mon, 24 Aug 2026 15:10:02 +0800</pubDate>
-				<guid>https://relishleisure.github.io/my-blog-repo/categories/%E7%94%B5%E5%BD%B1/</guid>
+				<guid>http://localhost:1313/my-blog-repo/categories/%E7%94%B5%E5%BD%B1/</guid>
 				<description></description>
 			</item>
 	</channel>
