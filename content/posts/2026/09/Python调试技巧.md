@@ -134,25 +134,41 @@ F:\PythonTemp\onlyone.py:12 | <module> | x=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 ## **powershell**
 
-> 格式
+> **格式**
 >
 > ```powershell
-> # python -c @"多行代码"
+> # 利用管道传输 
+> @"多行代码"@ | python
 > ```
 >
-> 例子
+> **例子**
 >
 > ```powershell
-> python -c @"
+> @"
 > import logging
 > logging.basicConfig(
->     level=logging.DEBUG,
->     format="%(pathname)s:%(lineno)d | %(funcName)s | %(message)s"
+>  level=logging.DEBUG,
+>  format="%(pathname)s:%(lineno)d | %(funcName)s | %(message)s"
 > )
 > log = logging.getLogger(__name__)
 > x = 10
 > log.debug(f"{x=}")
 > x = [i for i in range(10)]
 > log.debug(f"{x=}")
-> "@
+> "@ | python
 > ```
+>
+> **格式**
+>
+> ```powershell
+> python -c "import lib;语句1;语句2;语句3"
+> ```
+>
+> **例子**
+>
+> ```powershell
+> # 引号里面的 " 使用了转义符号  \"
+> python -c 'import logging;log = logging.getLogger(__name__);x = 10;log.warning(f\"{x=}\")'
+> ```
+>
+> 

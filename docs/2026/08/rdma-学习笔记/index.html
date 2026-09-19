@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="cn-zh">
 
-<head><script src="/my-blog-repo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=my-blog-repo/livereload" data-no-instant defer></script>
+<head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>RDMA 学习笔记 : Truman&#39;s blog</title>
@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet" type="text/css">
 
-  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="http://localhost:1313/my-blog-repo/feed.xml">
+  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="https://relishleisure.github.io/my-blog-repo/feed.xml">
 
 
 <style>
@@ -83,9 +83,7 @@ p code, li code {
 <h3 id="某岗位信息"  id="某岗位信息">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e6%9f%90%e5%b2%97%e4%bd%8d%e4%bf%a1%e6%81%af">某岗位信息<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h3>
-<h5 id="岗位关联小结"  id="岗位关联小结">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e5%b2%97%e4%bd%8d%e5%85%b3%e8%81%94%e5%b0%8f%e7%bb%93">岗位关联小结<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
+<p><strong>岗位关联小结</strong></p>
 <ul>
 <li>KVM/QEMU/Xen：<strong>底层虚拟机虚拟化</strong>，DPU 智能网卡需适配虚拟网络、硬件直通；</li>
 <li>OpenStack：<strong>云集群管控</strong>，对应大规模云环境测试场景；</li>
@@ -111,25 +109,19 @@ p code, li code {
 <h4 id="一-rdma-概念篇"  id="一-rdma-概念篇">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e4%b8%80-rdma-%e6%a6%82%e5%bf%b5%e7%af%87">一 RDMA 概念篇<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h4>
-<h5 id="1-rdma概述"  id="1-rdma概述">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#1-rdma%e6%a6%82%e8%bf%b0">1. RDMA概述<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p>RDMA</p>
+<p><strong>1. RDMA概述</strong>
+RDMA</p>
 <p>DMA，传统网卡发送接收数据需要经过CPU，非常耗时，而且还需要linux切换内核态和用户态</p>
 <p>0拷贝：不需要在用户空间和内核空间中来回复制数据</p>
 <p>内核Bypass：IO（数据）流程可以绕过内核，即在用户层就可以把数据准备好并通知硬件准备发送和接收。避免了系统调用和上下文切换的开销。</p>
 <p>CPU卸载：指的是可以在远端节点CPU不参与通信的情况下（当然要持有访问远端某段内存的“钥匙”才行）对内存进行读写</p>
 <p>协议：RDMA的具体实现</p>
 <p><a href="https://zhida.zhihu.com/search?content_id=118992942&amp;content_type=Article&amp;match_order=1&amp;q=Infiniband&amp;zhida_source=entity">Infiniband</a>（IB），RDMA over Converged Ethernet（RoCE）和internet Wide Area RDMA Protocol（iWARP）</p>
-<h5 id="2-比较基于传统以太网与rdma技术的通信"  id="2-比较基于传统以太网与rdma技术的通信">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#2-%e6%af%94%e8%be%83%e5%9f%ba%e4%ba%8e%e4%bc%a0%e7%bb%9f%e4%bb%a5%e5%a4%aa%e7%bd%91%e4%b8%8erdma%e6%8a%80%e6%9c%af%e7%9a%84%e9%80%9a%e4%bf%a1">2. 比较基于传统以太网与RDMA技术的通信<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p>RDMA的分层模型分成两部分“控制通路”和“数据通路”，控制通路需要进入内核态准备通信所需的内存资源，而数据通路指的是实际数据交互过程中的流程。</p>
+<p><strong>2. 比较基于传统以太网与RDMA技术的通信</strong>
+RDMA的分层模型分成两部分“控制通路”和“数据通路”，控制通路需要进入内核态准备通信所需的内存资源，而数据通路指的是实际数据交互过程中的流程。</p>
 <p><img src="https://pica.zhimg.com/v2-8ef2b015ba9d111fc2d42983cd5fe152_1440w.jpg" alt="img"></p>
-<h5 id="3-rdma基本元素"  id="3-rdma基本元素">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#3-rdma%e5%9f%ba%e6%9c%ac%e5%85%83%e7%b4%a0">3 RDMA基本元素<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p><img src="https://pic3.zhimg.com/v2-b6723caa5b291ee161d94fd8fd8ce09c_1440w.jpg" alt="img"></p>
+<p><strong>3 RDMA基本元素</strong>
+<img src="https://pic3.zhimg.com/v2-b6723caa5b291ee161d94fd8fd8ce09c_1440w.jpg" alt="img"></p>
 <p>WQ，Work Queue  软件给硬件的任务队列，WQE, Work Queue Element</p>
 <p>RDMA技术中<strong>通信的基本单元是QP</strong>, QP Queue  Pair  一对 WQ, 也就是发送和接收。SQ, Send Queue ； RQ, Receive Queue</p>
 <p>QPN（Queue Pair Number）,QP 的唯一编号</p>
@@ -138,9 +130,7 @@ p code, li code {
 <p><img src="https://pic2.zhimg.com/v2-a8d38721903672037b27cc7e49ecee03_1440w.jpg" alt="img"></p>
 <p>WR全称为Work Request，意为工作请求；WC全称Work Completion，意为工作完成。这两者其实是WQE和CQE在用户层的“映射”。</p>
 <p>[1]《IB Specification Vol 1-Release-1.3-2015-03-03》</p>
-<h5 id="4-rdma操作类型"  id="4-rdma操作类型">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#4-rdma%e6%93%8d%e4%bd%9c%e7%b1%bb%e5%9e%8b"><a href="https://zhuanlan.zhihu.com/p/142175657">4. RDMA操作类型</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
+<p><strong><a href="https://zhuanlan.zhihu.com/p/142175657">4. RDMA操作类型</a></strong></p>
 <h6 id="send--recv"  id="send--recv">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#send--recv">SEND &amp; RECV<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
@@ -150,10 +140,8 @@ p code, li code {
 <p>看原帖，图画的非常好</p>
 <p>个人想法&gt; 我们不生产数据，我们只是数据的搬运工，CV工程师</p>
 <p><strong>[1] part1-OFA_Training_Sept_2016.pdf</strong> 是<strong>2016 年 9 月发布的 OFA（OpenFabrics Alliance，开放架构联盟）官方培训资料第一部分</strong>，是 RDMA（远程直接内存访问）领域的经典入门 / 培训文档。</p>
-<h5 id="5-rdma基本服务类型"  id="5-rdma基本服务类型">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#5-rdma%e5%9f%ba%e6%9c%ac%e6%9c%8d%e5%8a%a1%e7%b1%bb%e5%9e%8b"><a href="https://zhuanlan.zhihu.com/p/144099636">5. RDMA基本服务类型</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p><a href="https://zhida.zhihu.com/search?content_id=120154436&amp;content_type=Article&amp;match_order=1&amp;q=IB%E5%8D%8F%E8%AE%AE&amp;zhida_source=entity">IB协议</a>中通过“可靠”和“连接”两个维度来描述一种服务类型。</p>
+<p><strong><a href="https://zhuanlan.zhihu.com/p/144099636">5. RDMA基本服务类型</a></strong>
+<a href="https://zhida.zhihu.com/search?content_id=120154436&amp;content_type=Article&amp;match_order=1&amp;q=IB%E5%8D%8F%E8%AE%AE&amp;zhida_source=entity">IB协议</a>中通过“可靠”和“连接”两个维度来描述一种服务类型。</p>
 <h6 id="可靠不可靠"  id="可靠不可靠">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e5%8f%af%e9%9d%a0%e4%b8%8d%e5%8f%af%e9%9d%a0">可靠/不可靠<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
@@ -162,9 +150,7 @@ p code, li code {
 <h6 id="连接与数据报datagram"  id="连接与数据报datagram">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e8%bf%9e%e6%8e%a5%e4%b8%8e%e6%95%b0%e6%8d%ae%e6%8a%a5datagram">连接与数据报（Datagram）<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
-<h5 id="服务类型"  id="服务类型">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e6%9c%8d%e5%8a%a1%e7%b1%bb%e5%9e%8b">服务类型<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
+<p><strong>服务类型</strong></p>
 <table>
 	<thead>
 			<tr>
@@ -187,9 +173,7 @@ p code, li code {
 	</tbody>
 </table>
 <p>RC和<a href="https://zhida.zhihu.com/search?content_id=120154436&amp;content_type=Article&amp;match_order=1&amp;q=UD&amp;zhida_source=entity">UD</a>是应用最多的两种，可以类比成TCP和UDP。</p>
-<h5 id="6-rdma之memory-region"  id="6-rdma之memory-region">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#6-rdma%e4%b9%8bmemory-region"><a href="https://zhuanlan.zhihu.com/p/156975042">6. RDMA之Memory Region</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
+<p><strong><a href="https://zhuanlan.zhihu.com/p/156975042">6. RDMA之Memory Region</a></strong></p>
 <h4 id="mrmemory-region"  id="mrmemory-region">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#mrmemory-region">MR，Memory Region<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h4>
@@ -207,25 +191,17 @@ p code, li code {
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e9%81%bf%e5%85%8d%e6%8d%a2%e9%a1%b5">避免换页<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
 <p>换页：内存为分页存储/读取，操作系统为提高内存使用效率，会将使用频率低的内存搬运。影响VA-PA的映射关系</p>
-<h5 id="7-rdma之protection-domain"  id="7-rdma之protection-domain">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#7-rdma%e4%b9%8bprotection-domain"><a href="https://zhuanlan.zhihu.com/p/159493100">7. RDMA之Protection Domain</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p>PD, Protection Domain, 包括 QP 和 MR，（工作队列对 和 内存区域），就像分组一样</p>
-<h5 id="8-rdma之address-handle"  id="8-rdma之address-handle">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#8-rdma%e4%b9%8baddress-handle"><a href="https://zhuanlan.zhihu.com/p/163552044">8. RDMA之Address Handle</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p>IB协议中的这个标识被称为GID（Global Identifier，全局ID）**，是一个128 bits的序列。</p>
+<p><strong><a href="https://zhuanlan.zhihu.com/p/159493100">7. RDMA之Protection Domain</a></strong>
+PD, Protection Domain, 包括 QP 和 MR，（工作队列对 和 内存区域），就像分组一样</p>
+<p><strong><a href="https://zhuanlan.zhihu.com/p/163552044">8. RDMA之Address Handle</a></strong>
+IB协议中的这个标识被称为GID（Global Identifier，全局ID）**，是一个128 bits的序列。</p>
 <p>AH全称为Address Handle，理解为一组定位节点和存储地址的句柄，并且对用户隐藏信息</p>
-<h5 id="9-rdma之queue-pair"  id="9-rdma之queue-pair">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#9-rdma%e4%b9%8bqueue-pair"><a href="https://zhuanlan.zhihu.com/p/195757767">9. RDMA之Queue Pair</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p>QPC全称是Queue Pair Context，用于存储QP相关属性。如SQ Address, RQ Address, SQ size等</p>
+<p><strong><a href="https://zhuanlan.zhihu.com/p/195757767">9. RDMA之Queue Pair</a></strong>
+QPC全称是Queue Pair Context，用于存储QP相关属性。如SQ Address, RQ Address, SQ size等</p>
 <p>QP Number， QPN， 编号</p>
 <p>QP 状态机</p>
-<h5 id="10-rdma之completion-queue"  id="10-rdma之completion-queue">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#10-rdma%e4%b9%8bcompletion-queue">10 RDMA之Completion Queue<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p>WQ和CQ的对应关系——每个WQ都必须关联一个CQ，而每个CQ可以关联多个SQ和RQ。</p>
+<p><strong>10 RDMA之Completion Queue</strong>
+WQ和CQ的对应关系——每个WQ都必须关联一个CQ，而每个CQ可以关联多个SQ和RQ。</p>
 <p>CQE</p>
 <p>CQC: （Completion Queue Context），存储CQ对应的详细信息的一段内存结构。</p>
 <p>CQN: CQ Number</p>
@@ -236,9 +212,7 @@ p code, li code {
 <p>立即错误的是“立即停止当前操作，并返回错误给上层用户”；</p>
 <p>完成错误指的是“通过CQE将错误信息返回给上层用户”；</p>
 <p>异步错误指的是“通过中断事件的方式上报给上层用户”。</p>
-<h5 id="11-rdma之shared-receive-queue"  id="11-rdma之shared-receive-queue">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#11-rdma%e4%b9%8bshared-receive-queue"><a href="https://zhuanlan.zhihu.com/p/279904125">11. RDMA之Shared Receive Queue</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
+<p><strong><a href="https://zhuanlan.zhihu.com/p/279904125">11. RDMA之Shared Receive Queue</a></strong></p>
 <h6 id="为什么"  id="为什么">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e4%b8%ba%e4%bb%80%e4%b9%88">为什么<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
@@ -256,10 +230,8 @@ p code, li code {
 <h6 id="用户接口"  id="用户接口">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e7%94%a8%e6%88%b7%e6%8e%a5%e5%8f%a3">用户接口<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
-<h5 id="12-rdma之memory-window"  id="12-rdma之memory-window">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#12-rdma%e4%b9%8bmemory-window"><a href="https://zhuanlan.zhihu.com/p/353590347">12 RDMA之Memory Window</a>***<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p>Memory Window 由用户申请的，用于让远端节点访问本端内存区域的RDMA资源。</p>
+<p><strong><a href="https://zhuanlan.zhihu.com/p/353590347">12 RDMA之Memory Window</a></strong>***
+Memory Window 由用户申请的，用于让远端节点访问本端内存区域的RDMA资源。</p>
 <h6 id="mrmw的权限配置"  id="mrmw的权限配置">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#mrmw%e7%9a%84%e6%9d%83%e9%99%90%e9%85%8d%e7%bd%ae">MR/MW的权限配置<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
@@ -301,21 +273,15 @@ p code, li code {
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e4%ba%8c-rdma%e8%bd%af%e4%bb%b6%e6%a0%88%e7%af%87">二 RDMA软件栈篇<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h4>
 <p>TODO</p>
-<h5 id="1-3rdma之verbs"  id="1-3rdma之verbs">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#1-3rdma%e4%b9%8bverbs"><a href="https://zhuanlan.zhihu.com/p/329198771">1 3RDMA之Verbs</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p><a href="https://zhuanlan.zhihu.com/p/346708569">14RDMA之用户态与内核态交互</a></p>
-<h5 id="15-rdma之roce--soft-roce"  id="15-rdma之roce--soft-roce">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#15-rdma%e4%b9%8broce--soft-roce">15. RDMA之RoCE &amp; Soft-RoCE<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
+<p><strong><a href="https://zhuanlan.zhihu.com/p/329198771">1 3RDMA之Verbs</a></strong>
+<a href="https://zhuanlan.zhihu.com/p/346708569">14RDMA之用户态与内核态交互</a></p>
+<p><strong>15. RDMA之RoCE &amp; Soft-RoCE</strong></p>
 <h6 id="roce"  id="roce">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#roce">RoCE<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
 <p>RoCE全称是RDMA over Converged Ethernet，即基于融合以太网的RDMA。用通俗的话讲，就是基于传统以太网的部分下层协议，在其基础上实现Infiniband的部分上层协议。这里的RoCE特指RoCE v2;</p>
-<h5 id="roce层次"  id="roce层次">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#roce%e5%b1%82%e6%ac%a1">RoCE层次<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p><img src="https://pic3.zhimg.com/v2-17e04efb14c550ad0be456b7b71209b4_1440w.jpg" alt="img"></p>
+<p><strong>RoCE层次</strong>
+<img src="https://pic3.zhimg.com/v2-17e04efb14c550ad0be456b7b71209b4_1440w.jpg" alt="img"></p>
 <h6 id="roce协议的优势"  id="roce协议的优势">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#roce%e5%8d%8f%e8%ae%ae%e7%9a%84%e4%bc%98%e5%8a%bf">RoCE协议的优势<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
@@ -324,18 +290,12 @@ p code, li code {
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#soft-roce">Soft-RoCE<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
 <p>RXE（Software RDMA over Ethernet, Soft-RoCE）是 RoCEv2 的软件实现，Linux内核模块名 <code>rdma_rxe</code>，让普通以太网卡也能跑 RDMA 应用。</p>
-<h5 id="16-pyverbspython-verbs"  id="16-pyverbspython-verbs">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#16-pyverbspython-verbs">16 Pyverbs（Python Verbs）<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<h5 id="17内存地址基础知识"  id="17内存地址基础知识">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#17%e5%86%85%e5%ad%98%e5%9c%b0%e5%9d%80%e5%9f%ba%e7%a1%80%e7%9f%a5%e8%af%86">17内存地址基础知识<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
+<p><strong>16 Pyverbs（Python Verbs）</strong>
+<strong>17内存地址基础知识</strong></p>
 <h6 id="18queue-buffer"  id="18queue-buffer">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#18queue-buffer">18Queue Buffer<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
-<h5 id="19用户态memory-region-buffer"  id="19用户态memory-region-buffer">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#19%e7%94%a8%e6%88%b7%e6%80%81memory-region-buffer">19用户态Memory Region Buffer<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
+<p><strong>19用户态Memory Region Buffer</strong></p>
 <h3 id="相关技术"  id="相关技术">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e7%9b%b8%e5%85%b3%e6%8a%80%e6%9c%af">相关技术<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h3>

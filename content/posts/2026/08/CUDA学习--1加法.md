@@ -6,8 +6,6 @@ slug: "CUDA"
 categories: [CUDA,笔记]
 ---
 
-
-
 **文件位置**
 
 https://github.com/Tony-Tan/CUDA_Freshman
@@ -141,8 +139,6 @@ V
 [[ block0 ] [ block1 ]] 					       gridDim:(2,2,1)				
 [[ block2 ] [ block3 ]] 	     				   blockIdx: block 位于 grid 的位置索引
 
-
-
 ```
 
 **线程的全局索引**
@@ -259,29 +255,27 @@ import torch
 import triton
 import triton.language as tl
 
-
 @triton.jit
 def vector_add_kernel(a, b, c, n_elements, BLOCK_SIZE: tl.constexpr):
     # 1. 获取当前 Block (Program) 的 ID
     pid = tl.program_id(axis=0)
-    
+
     # 2. 计算当前 Block 需要处理的全局索引 (offsets)
     # tl.arange(0, BLOCK_SIZE) 生成 [0, 1, ..., BLOCK_SIZE-1]
     block_start = pid * BLOCK_SIZE
     offsets = block_start + tl.arange(0, BLOCK_SIZE)
-    
+
     # 3. 边界保护，防止最后一个 Block 越界
     mask = offsets < n_elements
-    
+
     # 4. 加载数据
     # 注意：这里的 a 和 b 实际上是显存指针，a + offsets 得到一批地址
     x = tl.load(a + offsets, mask=mask)
     y = tl.load(b + offsets, mask=mask)
-    
+
     # 5. 执行加法并写回显存
     # 这里用 x + y，避免覆盖传进来的同名变量 a 和 b
     tl.store(c + offsets, x + y, mask=mask)
-
 
 # a, b, c are tensors on the GPU
 def solve(a: torch.Tensor, b: torch.Tensor, c: torch.Tensor, N: int):
@@ -344,7 +338,6 @@ def matrix_add_kernel(a, b, c, n_elements, BLOCK_SIZE: tl.constexpr):
     y = tl.load(b + offsets, mask=mask)
     tl.store(c + offsets, x + y, mask=mask)
 
-
 # a, b, c are tensors on the GPU
 def solve(a: torch.Tensor, b: torch.Tensor, c: torch.Tensor, N: int):
     BLOCK_SIZE = 1024
@@ -352,6 +345,4 @@ def solve(a: torch.Tensor, b: torch.Tensor, c: torch.Tensor, N: int):
     grid = (triton.cdiv(n_elements, BLOCK_SIZE),)
     matrix_add_kernel[grid](a, b, c, n_elements, BLOCK_SIZE)
 ```
-
-
 

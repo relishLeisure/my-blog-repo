@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="cn-zh">
 
-<head><script src="/my-blog-repo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=my-blog-repo/livereload" data-no-instant defer></script>
+<head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Truman&#39;s blog</title>
@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet" type="text/css">
 
-  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="http://localhost:1313/my-blog-repo/feed.xml">
+  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="https://relishleisure.github.io/my-blog-repo/feed.xml">
 
 
 <style>
@@ -65,6 +65,469 @@ p code, li code {
   
 <section class="posts">
   
+  
+  <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/09/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96%E8%AE%B0%E5%BD%951%E6%B7%BB%E5%8A%A0%E8%84%9A%E6%9C%AC%E5%A4%84%E7%90%86%E7%A9%BA%E8%A1%8C%E7%AD%89%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE/">博客优化记录1——添加脚本处理空行等、音乐播放</a></h2>
+    <abbr class="small postDate" title="2026-09-19">September 19, 2026</abbr>
+    <h3 id="脚本"  id="脚本">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96%E8%AE%B0%E5%BD%951%E6%B7%BB%E5%8A%A0%E8%84%9A%E6%9C%AC%E5%A4%84%E7%90%86%E7%A9%BA%E8%A1%8C%E7%AD%89%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE/#%e8%84%9a%e6%9c%ac">脚本<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h3 id="1去掉多行空格"  id="1去掉多行空格">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96%E8%AE%B0%E5%BD%951%E6%B7%BB%E5%8A%A0%E8%84%9A%E6%9C%AC%E5%A4%84%E7%90%86%E7%A9%BA%E8%A1%8C%E7%AD%89%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE/#1%e5%8e%bb%e6%8e%89%e5%a4%9a%e8%a1%8c%e7%a9%ba%e6%a0%bc">1.去掉多行空格<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p>Python 脚本：递归去掉文件夹内所有 <code>.md</code> 文件多个连续空行替换为单个空行</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> re
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> sys
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> pathlib <span style="color:#f92672">import</span> Path
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">compress_blank_lines</span>(directory):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 匹配 2 个或更多连续换行符（即两个或以上的空行，中间允许包含空格或制表符）</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># \n 后面跟着至少 2 个 ([ \t]*\n)</span>
+</span></span><span style="display:flex;"><span>    pattern <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>compile(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;\n([ \t]*\n){1,}&#39;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 获取目录下所有 .md 文件（递归）</span>
+</span></span><span style="display:flex;"><span>    folder_path <span style="color:#f92672">=</span> Path(directory)
+</span></span><span style="display:flex;"><span>    md_files <span style="color:#f92672">=</span> folder_path<span style="color:#f92672">.</span>rglob(<span style="color:#e6db74">&#39;*.md&#39;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    modified_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;开始扫描目录: </span><span style="color:#e6db74">{</span>folder_path<span style="color:#f92672">.</span>resolve()<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> file_path <span style="color:#f92672">in</span> md_files:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># 以 UTF-8 编码读取文件内容</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">with</span> open(file_path, <span style="color:#e6db74">&#39;r&#39;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;utf-8&#39;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>                content <span style="color:#f92672">=</span> f<span style="color:#f92672">.</span>read()
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># 执行正则替换</span>
+</span></span><span style="display:flex;"><span>            new_content <span style="color:#f92672">=</span> pattern<span style="color:#f92672">.</span>sub(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">&#39;</span>, content)
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># 如果内容发生变化，则覆盖写入原文件</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> new_content <span style="color:#f92672">!=</span> content:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">with</span> open(file_path, <span style="color:#e6db74">&#39;w&#39;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;utf-8&#39;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>                    f<span style="color:#f92672">.</span>write(new_content)
+</span></span><span style="display:flex;"><span>                print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;已清理空行: </span><span style="color:#e6db74">{</span>file_path<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>                modified_count <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;读取或写入文件 </span><span style="color:#e6db74">{</span>file_path<span style="color:#e6db74">}</span><span style="color:#e6db74"> 时出错: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">处理完成！共修改了 </span><span style="color:#e6db74">{</span>modified_count<span style="color:#e6db74">}</span><span style="color:#e6db74"> 个 .md 文件。&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> len(sys<span style="color:#f92672">.</span>argv) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>:
+</span></span><span style="display:flex;"><span>        TARGET_DIR <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        TARGET_DIR <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;.&#39;</span>
+</span></span><span style="display:flex;"><span>    compress_blank_lines(TARGET_DIR)
+</span></span></code></pre></div><h3 id="2替换h3"  id="2替换h3">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96%E8%AE%B0%E5%BD%951%E6%B7%BB%E5%8A%A0%E8%84%9A%E6%9C%AC%E5%A4%84%E7%90%86%E7%A9%BA%E8%A1%8C%E7%AD%89%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE/#2%e6%9b%bf%e6%8d%a2h3">2.替换h3<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p>将 h3 标题 替换为 加粗格式</p>
+<blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>&lt;h3&gt;标题&lt;/h3&gt;
+</span></span><span style="display:flex;"><span><span style="font-weight:bold">**标题**</span>
+</span></span></code></pre></div></blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> re
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> sys
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> pathlib <span style="color:#f92672">import</span> Path
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">convert_h3_to_bold</span>(directory):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 匹配 HTML 格式的 H3 标题: &lt;h3&gt;标题&lt;/h3&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># &lt;h3[^&gt;]*&gt; 处理可能带属性的 h3 标签 (例如 &lt;h3 class=&#34;title&#34;&gt;)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># \s*(.*?)\s* 用于去除标题文字前后的多余空格，防止加粗语法失效 (如 ** 标题 ** 是无效的)</span>
+</span></span><span style="display:flex;"><span>    html_h3_pattern <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>compile(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;&lt;h3[^&gt;]*&gt;\s*(.*?)\s*&lt;/h3&gt;&#39;</span>, re<span style="color:#f92672">.</span>IGNORECASE)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 匹配 Markdown 原生格式的 H3 标题: ### 标题</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ^ 匹配行首 (配合 re.MULTILINE 使用)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># \s+ 匹配 ### 后面的空格</span>
+</span></span><span style="display:flex;"><span>    md_h3_pattern <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>compile(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;^###\s+(.*?)\s*$&#39;</span>, re<span style="color:#f92672">.</span>MULTILINE)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 获取目录下所有 .md 文件</span>
+</span></span><span style="display:flex;"><span>    folder_path <span style="color:#f92672">=</span> Path(directory)
+</span></span><span style="display:flex;"><span>    md_files <span style="color:#f92672">=</span> folder_path<span style="color:#f92672">.</span>rglob(<span style="color:#e6db74">&#39;*.md&#39;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    modified_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;开始扫描目录: </span><span style="color:#e6db74">{</span>folder_path<span style="color:#f92672">.</span>resolve()<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> file_path <span style="color:#f92672">in</span> md_files:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">with</span> open(file_path, <span style="color:#e6db74">&#39;r&#39;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;utf-8&#39;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>                content <span style="color:#f92672">=</span> f<span style="color:#f92672">.</span>read()
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># 执行替换，r&#39;**\1**&#39; 中的 \1 代表正则表达式中括号 (.*?) 提取到的标题纯文本</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># 1. 先替换 HTML 标签的 H3</span>
+</span></span><span style="display:flex;"><span>            new_content <span style="color:#f92672">=</span> html_h3_pattern<span style="color:#f92672">.</span>sub(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;**\1**&#39;</span>, content)
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># 2. 再替换 Markdown 原生语法的 H3</span>
+</span></span><span style="display:flex;"><span>            new_content <span style="color:#f92672">=</span> md_h3_pattern<span style="color:#f92672">.</span>sub(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;**\1**&#39;</span>, new_content)
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># 如果内容发生了改变，再写入文件</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> new_content <span style="color:#f92672">!=</span> content:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">with</span> open(file_path, <span style="color:#e6db74">&#39;w&#39;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;utf-8&#39;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>                    f<span style="color:#f92672">.</span>write(new_content)
+</span></span><span style="display:flex;"><span>                print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;已转换 H3 标题: </span><span style="color:#e6db74">{</span>file_path<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>                modified_count <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;读取或写入文件 </span><span style="color:#e6db74">{</span>file_path<span style="color:#e6db74">}</span><span style="color:#e6db74"> 时出错: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">处理完成！共修改了 </span><span style="color:#e6db74">{</span>modified_count<span style="color:#e6db74">}</span><span style="color:#e6db74"> 个 .md 文件。&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> len(sys<span style="color:#f92672">.</span>argv) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>:
+</span></span><span style="display:flex;"><span>        TARGET_DIR <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        TARGET_DIR <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;.&#39;</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    convert_h3_to_bold(TARGET_DIR)
+</span></span></code></pre></div><h3 id="3补充模板信息"  id="3补充模板信息">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96%E8%AE%B0%E5%BD%951%E6%B7%BB%E5%8A%A0%E8%84%9A%E6%9C%AC%E5%A4%84%E7%90%86%E7%A9%BA%E8%A1%8C%E7%AD%89%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE/#3%e8%a1%a5%e5%85%85%e6%a8%a1%e6%9d%bf%e4%bf%a1%e6%81%af">3.补充模板信息<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p>python 脚本：判断是否含有标题栏（判断开头是否包含），如果有那么添加通用模板</p>
+<ul>
+<li>title 设置为 文件名</li>
+<li>时间设置为当前时间</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> sys
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> pathlib <span style="color:#f92672">import</span> Path
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> datetime <span style="color:#f92672">import</span> datetime
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">meets_condition</span>(content: str) <span style="color:#f92672">-&gt;</span> bool:
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    判断 Markdown 内容是否符合条件。
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    如果返回 True，则跳过该文件；如果返回 False，则执行插入操作。
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    【当前逻辑】：检查文件开头是否已经包含 &#39;---&#39; (即是否已经有 Front Matter)。
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    你可以根据需要随意修改此函数的判断逻辑。
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 忽略前导空白字符后，判断是否以 --- 开头</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> content<span style="color:#f92672">.</span>lstrip()<span style="color:#f92672">.</span>startswith(<span style="color:#e6db74">&#39;---&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">generate_front_matter</span>(file_path: Path) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    模拟 Hugo archetypes 模板逻辑，生成 Front Matter 字符串。
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 获取不带后缀的文件名 (例如: &#34;my-first-post&#34;)</span>
+</span></span><span style="display:flex;"><span>    base_name <span style="color:#f92672">=</span> file_path<span style="color:#f92672">.</span>stem 
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 模拟 replace .File.ContentBaseName &#34;-&#34; &#34; &#34; | title </span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 将连字符替换为空格，并将每个单词首字母大写</span>
+</span></span><span style="display:flex;"><span>    title <span style="color:#f92672">=</span> base_name<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;-&#34;</span>, <span style="color:#e6db74">&#34; &#34;</span>)<span style="color:#f92672">.</span>title()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 模拟 {{ .Date }} </span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 生成带时区的 ISO 8601 格式时间，例如: 2026-09-19T20:07:20+08:00</span>
+</span></span><span style="display:flex;"><span>    date_str <span style="color:#f92672">=</span> datetime<span style="color:#f92672">.</span>now()<span style="color:#f92672">.</span>astimezone()<span style="color:#f92672">.</span>isoformat(timespec<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;seconds&#39;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 构建 YAML 格式的 Front Matter</span>
+</span></span><span style="display:flex;"><span>    front_matter <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;&#34;&#34;---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        title: &#34;</span><span style="color:#e6db74">{</span>title<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        date: </span><span style="color:#e6db74">{</span>date_str<span style="color:#e6db74">}</span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        draft: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        slug: &#34;</span><span style="color:#e6db74">{</span>base_name<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        categories: []
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        ---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;&#34;&#34;</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> front_matter
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">process_md_files</span>(directory: str):
+</span></span><span style="display:flex;"><span>    folder_path <span style="color:#f92672">=</span> Path(directory)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> folder_path<span style="color:#f92672">.</span>exists() <span style="color:#f92672">or</span> <span style="color:#f92672">not</span> folder_path<span style="color:#f92672">.</span>is_dir():
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;错误: 路径 &#39;</span><span style="color:#e6db74">{</span>directory<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39; 不存在或不是文件夹！&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>    md_files <span style="color:#f92672">=</span> folder_path<span style="color:#f92672">.</span>rglob(<span style="color:#e6db74">&#39;*.md&#39;</span>)
+</span></span><span style="display:flex;"><span>    modified_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;开始扫描目录: </span><span style="color:#e6db74">{</span>folder_path<span style="color:#f92672">.</span>resolve()<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> file_path <span style="color:#f92672">in</span> md_files:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">with</span> open(file_path, <span style="color:#e6db74">&#39;r&#39;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;utf-8&#39;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>                content <span style="color:#f92672">=</span> f<span style="color:#f92672">.</span>read()
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># 判断是否符合条件</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> meets_condition(content):
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># 生成模板文字</span>
+</span></span><span style="display:flex;"><span>                new_meta <span style="color:#f92672">=</span> generate_front_matter(file_path)
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># 【在开头插入】</span>
+</span></span><span style="display:flex;"><span>                new_content <span style="color:#f92672">=</span> new_meta <span style="color:#f92672">+</span> content
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># 如果你想【在结尾插入】，请注释掉上一行，并取消下面这行的注释：</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># new_content = content + &#34;\n\n&#34; + new_meta</span>
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">with</span> open(file_path, <span style="color:#e6db74">&#39;w&#39;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;utf-8&#39;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>                    f<span style="color:#f92672">.</span>write(new_content)
+</span></span><span style="display:flex;"><span>                    
+</span></span><span style="display:flex;"><span>                print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;已补全 Front Matter: </span><span style="color:#e6db74">{</span>file_path<span style="color:#f92672">.</span>name<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>                modified_count <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;处理文件 </span><span style="color:#e6db74">{</span>file_path<span style="color:#f92672">.</span>name<span style="color:#e6db74">}</span><span style="color:#e6db74"> 时出错: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">处理完成！共修改了 </span><span style="color:#e6db74">{</span>modified_count<span style="color:#e6db74">}</span><span style="color:#e6db74"> 个 .md 文件。&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 允许从命令行传入路径，如果没有传入则默认处理当前目录</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> len(sys<span style="color:#f92672">.</span>argv) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>:
+</span></span><span style="display:flex;"><span>        TARGET_DIR <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        TARGET_DIR <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;.&#39;</span> 
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>    process_md_files(TARGET_DIR)
+</span></span></code></pre></div><h3 id="音乐页面"  id="音乐页面">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96%E8%AE%B0%E5%BD%951%E6%B7%BB%E5%8A%A0%E8%84%9A%E6%9C%AC%E5%A4%84%E7%90%86%E7%A9%BA%E8%A1%8C%E7%AD%89%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE/#%e9%9f%b3%e4%b9%90%e9%a1%b5%e9%9d%a2">音乐页面<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h3 id="常规"  id="常规">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96%E8%AE%B0%E5%BD%951%E6%B7%BB%E5%8A%A0%E8%84%9A%E6%9C%AC%E5%A4%84%E7%90%86%E7%A9%BA%E8%A1%8C%E7%AD%89%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE/#%e5%b8%b8%e8%a7%84">常规<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p>1.<strong>存放位置</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>my-hugo-repo/
+</span></span><span style="display:flex;"><span>├── static/
+</span></span><span style="display:flex;"><span>│   └── audio/
+</span></span><span style="display:flex;"><span>│       └── bgm.mp3      &lt;-- 放在这里
+</span></span></code></pre></div><p>2.<strong>创建 Audio Shortcode 模块</strong></p>
+<p><strong>文件路径：</strong> <code>layouts/shortcodes/audio.html</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-HTML" data-lang="HTML"><span style="display:flex;"><span>&lt;<span style="color:#f92672">audio</span> <span style="color:#a6e22e">controls</span> <span style="color:#a6e22e">preload</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;auto&#34;</span> <span style="color:#a6e22e">style</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;width: 100%;&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">source</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{{ .Get &#34;</span><span style="color:#a6e22e">src</span><span style="color:#960050;background-color:#1e0010">&#34;</span> <span style="color:#960050;background-color:#1e0010">}}&#34;</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;audio/mpeg&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>    您的浏览器不支持 audio 标签。
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">audio</span>&gt;
+</span></span></code></pre></div><p>自定义CSS, 放在HTML 文件内部</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-CSS" data-lang="CSS"><span style="display:flex;"><span><span style="color:#f92672">&lt;</span><span style="color:#f92672">div</span> <span style="color:#f92672">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;custom-audio-card&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>    {<span style="color:#960050;background-color:#1e0010">{</span> <span style="color:#960050;background-color:#1e0010">if</span> <span style="color:#960050;background-color:#1e0010">.Get</span> <span style="color:#960050;background-color:#1e0010">&#34;title&#34;</span> }<span style="color:#960050;background-color:#1e0010">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;</span><span style="color:#f92672">div</span> <span style="color:#f92672">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;audio-info&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;</span><span style="color:#f92672">span</span> <span style="color:#f92672">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;audio-icon&#34;</span><span style="color:#f92672">&gt;</span><span style="color:#960050;background-color:#1e0010">🎵</span><span style="color:#f92672">&lt;/</span><span style="color:#f92672">span</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;</span><span style="color:#f92672">span</span> <span style="color:#f92672">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;audio-title&#34;</span><span style="color:#f92672">&gt;</span>{<span style="color:#960050;background-color:#1e0010">{</span> <span style="color:#960050;background-color:#1e0010">.Get</span> <span style="color:#960050;background-color:#1e0010">&#34;title&#34;</span> }<span style="color:#960050;background-color:#1e0010">}</span><span style="color:#f92672">&lt;/</span><span style="color:#f92672">span</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>        {<span style="color:#960050;background-color:#1e0010">{</span> <span style="color:#960050;background-color:#1e0010">if</span> <span style="color:#960050;background-color:#1e0010">.Get</span> <span style="color:#960050;background-color:#1e0010">&#34;artist&#34;</span> }<span style="color:#960050;background-color:#1e0010">}</span><span style="color:#f92672">&lt;</span><span style="color:#f92672">span</span> <span style="color:#f92672">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;audio-artist&#34;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">-</span> {<span style="color:#960050;background-color:#1e0010">{</span> <span style="color:#960050;background-color:#1e0010">.Get</span> <span style="color:#960050;background-color:#1e0010">&#34;artist&#34;</span> }<span style="color:#960050;background-color:#1e0010">}</span><span style="color:#f92672">&lt;/</span><span style="color:#f92672">span</span><span style="color:#f92672">&gt;</span>{<span style="color:#960050;background-color:#1e0010">{</span> <span style="color:#960050;background-color:#1e0010">end</span> }<span style="color:#960050;background-color:#1e0010">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/</span><span style="color:#f92672">div</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>    {<span style="color:#960050;background-color:#1e0010">{</span> <span style="color:#960050;background-color:#1e0010">end</span> }<span style="color:#960050;background-color:#1e0010">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;</span><span style="color:#f92672">audio</span> <span style="color:#f92672">controls</span> <span style="color:#f92672">preload</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;metadata&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;</span><span style="color:#f92672">source</span> <span style="color:#f92672">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{{ .Get &#34;</span><span style="color:#f92672">src</span><span style="color:#e6db74">&#34; }}&#34;</span> <span style="color:#f92672">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;audio/mpeg&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">您的浏览器不支持</span> <span style="color:#f92672">audio</span> <span style="color:#f92672">标签</span><span style="color:#960050;background-color:#1e0010">。</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/</span><span style="color:#f92672">audio</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/</span><span style="color:#f92672">div</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;</span><span style="color:#f92672">style</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>.<span style="color:#a6e22e">custom-audio-card</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">background</span>: <span style="color:#a6e22e">var</span>(<span style="color:#f92672">--</span>entry, <span style="color:#ae81ff">#f8f9fa</span>); <span style="color:#75715e">/* 兼容暗黑模式，或自定义背景色 */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">border</span>: <span style="color:#ae81ff">1</span><span style="color:#66d9ef">px</span> <span style="color:#66d9ef">solid</span> rgba(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0.08</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">border-radius</span>: <span style="color:#ae81ff">12</span><span style="color:#66d9ef">px</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">padding</span>: <span style="color:#ae81ff">12</span><span style="color:#66d9ef">px</span> <span style="color:#ae81ff">16</span><span style="color:#66d9ef">px</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">margin</span>: <span style="color:#ae81ff">1.5</span><span style="color:#66d9ef">rem</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">box-shadow</span>: <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">4</span><span style="color:#66d9ef">px</span> <span style="color:#ae81ff">12</span><span style="color:#66d9ef">px</span> rgba(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0.03</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>.<span style="color:#a6e22e">audio-info</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">display</span>: <span style="color:#66d9ef">flex</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">align-items</span>: <span style="color:#66d9ef">center</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">gap</span>: <span style="color:#ae81ff">8</span><span style="color:#66d9ef">px</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">margin-bottom</span>: <span style="color:#ae81ff">8</span><span style="color:#66d9ef">px</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">font-size</span>: <span style="color:#ae81ff">0.95</span><span style="color:#66d9ef">rem</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>.<span style="color:#a6e22e">audio-title</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">font-weight</span>: <span style="color:#ae81ff">600</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>.<span style="color:#a6e22e">audio-artist</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">opacity</span>: <span style="color:#ae81ff">0.7</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">font-size</span>: <span style="color:#ae81ff">0.85</span><span style="color:#66d9ef">rem</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>.<span style="color:#a6e22e">custom-audio-card</span> <span style="color:#f92672">audio</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">width</span>: <span style="color:#ae81ff">100</span><span style="color:#66d9ef">%</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">height</span>: <span style="color:#ae81ff">40</span><span style="color:#66d9ef">px</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">outline</span>: <span style="color:#66d9ef">none</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/</span><span style="color:#f92672">style</span><span style="color:#f92672">&gt;</span>
+</span></span></code></pre></div><p><strong>3. 在 Markdown 文件中调用</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-Markdown" data-lang="Markdown"><span style="display:flex;"><span><span style="color:#75715e">## 我的音乐
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>听听这首曲子：
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><div class="custom-audio-card">
+    
+    <audio controls preload="metadata">
+        <source src="/audio/bgm.mp3" type="audio/mpeg">
+        您的浏览器不支持 audio 标签。
+    </audio>
+</div>
+
+<style>
+.custom-audio-card {
+    background: var(--entry, #f8f9fa);  
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin: 1.5rem 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+.audio-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+.audio-title {
+    font-weight: 600;
+}
+.audio-artist {
+    opacity: 0.7;
+    font-size: 0.85rem;
+}
+.custom-audio-card audio {
+    width: 100%;
+    height: 40px;
+    outline: none;
+}
+</style>
+</span></span></code></pre></div><h3 id="aplayer卡片播放器"  id="aplayer卡片播放器">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96%E8%AE%B0%E5%BD%951%E6%B7%BB%E5%8A%A0%E8%84%9A%E6%9C%AC%E5%A4%84%E7%90%86%E7%A9%BA%E8%A1%8C%E7%AD%89%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE/#aplayer%e5%8d%a1%e7%89%87%e6%92%ad%e6%94%be%e5%99%a8">APlayer卡片播放器<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><strong>1. 新建 Shortcode</strong></p>
+<p>创建文件 <code>layouts/shortcodes/aplayer.html</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-HTML" data-lang="HTML"><span style="display:flex;"><span><span style="color:#75715e">&lt;!-- 引入 APlayer 静态资源 --&gt;</span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">link</span> <span style="color:#a6e22e">rel</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;stylesheet&#34;</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js&#34;</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">&lt;!-- 播放器容器 --&gt;</span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;aplayer-{{ .Ordinal }}&#34;</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;aplayer-container&#34;</span>&gt;&lt;/<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span>  document.<span style="color:#a6e22e">addEventListener</span>(<span style="color:#e6db74">&#34;DOMContentLoaded&#34;</span>, <span style="color:#66d9ef">function</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">APlayer</span>({
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">container</span><span style="color:#f92672">:</span> document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;aplayer-{{ .Ordinal }}&#39;</span>),
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">audio</span><span style="color:#f92672">:</span> [{
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;{{ .Get &#34;title&#34; | default &#34;未知曲目&#34; }}&#39;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">artist</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;{{ .Get &#34;artist&#34; | default &#34;未知歌手&#34; }}&#39;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">url</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;{{ .Get &#34;src&#34; }}&#39;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">cover</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;{{ .Get &#34;cover&#34; | default &#34;&#34; }}&#39;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">lrc</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;{{ .Get &#34;lrc&#34; | default &#34;&#34; }}&#39;</span>
+</span></span><span style="display:flex;"><span>      }]
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>  });
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">script</span>&gt;
+</span></span></code></pre></div><p><strong>2. Markdown 中调用</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-Markdown" data-lang="Markdown"><span style="display:flex;"><span>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+
+<div id="aplayer-1" class="aplayer-container"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    new APlayer({
+      container: document.getElementById('aplayer-1'),
+      audio: [{
+        name: '稻香',
+        artist: '周杰伦',
+        url: '\/my-blog-repo\/audio\/稻香-周杰伦.mp3',
+        cover: '',
+        lrc: ''
+      }]
+    });
+  });
+</script>
+</span></span></code></pre></div><ul>
+<li>带封面的调用：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-Markdown" data-lang="Markdown"><span style="display:flex;"><span>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+
+<div id="aplayer-2" class="aplayer-container"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    new APlayer({
+      container: document.getElementById('aplayer-2'),
+      audio: [{
+        name: '稻香',
+        artist: '周杰伦',
+        url: '\/my-blog-repo\/audio\/稻香-周杰伦.mp3',
+        cover: '\/images\/cover.jpg',
+        lrc: ''
+      }]
+    });
+  });
+</script>
+</span></span></code></pre></div><p><strong>如果播放 <code>flac</code> 文件，将 type=&ldquo;audio/mpeg&rdquo; 改为 type=&ldquo;audio/flac&rdquo;</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+
+<div id="aplayer-3" class="aplayer-container"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    new APlayer({
+      container: document.getElementById('aplayer-3'),
+      audio: [{
+        name: '稻香',
+        artist: '周杰伦',
+        url: '\/my-blog-repo\/audio\/稻香-周杰伦.flac',
+        cover: '',
+        lrc: ''
+      }]
+    });
+  });
+</script>
+</span></span></code></pre></div>
+  </article>
+  
+  <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/09/%E9%9F%B3%E4%B9%90%E9%A1%B5%E9%9D%A2/">音乐页面</a></h2>
+    <abbr class="small postDate" title="2026-09-19">September 19, 2026</abbr>
+    <h4 id="我的音乐"  id="我的音乐">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E9%9F%B3%E4%B9%90%E9%A1%B5%E9%9D%A2/#%e6%88%91%e7%9a%84%e9%9f%b3%e4%b9%90">我的音乐<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>听听这首曲子：</p>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+
+<div id="aplayer-0" class="aplayer-container"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    new APlayer({
+      container: document.getElementById('aplayer-0'),
+      audio: [{
+        name: '不要认输',
+        artist: '坂本泉水',
+        url: '\/my-blog-repo\/audio\/不要认输-坂本泉水.flac',
+        cover: '',
+        lrc: ''
+      }]
+    });
+  });
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+
+<div id="aplayer-1" class="aplayer-container"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    new APlayer({
+      container: document.getElementById('aplayer-1'),
+      audio: [{
+        name: '稻香',
+        artist: '周杰伦',
+        url: '\/my-blog-repo\/audio\/稻香-周杰伦.flac',
+        cover: '',
+        lrc: ''
+      }]
+    });
+  });
+</script>
+
+  </article>
   
   <article class="post">
     <h2><a class="post-title" href="/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/">Python调试技巧</a></h2>
@@ -178,21 +641,27 @@ F:\PythonTemp\onlyone.py:12 | &lt;module&gt; | x=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
   <a class="heading-link" href="/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/#powershell"><strong>powershell</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h4>
 <blockquote>
-<p>格式</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span><span style="color:#75715e"># python -c @&#34;多行代码&#34;</span>
-</span></span></code></pre></div><p>例子</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span>python -c <span style="color:#e6db74">@&#34;
+<p><strong>格式</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span><span style="color:#75715e"># 利用管道传输 </span>
+</span></span><span style="display:flex;"><span>@<span style="color:#e6db74">&#34;多行代码&#34;</span>@ | python
+</span></span></code></pre></div><p><strong>例子</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span><span style="color:#e6db74">@&#34;
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">import logging
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">logging.basicConfig(
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    level=logging.DEBUG,
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    format=&#34;%(pathname)s:%(lineno)d | %(funcName)s | %(message)s&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> level=logging.DEBUG,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> format=&#34;%(pathname)s:%(lineno)d | %(funcName)s | %(message)s&#34;
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">)
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">log = logging.getLogger(__name__)
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">x = 10
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">log.debug(f&#34;{x=}&#34;)
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">x = [i for i in range(10)]
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">log.debug(f&#34;{x=}&#34;)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;@</span>
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;@</span> | python
+</span></span></code></pre></div><p><strong>格式</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span>python -c <span style="color:#e6db74">&#34;import lib;语句1;语句2;语句3&#34;</span>
+</span></span></code></pre></div><p><strong>例子</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span><span style="color:#75715e"># 引号里面的 &#34; 使用了转义符号  \&#34;</span>
+</span></span><span style="display:flex;"><span>python -c <span style="color:#e6db74">&#39;import logging;log = logging.getLogger(__name__);x = 10;log.warning(f\&#34;{x=}\&#34;)&#39;</span>
 </span></span></code></pre></div></blockquote>
 
   </article>
@@ -491,10 +960,8 @@ ls -la
 <h4 id="2处理"  id="2处理">
   <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#2%e5%a4%84%e7%90%86">2.处理<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h4>
-<h5 id="第一步删除定时任务"  id="第一步删除定时任务">
-  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#%e7%ac%ac%e4%b8%80%e6%ad%a5%e5%88%a0%e9%99%a4%e5%ae%9a%e6%97%b6%e4%bb%bb%e5%8a%a1">第一步：删除定时任务<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p>必须先删定时任务，否则后面的操作毫无意义。</p>
+<p><strong>第一步：删除定时任务</strong>
+必须先删定时任务，否则后面的操作毫无意义。</p>
 <ol>
 <li>
 <p>查看定时任务</p>
@@ -517,10 +984,8 @@ ls -la
 <p>再次运行 <code>crontab -l</code>，确认没有任何输出，或者该恶意行已被成功移除。</p>
 </li>
 </ol>
-<h5 id="第二步彻底击杀所有恶意进程"  id="第二步彻底击杀所有恶意进程">
-  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#%e7%ac%ac%e4%ba%8c%e6%ad%a5%e5%bd%bb%e5%ba%95%e5%87%bb%e6%9d%80%e6%89%80%e6%9c%89%e6%81%b6%e6%84%8f%e8%bf%9b%e7%a8%8b">第二步：彻底击杀所有恶意进程<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p>现在定时任务已经不在了，木马失去了“复活甲”，我们可以放心动手杀进程了。请依次执行：</p>
+<p><strong>第二步：彻底击杀所有恶意进程</strong>
+现在定时任务已经不在了，木马失去了“复活甲”，我们可以放心动手杀进程了。请依次执行：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span><span style="color:#75715e"># 击杀挖矿木马主进程</span>
 </span></span><span style="display:flex;"><span>kill -9 <span style="color:#ae81ff">513276</span>
 </span></span><span style="display:flex;"><span>
@@ -533,10 +998,8 @@ ls -la
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># 如果还不放心，可以用下面这条命令一键清理名为 python、crond 但在恶意路径下的漏网之鱼</span>
 </span></span><span style="display:flex;"><span>pkill -9 -f <span style="color:#e6db74">&#34;/tmp/.crond/python&#34;</span>
 </span></span><span style="display:flex;"><span>pkill -9 -f <span style="color:#e6db74">&#34;/var/tmp/.crond/&#34;</span>
-</span></span></code></pre></div><h5 id="第三步连根拔起删除所有恶意文件"  id="第三步连根拔起删除所有恶意文件">
-  <a class="heading-link" href="/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/#%e7%ac%ac%e4%b8%89%e6%ad%a5%e8%bf%9e%e6%a0%b9%e6%8b%94%e8%b5%b7%e5%88%a0%e9%99%a4%e6%89%80%e6%9c%89%e6%81%b6%e6%84%8f%e6%96%87%e4%bb%b6">第三步：连根拔起，删除所有恶意文件<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p>清理所有查出的木马目录：</p>
+</span></span></code></pre></div><p><strong>第三步：连根拔起，删除所有恶意文件</strong>
+清理所有查出的木马目录：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span><span style="color:#75715e"># 删除 /tmp 下的木马主目录</span>
 </span></span><span style="display:flex;"><span>rm -rf /tmp/.crond
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># 删除 /var/tmp 下的更新脚本或备份目录</span>
@@ -561,7 +1024,7 @@ ls -la
 </span></span><span style="display:flex;"><span>| N/A   36C    P0             55W /  400W |      14MiB /  40960MiB |      0%      Default |
 </span></span><span style="display:flex;"><span>|                                         |                        |             Disabled |
 </span></span><span style="display:flex;"><span>+-----------------------------------------+------------------------+----------------------+
-</span></span><span style="display:flex;"><span>                                                                                         
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>+-----------------------------------------------------------------------------------------+
 </span></span><span style="display:flex;"><span>| Processes:                                                                              |
 </span></span><span style="display:flex;"><span>|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
@@ -651,12 +1114,10 @@ ls -la
 </span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> triton
 </span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> triton.language <span style="color:#66d9ef">as</span> tl
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">@triton.jit</span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">conv1d_kernel</span>(input, kernel, output, input_size, kernel_size, BLOCK_SIZE: tl<span style="color:#f92672">.</span>constexpr):
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pass</span>
 </span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pass</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># input, kernel, output are tensors on the GPU</span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">solve</span>(
@@ -702,7 +1163,6 @@ ls -la
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@triton.jit</span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">leaky_relu_kernel</span>(input, output, n_elements, BLOCK_SIZE: tl<span style="color:#f92672">.</span>constexpr):
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pass</span>
-</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># input, output are tensors on the GPU</span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">solve</span>(input: torch<span style="color:#f92672">.</span>Tensor, output: torch<span style="color:#f92672">.</span>Tensor, N: int):
@@ -792,7 +1252,7 @@ ls -la
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int64_t</span> total_elements <span style="color:#f92672">=</span> T <span style="color:#f92672">*</span> H;
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> block_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int64_t</span> grid_size <span style="color:#f92672">=</span> (total_elements <span style="color:#f92672">+</span> block_size <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> block_size;
-</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    relu_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>grid_size, block_size<span style="color:#f92672">&gt;&gt;&gt;</span>(x, y, total_elements);
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// cudaDeviceSynchronize();
 </span></span></span><span style="display:flex;"><span>}
@@ -1390,7 +1850,7 @@ FigS1_training_curves 与 logs/）。</li>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cmd" data-lang="cmd"><span style="display:flex;"><span># conda 新环境
 </span></span><span style="display:flex;"><span>conda create -n tf python=3.10 -y
 </span></span><span style="display:flex;"><span>conda activate tf
-</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span># 安装库
 </span></span><span style="display:flex;"><span>pip list
 </span></span><span style="display:flex;"><span>pip install tensorflow==2.10.0 numpy==1.25.3 scipy jax h5py matplotlib seaborn numba spectrum notebook ipympl	
@@ -1503,26 +1963,26 @@ FigS1_training_curves 与 logs/）。</li>
 </span></span><span style="display:flex;"><span>        super()<span style="color:#f92672">.</span><span style="color:#a6e22e">__init__</span>()
 </span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 初始化模型，指定参数</span>
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pass</span>
-</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 前向过程</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">call</span>(self, x):
 </span></span><span style="display:flex;"><span>        x_hat <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>ResNet(x)
 </span></span><span style="display:flex;"><span>        y_hat <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>nn<span style="color:#f92672">.</span>conv2d(x_hat, self<span style="color:#f92672">.</span>impulse_response, padding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;SAME&#34;</span>, strides<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> x_hat, y_hat
-</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 重写 compile()</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">compile</span>(self, opt):
 </span></span><span style="display:flex;"><span>        super()<span style="color:#f92672">.</span>compile()
 </span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>opt <span style="color:#f92672">=</span> opt						<span style="color:#75715e"># 指定 optimizer </span>
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pass</span>
-</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 计算损失函数</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">compute_loss</span>(self, Y, Y_hat, X):
 </span></span><span style="display:flex;"><span>        l1 <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reduce_mean(tf<span style="color:#f92672">.</span>abs(X))
 </span></span><span style="display:flex;"><span>        l2 <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>reduce_mean(tf<span style="color:#f92672">.</span>square(Y <span style="color:#f92672">-</span> Y_hat))
 </span></span><span style="display:flex;"><span>        total_loss <span style="color:#f92672">=</span> l2 <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>lam <span style="color:#f92672">*</span> l1
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> total_loss, l2, l1
-</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 正向传播：X, Y_hat = self.call(Y) (对应 PyTorch 里的 output = model(data))</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 计算损失：total_loss, ... = self.compute_loss(...) (对应 loss = criterion(...))</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 反向传播求梯度：grads = tape.gradient(total_loss, RN_vars) (对应 loss.backward())</span>
@@ -1530,16 +1990,16 @@ FigS1_training_curves 与 logs/）。</li>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">train_step</span>(self, Y):
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> isinstance(data, tuple):
 </span></span><span style="display:flex;"><span>            Y <span style="color:#f92672">=</span> Y[<span style="color:#ae81ff">0</span>]
-</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>        RN <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>ResNet
 </span></span><span style="display:flex;"><span>        RN_vars <span style="color:#f92672">=</span> RN<span style="color:#f92672">.</span>trainable_variables
-</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> tf<span style="color:#f92672">.</span>GradientTape() <span style="color:#66d9ef">as</span> tape:
 </span></span><span style="display:flex;"><span>            X, Y_hat <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>call(Y)
 </span></span><span style="display:flex;"><span>            total_loss, l2_loss, l1_loss <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>compute_loss(Y, Y_hat, X)
-</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>        grads <span style="color:#f92672">=</span> tape<span style="color:#f92672">.</span>gradient(total_loss, RN_vars)
-</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>opt<span style="color:#f92672">.</span>apply_gradients(zip(grads, RN_vars))
 </span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>compiled_metrics<span style="color:#f92672">.</span>update_state(Y, Y_hat)
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> {
@@ -1547,11 +2007,11 @@ FigS1_training_curves 与 logs/）。</li>
 </span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;l2&#34;</span>: l2_loss,
 </span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;l1&#34;</span>: l1_loss,
 </span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_step</span>(self, Y):
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> isinstance(data, tuple):
 </span></span><span style="display:flex;"><span>            Y <span style="color:#f92672">=</span> Y[<span style="color:#ae81ff">0</span>]
-</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>        X, Y_hat <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>call(Y)
 </span></span><span style="display:flex;"><span>        total_loss, l2_loss, l1_loss <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>compute_loss(Y, Y_hat, X)
 </span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>compiled_metrics<span style="color:#f92672">.</span>update_state(Y, Y_hat)
@@ -1567,14 +2027,14 @@ FigS1_training_curves 与 logs/）。</li>
 </span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;&#34;&#34;
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        Convolution layer &gt; batch normalisation &gt; activation &gt; dropout
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
-</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> x
-</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 模块</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">residual_block</span>(self, x, f0):
 </span></span><span style="display:flex;"><span>        <span style="color:#f92672">...</span>
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> x0 <span style="color:#f92672">+</span> x
-</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 拼接卷积层和</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">construct</span>(self):
 </span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;&#34;&#34;
@@ -1582,7 +2042,7 @@ FigS1_training_curves 与 logs/）。</li>
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
 </span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>ResNet <span style="color:#f92672">=</span> Model(inputs, x)
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>ResNet
-</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># 模型</span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UNet</span>(keras<span style="color:#f92672">.</span>Model):
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 同上</span>
@@ -1668,9 +2128,7 @@ $$</p>
 <h3 id="某岗位信息"  id="某岗位信息">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e6%9f%90%e5%b2%97%e4%bd%8d%e4%bf%a1%e6%81%af">某岗位信息<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h3>
-<h5 id="岗位关联小结"  id="岗位关联小结">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e5%b2%97%e4%bd%8d%e5%85%b3%e8%81%94%e5%b0%8f%e7%bb%93">岗位关联小结<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
+<p><strong>岗位关联小结</strong></p>
 <ul>
 <li>KVM/QEMU/Xen：<strong>底层虚拟机虚拟化</strong>，DPU 智能网卡需适配虚拟网络、硬件直通；</li>
 <li>OpenStack：<strong>云集群管控</strong>，对应大规模云环境测试场景；</li>
@@ -1696,25 +2154,19 @@ $$</p>
 <h4 id="一-rdma-概念篇"  id="一-rdma-概念篇">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e4%b8%80-rdma-%e6%a6%82%e5%bf%b5%e7%af%87">一 RDMA 概念篇<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h4>
-<h5 id="1-rdma概述"  id="1-rdma概述">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#1-rdma%e6%a6%82%e8%bf%b0">1. RDMA概述<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p>RDMA</p>
+<p><strong>1. RDMA概述</strong>
+RDMA</p>
 <p>DMA，传统网卡发送接收数据需要经过CPU，非常耗时，而且还需要linux切换内核态和用户态</p>
 <p>0拷贝：不需要在用户空间和内核空间中来回复制数据</p>
 <p>内核Bypass：IO（数据）流程可以绕过内核，即在用户层就可以把数据准备好并通知硬件准备发送和接收。避免了系统调用和上下文切换的开销。</p>
 <p>CPU卸载：指的是可以在远端节点CPU不参与通信的情况下（当然要持有访问远端某段内存的“钥匙”才行）对内存进行读写</p>
 <p>协议：RDMA的具体实现</p>
 <p><a href="https://zhida.zhihu.com/search?content_id=118992942&amp;content_type=Article&amp;match_order=1&amp;q=Infiniband&amp;zhida_source=entity">Infiniband</a>（IB），RDMA over Converged Ethernet（RoCE）和internet Wide Area RDMA Protocol（iWARP）</p>
-<h5 id="2-比较基于传统以太网与rdma技术的通信"  id="2-比较基于传统以太网与rdma技术的通信">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#2-%e6%af%94%e8%be%83%e5%9f%ba%e4%ba%8e%e4%bc%a0%e7%bb%9f%e4%bb%a5%e5%a4%aa%e7%bd%91%e4%b8%8erdma%e6%8a%80%e6%9c%af%e7%9a%84%e9%80%9a%e4%bf%a1">2. 比较基于传统以太网与RDMA技术的通信<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p>RDMA的分层模型分成两部分“控制通路”和“数据通路”，控制通路需要进入内核态准备通信所需的内存资源，而数据通路指的是实际数据交互过程中的流程。</p>
+<p><strong>2. 比较基于传统以太网与RDMA技术的通信</strong>
+RDMA的分层模型分成两部分“控制通路”和“数据通路”，控制通路需要进入内核态准备通信所需的内存资源，而数据通路指的是实际数据交互过程中的流程。</p>
 <p><img src="https://pica.zhimg.com/v2-8ef2b015ba9d111fc2d42983cd5fe152_1440w.jpg" alt="img"></p>
-<h5 id="3-rdma基本元素"  id="3-rdma基本元素">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#3-rdma%e5%9f%ba%e6%9c%ac%e5%85%83%e7%b4%a0">3 RDMA基本元素<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p><img src="https://pic3.zhimg.com/v2-b6723caa5b291ee161d94fd8fd8ce09c_1440w.jpg" alt="img"></p>
+<p><strong>3 RDMA基本元素</strong>
+<img src="https://pic3.zhimg.com/v2-b6723caa5b291ee161d94fd8fd8ce09c_1440w.jpg" alt="img"></p>
 <p>WQ，Work Queue  软件给硬件的任务队列，WQE, Work Queue Element</p>
 <p>RDMA技术中<strong>通信的基本单元是QP</strong>, QP Queue  Pair  一对 WQ, 也就是发送和接收。SQ, Send Queue ； RQ, Receive Queue</p>
 <p>QPN（Queue Pair Number）,QP 的唯一编号</p>
@@ -1723,9 +2175,7 @@ $$</p>
 <p><img src="https://pic2.zhimg.com/v2-a8d38721903672037b27cc7e49ecee03_1440w.jpg" alt="img"></p>
 <p>WR全称为Work Request，意为工作请求；WC全称Work Completion，意为工作完成。这两者其实是WQE和CQE在用户层的“映射”。</p>
 <p>[1]《IB Specification Vol 1-Release-1.3-2015-03-03》</p>
-<h5 id="4-rdma操作类型"  id="4-rdma操作类型">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#4-rdma%e6%93%8d%e4%bd%9c%e7%b1%bb%e5%9e%8b"><a href="https://zhuanlan.zhihu.com/p/142175657">4. RDMA操作类型</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
+<p><strong><a href="https://zhuanlan.zhihu.com/p/142175657">4. RDMA操作类型</a></strong></p>
 <h6 id="send--recv"  id="send--recv">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#send--recv">SEND &amp; RECV<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
@@ -1735,10 +2185,8 @@ $$</p>
 <p>看原帖，图画的非常好</p>
 <p>个人想法&gt; 我们不生产数据，我们只是数据的搬运工，CV工程师</p>
 <p><strong>[1] part1-OFA_Training_Sept_2016.pdf</strong> 是<strong>2016 年 9 月发布的 OFA（OpenFabrics Alliance，开放架构联盟）官方培训资料第一部分</strong>，是 RDMA（远程直接内存访问）领域的经典入门 / 培训文档。</p>
-<h5 id="5-rdma基本服务类型"  id="5-rdma基本服务类型">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#5-rdma%e5%9f%ba%e6%9c%ac%e6%9c%8d%e5%8a%a1%e7%b1%bb%e5%9e%8b"><a href="https://zhuanlan.zhihu.com/p/144099636">5. RDMA基本服务类型</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p><a href="https://zhida.zhihu.com/search?content_id=120154436&amp;content_type=Article&amp;match_order=1&amp;q=IB%E5%8D%8F%E8%AE%AE&amp;zhida_source=entity">IB协议</a>中通过“可靠”和“连接”两个维度来描述一种服务类型。</p>
+<p><strong><a href="https://zhuanlan.zhihu.com/p/144099636">5. RDMA基本服务类型</a></strong>
+<a href="https://zhida.zhihu.com/search?content_id=120154436&amp;content_type=Article&amp;match_order=1&amp;q=IB%E5%8D%8F%E8%AE%AE&amp;zhida_source=entity">IB协议</a>中通过“可靠”和“连接”两个维度来描述一种服务类型。</p>
 <h6 id="可靠不可靠"  id="可靠不可靠">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e5%8f%af%e9%9d%a0%e4%b8%8d%e5%8f%af%e9%9d%a0">可靠/不可靠<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
@@ -1747,9 +2195,7 @@ $$</p>
 <h6 id="连接与数据报datagram"  id="连接与数据报datagram">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e8%bf%9e%e6%8e%a5%e4%b8%8e%e6%95%b0%e6%8d%ae%e6%8a%a5datagram">连接与数据报（Datagram）<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
-<h5 id="服务类型"  id="服务类型">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e6%9c%8d%e5%8a%a1%e7%b1%bb%e5%9e%8b">服务类型<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
+<p><strong>服务类型</strong></p>
 <table>
 	<thead>
 			<tr>
@@ -1772,9 +2218,7 @@ $$</p>
 	</tbody>
 </table>
 <p>RC和<a href="https://zhida.zhihu.com/search?content_id=120154436&amp;content_type=Article&amp;match_order=1&amp;q=UD&amp;zhida_source=entity">UD</a>是应用最多的两种，可以类比成TCP和UDP。</p>
-<h5 id="6-rdma之memory-region"  id="6-rdma之memory-region">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#6-rdma%e4%b9%8bmemory-region"><a href="https://zhuanlan.zhihu.com/p/156975042">6. RDMA之Memory Region</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
+<p><strong><a href="https://zhuanlan.zhihu.com/p/156975042">6. RDMA之Memory Region</a></strong></p>
 <h4 id="mrmemory-region"  id="mrmemory-region">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#mrmemory-region">MR，Memory Region<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h4>
@@ -1792,25 +2236,17 @@ $$</p>
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e9%81%bf%e5%85%8d%e6%8d%a2%e9%a1%b5">避免换页<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
 <p>换页：内存为分页存储/读取，操作系统为提高内存使用效率，会将使用频率低的内存搬运。影响VA-PA的映射关系</p>
-<h5 id="7-rdma之protection-domain"  id="7-rdma之protection-domain">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#7-rdma%e4%b9%8bprotection-domain"><a href="https://zhuanlan.zhihu.com/p/159493100">7. RDMA之Protection Domain</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p>PD, Protection Domain, 包括 QP 和 MR，（工作队列对 和 内存区域），就像分组一样</p>
-<h5 id="8-rdma之address-handle"  id="8-rdma之address-handle">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#8-rdma%e4%b9%8baddress-handle"><a href="https://zhuanlan.zhihu.com/p/163552044">8. RDMA之Address Handle</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p>IB协议中的这个标识被称为GID（Global Identifier，全局ID）**，是一个128 bits的序列。</p>
+<p><strong><a href="https://zhuanlan.zhihu.com/p/159493100">7. RDMA之Protection Domain</a></strong>
+PD, Protection Domain, 包括 QP 和 MR，（工作队列对 和 内存区域），就像分组一样</p>
+<p><strong><a href="https://zhuanlan.zhihu.com/p/163552044">8. RDMA之Address Handle</a></strong>
+IB协议中的这个标识被称为GID（Global Identifier，全局ID）**，是一个128 bits的序列。</p>
 <p>AH全称为Address Handle，理解为一组定位节点和存储地址的句柄，并且对用户隐藏信息</p>
-<h5 id="9-rdma之queue-pair"  id="9-rdma之queue-pair">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#9-rdma%e4%b9%8bqueue-pair"><a href="https://zhuanlan.zhihu.com/p/195757767">9. RDMA之Queue Pair</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p>QPC全称是Queue Pair Context，用于存储QP相关属性。如SQ Address, RQ Address, SQ size等</p>
+<p><strong><a href="https://zhuanlan.zhihu.com/p/195757767">9. RDMA之Queue Pair</a></strong>
+QPC全称是Queue Pair Context，用于存储QP相关属性。如SQ Address, RQ Address, SQ size等</p>
 <p>QP Number， QPN， 编号</p>
 <p>QP 状态机</p>
-<h5 id="10-rdma之completion-queue"  id="10-rdma之completion-queue">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#10-rdma%e4%b9%8bcompletion-queue">10 RDMA之Completion Queue<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p>WQ和CQ的对应关系——每个WQ都必须关联一个CQ，而每个CQ可以关联多个SQ和RQ。</p>
+<p><strong>10 RDMA之Completion Queue</strong>
+WQ和CQ的对应关系——每个WQ都必须关联一个CQ，而每个CQ可以关联多个SQ和RQ。</p>
 <p>CQE</p>
 <p>CQC: （Completion Queue Context），存储CQ对应的详细信息的一段内存结构。</p>
 <p>CQN: CQ Number</p>
@@ -1821,9 +2257,7 @@ $$</p>
 <p>立即错误的是“立即停止当前操作，并返回错误给上层用户”；</p>
 <p>完成错误指的是“通过CQE将错误信息返回给上层用户”；</p>
 <p>异步错误指的是“通过中断事件的方式上报给上层用户”。</p>
-<h5 id="11-rdma之shared-receive-queue"  id="11-rdma之shared-receive-queue">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#11-rdma%e4%b9%8bshared-receive-queue"><a href="https://zhuanlan.zhihu.com/p/279904125">11. RDMA之Shared Receive Queue</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
+<p><strong><a href="https://zhuanlan.zhihu.com/p/279904125">11. RDMA之Shared Receive Queue</a></strong></p>
 <h6 id="为什么"  id="为什么">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e4%b8%ba%e4%bb%80%e4%b9%88">为什么<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
@@ -1841,10 +2275,8 @@ $$</p>
 <h6 id="用户接口"  id="用户接口">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e7%94%a8%e6%88%b7%e6%8e%a5%e5%8f%a3">用户接口<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
-<h5 id="12-rdma之memory-window"  id="12-rdma之memory-window">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#12-rdma%e4%b9%8bmemory-window"><a href="https://zhuanlan.zhihu.com/p/353590347">12 RDMA之Memory Window</a>***<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p>Memory Window 由用户申请的，用于让远端节点访问本端内存区域的RDMA资源。</p>
+<p><strong><a href="https://zhuanlan.zhihu.com/p/353590347">12 RDMA之Memory Window</a></strong>***
+Memory Window 由用户申请的，用于让远端节点访问本端内存区域的RDMA资源。</p>
 <h6 id="mrmw的权限配置"  id="mrmw的权限配置">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#mrmw%e7%9a%84%e6%9d%83%e9%99%90%e9%85%8d%e7%bd%ae">MR/MW的权限配置<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
@@ -1886,21 +2318,15 @@ $$</p>
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e4%ba%8c-rdma%e8%bd%af%e4%bb%b6%e6%a0%88%e7%af%87">二 RDMA软件栈篇<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h4>
 <p>TODO</p>
-<h5 id="1-3rdma之verbs"  id="1-3rdma之verbs">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#1-3rdma%e4%b9%8bverbs"><a href="https://zhuanlan.zhihu.com/p/329198771">1 3RDMA之Verbs</a><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p><a href="https://zhuanlan.zhihu.com/p/346708569">14RDMA之用户态与内核态交互</a></p>
-<h5 id="15-rdma之roce--soft-roce"  id="15-rdma之roce--soft-roce">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#15-rdma%e4%b9%8broce--soft-roce">15. RDMA之RoCE &amp; Soft-RoCE<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
+<p><strong><a href="https://zhuanlan.zhihu.com/p/329198771">1 3RDMA之Verbs</a></strong>
+<a href="https://zhuanlan.zhihu.com/p/346708569">14RDMA之用户态与内核态交互</a></p>
+<p><strong>15. RDMA之RoCE &amp; Soft-RoCE</strong></p>
 <h6 id="roce"  id="roce">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#roce">RoCE<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
 <p>RoCE全称是RDMA over Converged Ethernet，即基于融合以太网的RDMA。用通俗的话讲，就是基于传统以太网的部分下层协议，在其基础上实现Infiniband的部分上层协议。这里的RoCE特指RoCE v2;</p>
-<h5 id="roce层次"  id="roce层次">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#roce%e5%b1%82%e6%ac%a1">RoCE层次<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p><img src="https://pic3.zhimg.com/v2-17e04efb14c550ad0be456b7b71209b4_1440w.jpg" alt="img"></p>
+<p><strong>RoCE层次</strong>
+<img src="https://pic3.zhimg.com/v2-17e04efb14c550ad0be456b7b71209b4_1440w.jpg" alt="img"></p>
 <h6 id="roce协议的优势"  id="roce协议的优势">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#roce%e5%8d%8f%e8%ae%ae%e7%9a%84%e4%bc%98%e5%8a%bf">RoCE协议的优势<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
@@ -1909,18 +2335,12 @@ $$</p>
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#soft-roce">Soft-RoCE<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
 <p>RXE（Software RDMA over Ethernet, Soft-RoCE）是 RoCEv2 的软件实现，Linux内核模块名 <code>rdma_rxe</code>，让普通以太网卡也能跑 RDMA 应用。</p>
-<h5 id="16-pyverbspython-verbs"  id="16-pyverbspython-verbs">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#16-pyverbspython-verbs">16 Pyverbs（Python Verbs）<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<h5 id="17内存地址基础知识"  id="17内存地址基础知识">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#17%e5%86%85%e5%ad%98%e5%9c%b0%e5%9d%80%e5%9f%ba%e7%a1%80%e7%9f%a5%e8%af%86">17内存地址基础知识<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
+<p><strong>16 Pyverbs（Python Verbs）</strong>
+<strong>17内存地址基础知识</strong></p>
 <h6 id="18queue-buffer"  id="18queue-buffer">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#18queue-buffer">18Queue Buffer<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h6>
-<h5 id="19用户态memory-region-buffer"  id="19用户态memory-region-buffer">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#19%e7%94%a8%e6%88%b7%e6%80%81memory-region-buffer">19用户态Memory Region Buffer<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
+<p><strong>19用户态Memory Region Buffer</strong></p>
 <h3 id="相关技术"  id="相关技术">
   <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e7%9b%b8%e5%85%b3%e6%8a%80%e6%9c%af">相关技术<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h3>
@@ -2329,93 +2749,6 @@ $$</p>
 <img src="/my-blog-repo/img/2026/08/WSL%20%e6%b5%8b%e8%af%95%20RoCE/iwarp_rping%20%e6%8a%93%e5%8c%851.png" alt="图片">
 
 
-  </article>
-  
-  <article class="post">
-    <h2><a class="post-title" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/">《后会无期》———— 每个人的平凡之路</a></h2>
-    <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr>
-    <h3 id="家乡在东极岛"  id="家乡在东极岛">
-  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e5%ae%b6%e4%b9%a1%e5%9c%a8%e4%b8%9c%e6%9e%81%e5%b2%9b">家乡在东极岛<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p>故事从东极岛展开，<a href="https://www.bilibili.com/video/BV1D341127xk/">《东极岛之歌》</a></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>《东极岛之歌》
-</span></span><span style="display:flex;"><span>东极岛啊 你人杰又地灵
-</span></span><span style="display:flex;"><span>太平洋的风儿最先吹到你
-</span></span><span style="display:flex;"><span>东极岛 东极岛
-</span></span><span style="display:flex;"><span>大陆最东的岛屿
-</span></span><span style="display:flex;"><span>海浪都来亲吻你
-</span></span><span style="display:flex;"><span>鱼儿都来拥抱你
-</span></span><span style="display:flex;"><span>东极岛 你是人间的仙境
-</span></span><span style="display:flex;"><span>太平洋的阳光它最先照耀这里
-</span></span><span style="display:flex;"><span>东极岛 东极岛
-</span></span><span style="display:flex;"><span>我们不会离开你
-</span></span><span style="display:flex;"><span>生是你的老百姓
-</span></span><span style="display:flex;"><span>死是你的小精灵
-</span></span><span style="display:flex;"><span>东极岛啊 东极岛啊
-</span></span><span style="display:flex;"><span>除了这里
-</span></span><span style="display:flex;"><span>我们哪儿都不想去
-</span></span></code></pre></div><p>从小受到的教育，家乡是人杰地灵，国家是地大物博，人民是勤劳质朴</p>
-<p>文字描述的是缺乏的东西，稀缺才像看爽文一样，在幻想中在脑海中得到满足</p>
-<p>激昂的歌词配上萧条的画面，起开家乡久了，再回到家乡</p>
-<p>会发现家乡的房子原来这么矮，路这么窄，这么破旧</p>
-<p>原来我的家乡很平凡</p>
-<h3 id="周沫姐"  id="周沫姐">
-  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e5%91%a8%e6%b2%ab%e5%a7%90">周沫姐<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p>见到周沫姐，以为是民国的贵妇人，原来是他人的替身</p>
-<p>没有家庭没有背景，大城市相对小地方公平</p>
-<p>如果有家庭有背景，那么在大城市会更公平</p>
-<p>穿着学生服，理想倒在枪口下</p>
-<h3 id="苏米"  id="苏米">
-  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e8%8b%8f%e7%b1%b3">苏米<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p>苏米和家人被骗了，于是他们也去骗人</p>
-<p>不去借钱，因为借钱就是骗朋友的钱</p>
-<p>仙人跳，骗的是嫖客的钱</p>
-<p>小孩子才论好坏，成年人只看利弊</p>
-<p>他们的确更厚道些</p>
-<h3 id="胡生"  id="胡生">
-  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e8%83%a1%e7%94%9f">胡生<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p>胡生在心目中，很崇拜浩瀚哥和江河，因为只有他们不说他脑子不正常</p>
-<p>胡生被弄丢之后，浩瀚哥和江河其实也认为他不正常</p>
-<p>我也是胡生，自命不凡，在别人眼中十分不正常</p>
-<p>原来我自己很平凡</p>
-<h3 id="刘莺莺"  id="刘莺莺">
-  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e5%88%98%e8%8e%ba%e8%8e%ba">刘莺莺<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p>浩瀚哥要去见刘莺莺，以为是自己迷倒了对方</p>
-<p>其实他们同父异母，有血缘关系</p>
-<p>他们的通信，起因是浩瀚哥的父亲还关心他</p>
-<p>浩瀚哥记忆中，父亲在台风天出海而死，是不惧怕风雨的勇敢者</p>
-<p>现实中，父亲喝醉酒后抽烟，被烧死了</p>
-<p>像社会新闻，死得很平凡</p>
-<p>原来我们的父母很平凡</p>
-<h3 id="旅行者"  id="旅行者">
-  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e6%97%85%e8%a1%8c%e8%80%85">旅行者<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p>来自东莞的旅行者，不说姓名，只说自己叫<code>旅行者2号</code></p>
-<p>他说小学追了女同学七年，后来女生真成了他的妻子，把她的照片印在头盔上</p>
-<p>他骑行想证明自己，除了妻子无人关心</p>
-<p>他说的英文编号，江河也知道，想必确有其事</p>
-<p>他是理想者还是骗子？为什么取得信任之后，盗走了浩瀚哥的车子？</p>
-<p>他可能真的曾有梦想，只是生活还得继续，梦想既是他的追求，也是他的谋生手段</p>
-<p>就和旅行者二号一样，想去追赶旅行者，半途爆炸了</p>
-<p>描绘理想的人也很平凡</p>
-<h3 id="结语"  id="结语">
-  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e7%bb%93%e8%af%ad">结语<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<blockquote>
-<p>世界很平凡，每个人都撒谎，与自己和解吧</p>
-<p>接纳自己，相信自己，守护自己的本心</p>
-</blockquote>
-
-  </article>
-  
-  <article class="post">
-    <h2><a class="post-title" href="/my-blog-repo/1/01/"></a></h2>
-    <abbr class="small postDate" title="0001-01-01">January 1, 0001</abbr>
-    
   </article>
   
 

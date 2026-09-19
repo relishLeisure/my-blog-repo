@@ -6,8 +6,6 @@ slug:
 categories: [笔记]
 ---
 
-
-
 ## 新建模板文件
 
 ```cmd
@@ -46,16 +44,14 @@ hugo server --gc -D				# server 表示在本地启动服务，gc 表示清理缓
 
 ## Jupyter Notebook
 
-### 1 转成markdown之后使用hugo
-
+**1 转成markdown之后使用hugo**
 将 `.ipynb` 转换为 `.md`
 
 ```cmd
 jupyter nbconvert --to markdown your_notebook.ipynb
 ```
 
-### 2 Quarto
-
+**2 Quarto**
 下载下来需要安装
 
 ```cmd

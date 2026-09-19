@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="cn-zh">
 
-<head><script src="/my-blog-repo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=my-blog-repo/livereload" data-no-instant defer></script>
+<head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>2026 : Truman&#39;s blog</title>
@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet" type="text/css">
 
-  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="http://localhost:1313/my-blog-repo/feed.xml">
+  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="https://relishleisure.github.io/my-blog-repo/feed.xml">
 
 
 <style>
@@ -81,638 +81,76 @@ p code, li code {
   
   
   <article class="post">
-    <h2><a class="post-title" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/">Tailscale使用记录</a> <abbr class="small postDate" title="2026-08-28">August 28, 2026</abbr></h2>
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/">《后会无期》———— 每个人的平凡之路</a> <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr></h2>
     
     <div class="summary">
-      <h3 id="设置流量转发节点"  id="设置流量转发节点">
-  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#%e8%ae%be%e7%bd%ae%e6%b5%81%e9%87%8f%e8%bd%ac%e5%8f%91%e8%8a%82%e7%82%b9">设置流量转发节点<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+      <h3 id="家乡在东极岛"  id="家乡在东极岛">
+  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e5%ae%b6%e4%b9%a1%e5%9c%a8%e4%b8%9c%e6%9e%81%e5%b2%9b">家乡在东极岛<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h3>
-<h5 id="linux下载安装tailscale"  id="linux下载安装tailscale">
-  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#linux%e4%b8%8b%e8%bd%bd%e5%ae%89%e8%a3%85tailscale"><strong>Linux下载安装Tailscale</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo mkdir -p /etc/apt/sources.list.d/
-</span></span><span style="display:flex;"><span>curl -fsSL https://tailscale.com/install.sh | sh
-</span></span></code></pre></div><p><strong>登录</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo tailscale up
-</span></span></code></pre></div><p><strong>开启ip转发</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;net.ipv4.ip_forward = 1&#39;</span> | sudo tee -a /etc/sysctl.d/99-tailscale.conf
-</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;net.ipv6.conf.all.forwarding = 1&#39;</span> | sudo tee -a /etc/sysctl.d/99-tailscale.conf
-</span></span><span style="display:flex;"><span>sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
-</span></span></code></pre></div><h5 id="设置流量出口节点-exit-node"  id="设置流量出口节点-exit-node">
-  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#%e8%ae%be%e7%bd%ae%e6%b5%81%e9%87%8f%e5%87%ba%e5%8f%a3%e8%8a%82%e7%82%b9-exit-node"><strong>设置流量出口节点 Exit Node</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p>其他机器流量经过这个设备转发</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>sudo tailscale up <span style="color:#f92672">--</span>advertise<span style="color:#f92672">-</span>exit<span style="color:#f92672">-</span>node
-</span></span></code></pre></div><p><strong>在 Tailscale 控制面板中批准 Authorization</strong></p>
-<p>出于安全考虑，宣告后并不会立刻生效，必须在后台手工允许：</p>
-<ol>
-<li>打开 <a href="https://login.tailscale.com/admin/machines">Tailscale Admin Console (Machines 页面)</a>。</li>
-<li>找到你刚配置的这台 Linux 设备。</li>
-<li>点击设备右侧的 <strong><code>...</code></strong> (更多选项) -&gt; 选择 <strong>Edit route settings</strong>。</li>
-<li>勾选 <strong>Use as exit node</strong>。</li>
-<li>点击 <strong>Save</strong>。</li>
-</ol>
-<h5 id="其他设备配置"  id="其他设备配置">
-  <a class="heading-link" href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/#%e5%85%b6%e4%bb%96%e8%ae%be%e5%a4%87%e9%85%8d%e7%bd%ae"><strong>其他设备配置</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
-<p><strong>Windows</strong></p>
-      
-      <p><a href="/my-blog-repo/2026/08/tailscale%E4%BD%BF%E7%94%A8%E8%AE%B0%E5%BD%95/">Read more...</a></p>
-      
-    </div>
-    
-  </article>
-  
-  <article class="post">
-    <h2><a class="post-title" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/">CUDA学习--2简单运算</a> <abbr class="small postDate" title="2026-08-28">August 28, 2026</abbr></h2>
-    
-    <div class="summary">
-      <h3 id="目录"  id="目录">
-  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#%e7%9b%ae%e5%bd%95">目录<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+<p>故事从东极岛展开，<a href="https://www.bilibili.com/video/BV1D341127xk/">《东极岛之歌》</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>《东极岛之歌》
+</span></span><span style="display:flex;"><span>东极岛啊 你人杰又地灵
+</span></span><span style="display:flex;"><span>太平洋的风儿最先吹到你
+</span></span><span style="display:flex;"><span>东极岛 东极岛
+</span></span><span style="display:flex;"><span>大陆最东的岛屿
+</span></span><span style="display:flex;"><span>海浪都来亲吻你
+</span></span><span style="display:flex;"><span>鱼儿都来拥抱你
+</span></span><span style="display:flex;"><span>东极岛 你是人间的仙境
+</span></span><span style="display:flex;"><span>太平洋的阳光它最先照耀这里
+</span></span><span style="display:flex;"><span>东极岛 东极岛
+</span></span><span style="display:flex;"><span>我们不会离开你
+</span></span><span style="display:flex;"><span>生是你的老百姓
+</span></span><span style="display:flex;"><span>死是你的小精灵
+</span></span><span style="display:flex;"><span>东极岛啊 东极岛啊
+</span></span><span style="display:flex;"><span>除了这里
+</span></span><span style="display:flex;"><span>我们哪儿都不想去
+</span></span></code></pre></div><p>从小受到的教育，家乡是人杰地灵，国家是地大物博，人民是勤劳质朴</p>
+<p>文字描述的是缺乏的东西，稀缺才像看爽文一样，在幻想中在脑海中得到满足</p>
+<p>激昂的歌词配上萧条的画面，起开家乡久了，再回到家乡</p>
+<p>会发现家乡的房子原来这么矮，路这么窄，这么破旧</p>
+<p>原来我的家乡很平凡</p>
+<h3 id="周沫姐"  id="周沫姐">
+  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e5%91%a8%e6%b2%ab%e5%a7%90">周沫姐<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h3>
-<p><a href="https://leetgpu.com/challenges/1d-convolution">1D Convolution</a></p>
-<p><a href="https://leetgpu.com/challenges/leaky-relu">Leaky ReLU</a></p>
-<p><a href="https://leetgpu.com/challenges/sigmoid-linear-unit">Sigmoid Linear Unit</a></p>
-<p><a href="https://leetgpu.com/challenges/matrix-transpose">Matrix Transpose</a></p>
-<p><a href="https://leetgpu.com/challenges/swish-gated-linear-unit">Swish-Gated Linear Unit</a></p>
-<p><a href="https://leetgpu.com/challenges/matrix-multiplication">Matrix Multiplication</a></p>
-<h4 id="1d-convolution"  id="1d-convolution">
-  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/#1d-convolution">1D Convolution<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h4>
-<p>CUDA</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">convolution_1d_kernel</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> kernel, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output,
-</span></span><span style="display:flex;"><span>                                      <span style="color:#66d9ef">int</span> input_size, <span style="color:#66d9ef">int</span> kernel_size) {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x; 
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> sum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0f</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (tid <span style="color:#f92672">&lt;</span> input_size <span style="color:#f92672">-</span> kernel_size <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i<span style="color:#f92672">&lt;</span>kernel_size; <span style="color:#f92672">++</span>i) {
-</span></span><span style="display:flex;"><span>            sum <span style="color:#f92672">+=</span> input[tid <span style="color:#f92672">+</span> i] <span style="color:#f92672">*</span> kernel[i];
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>        output[tid] <span style="color:#f92672">=</span> sum;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// input, kernel, output are device pointers (i.e. pointers to memory on the GPU)
-</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> solve(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> input, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> kernel, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> output, <span style="color:#66d9ef">int</span> input_size,
-</span></span><span style="display:flex;"><span>                      <span style="color:#66d9ef">int</span> kernel_size) {
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> output_size <span style="color:#f92672">=</span> input_size <span style="color:#f92672">-</span> kernel_size <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> threadsPerBlock <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> blocksPerGrid <span style="color:#f92672">=</span> (output_size <span style="color:#f92672">+</span> threadsPerBlock <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> threadsPerBlock;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    convolution_1d_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocksPerGrid, threadsPerBlock<span style="color:#f92672">&gt;&gt;&gt;</span>(input, kernel, output, input_size,
-</span></span><span style="display:flex;"><span>                                                              kernel_size);
-</span></span><span style="display:flex;"><span>    cudaDeviceSynchronize();
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>Triton</p>
-      
-      <p><a href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/">Read more...</a></p>
-      
-    </div>
-    
-  </article>
-  
-  <article class="post">
-    <h2><a class="post-title" href="/my-blog-repo/2026/08/cuda/">CUDA学习--0环境</a> <abbr class="small postDate" title="2026-08-28">August 28, 2026</abbr></h2>
-    
-    <div class="summary">
-      <h3 id="目录"  id="目录">
-  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#%e7%9b%ae%e5%bd%95">目录<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+<p>见到周沫姐，以为是民国的贵妇人，原来是他人的替身</p>
+<p>没有家庭没有背景，大城市相对小地方公平</p>
+<p>如果有家庭有背景，那么在大城市会更公平</p>
+<p>穿着学生服，理想倒在枪口下</p>
+<h3 id="苏米"  id="苏米">
+  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e8%8b%8f%e7%b1%b3">苏米<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h3>
-<h3 id="自建环境"  id="自建环境">
-  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#%e8%87%aa%e5%bb%ba%e7%8e%af%e5%a2%83">自建环境<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+<p>苏米和家人被骗了，于是他们也去骗人</p>
+<p>不去借钱，因为借钱就是骗朋友的钱</p>
+<p>仙人跳，骗的是嫖客的钱</p>
+<p>小孩子才论好坏，成年人只看利弊</p>
+<p>他们的确更厚道些</p>
+<h3 id="胡生"  id="胡生">
+  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e8%83%a1%e7%94%9f">胡生<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h3>
-<p><strong>CUDA环境WSL</strong></p>
-<p><strong>CUDA环境Linux</strong></p>
-<p><strong>CANN云环境</strong></p>
-<p><strong>CANN香橙派</strong></p>
-<p><strong>性能测试工具</strong></p>
-<h3 id="自建环境-1"  id="自建环境-1">
-  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#%e8%87%aa%e5%bb%ba%e7%8e%af%e5%a2%83-1">自建环境<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+<p>胡生在心目中，很崇拜浩瀚哥和江河，因为只有他们不说他脑子不正常</p>
+<p>胡生被弄丢之后，浩瀚哥和江河其实也认为他不正常</p>
+<p>我也是胡生，自命不凡，在别人眼中十分不正常</p>
+<p>原来我自己很平凡</p>
+<h3 id="刘莺莺"  id="刘莺莺">
+  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e5%88%98%e8%8e%ba%e8%8e%ba">刘莺莺<span class="heading-anchor" aria-label="Anchor">¶</span></a>
 </h3>
-<h4 id="cuda环境wsl"  id="cuda环境wsl">
-  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#cuda%e7%8e%af%e5%a2%83wsl">CUDA环境WSL<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h4>
-<p>打开环境</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cmd" data-lang="cmd"><span style="display:flex;"><span># 列出wsl 的linux环境
-</span></span><span style="display:flex;"><span>wsl -l
-</span></span><span style="display:flex;"><span># 进入环境  wsl -d &lt;linux-name&gt;
-</span></span><span style="display:flex;"><span>wsl -d Debian
-</span></span></code></pre></div><p>安装cuda驱动</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>nvidia-smi
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># </span>
-</span></span></code></pre></div>
+<p>浩瀚哥要去见刘莺莺，以为是自己迷倒了对方</p>
+<p>其实他们同父异母，有血缘关系</p>
+<p>他们的通信，起因是浩瀚哥的父亲还关心他</p>
+<p>浩瀚哥记忆中，父亲在台风天出海而死，是不惧怕风雨的勇敢者</p>
+<p>现实中，父亲喝醉酒后抽烟，被烧死了</p>
+<p>像社会新闻，死得很平凡</p>
+<p>原来我们的父母很平凡</p>
+<h3 id="旅行者"  id="旅行者">
+  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e6%97%85%e8%a1%8c%e8%80%85">旅行者<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p>来自东莞的旅行者，不说姓名，只说自己叫<code>旅行者2号</code></p>
+<p>他说小学追了女同学七年，后来女生真成了他的妻子，把她的照片印在头盔上</p>
+<p>他骑行想证明自己，除了妻子无人关心</p>
+<p>他说的英文编号，江河也知道，想必确有其事</p>
+<p>他是理想者还是骗子？为什么取得信任之后，盗走了浩瀚哥的车子？</p>
       
-    </div>
-    
-  </article>
-  
-  <article class="post">
-    <h2><a class="post-title" href="/my-blog-repo/2026/08/%E8%80%83%E5%85%AC%E6%97%B6%E9%97%B4%E8%A1%A8/">考公时间表</a> <abbr class="small postDate" title="2026-08-28">August 28, 2026</abbr></h2>
-    
-    <div class="summary">
-      <h3 id="考公时间表"  id="考公时间表">
-  <a class="heading-link" href="/my-blog-repo/2026/08/%E8%80%83%E5%85%AC%E6%97%B6%E9%97%B4%E8%A1%A8/#%e8%80%83%e5%85%ac%e6%97%b6%e9%97%b4%e8%a1%a8">考公时间表<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p>信息整理自<a href="https://fenbi.com/">粉笔网</a></p>
-<h4 id="模板"  id="模板">
-  <a class="heading-link" href="/my-blog-repo/2026/08/%E8%80%83%E5%85%AC%E6%97%B6%E9%97%B4%E8%A1%A8/#%e6%a8%a1%e6%9d%bf"><strong>模板</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h4>
-<table>
-	<thead>
-			<tr>
-					<th>考试名称</th>
-					<th>XXXXXXXX</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td>报名时间</td>
-					<td></td>
-			</tr>
-			<tr>
-					<td>考试时间</td>
-					<td></td>
-			</tr>
-			<tr>
-					<td>报名地址</td>
-					<td></td>
-			</tr>
-	</tbody>
-</table>
-<h3 id="国考"  id="国考">
-  <a class="heading-link" href="/my-blog-repo/2026/08/%E8%80%83%E5%85%AC%E6%97%B6%E9%97%B4%E8%A1%A8/#%e5%9b%bd%e8%80%83">国考<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<table>
-	<thead>
-			<tr>
-					<th>名称</th>
-					<th>中央机关及其直属机构2026年度考试录用公务员</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td>报名时间</td>
-					<td>2025/10/15 08:00-2025/10/24 18:00</td>
-			</tr>
-			<tr>
-					<td>考试时间</td>
-					<td>2025/11/30 09:00-2025/11/30 17:00</td>
-			</tr>
-			<tr>
-					<td>报名地址</td>
-					<td>国家公务员局http://bm.scs.gov.cn/kl2026</td>
-			</tr>
-	</tbody>
-</table>
-<table>
-	<thead>
-			<tr>
-					<th>名称</th>
-					<th>中央机关及其直属机构2026年度补充录用公务员</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td>报名时间</td>
-					<td>2026/5/8 08:00-2026/5/10 18:00</td>
-			</tr>
-			<tr>
-					<td>考试时间</td>
-					<td>2025/11/30 09:00-2025/11/30 17:00</td>
-			</tr>
-			<tr>
-					<td>报名地址</td>
-					<td><a href="http://bm.scs.gov.cn/kl2026">http://bm.scs.gov.cn/kl2026</a></td>
-			</tr>
-			<tr>
-					<td>粉笔地址</td>
-					<td><a href="https://fenbi.com/page/exam-information-detail/466123850534913">https://fenbi.com/page/exam-information-detail/466123850534913</a></td>
-			</tr>
-	</tbody>
-</table>
-<h4 id="备注补充录用每个省市录用人数较少在10个以内"  id="备注补充录用每个省市录用人数较少在10个以内">
-  <a class="heading-link" href="/my-blog-repo/2026/08/%E8%80%83%E5%85%AC%E6%97%B6%E9%97%B4%E8%A1%A8/#%e5%a4%87%e6%b3%a8%e8%a1%a5%e5%85%85%e5%bd%95%e7%94%a8%e6%af%8f%e4%b8%aa%e7%9c%81%e5%b8%82%e5%bd%95%e7%94%a8%e4%ba%ba%e6%95%b0%e8%be%83%e5%b0%91%e5%9c%a810%e4%b8%aa%e4%bb%a5%e5%86%85">**备注：**补充录用每个省市录用人数较少，在10个以内<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h4>
-<h3 id="省考"  id="省考">
-  <a class="heading-link" href="/my-blog-repo/2026/08/%E8%80%83%E5%85%AC%E6%97%B6%E9%97%B4%E8%A1%A8/#%e7%9c%81%e8%80%83">省考<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<table>
-	<thead>
-			<tr>
-					<th>省市</th>
-					<th>湖北省</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td>报名时间</td>
-					<td>2026/1/13 09:00-2026/1/19 17:00</td>
-			</tr>
-			<tr>
-					<td>考试时间</td>
-					<td>2026/3/14 09:00-2026/3/15 12:00</td>
-			</tr>
-			<tr>
-					<td>报名地址</td>
-					<td><a href="https://rst.hubei.gov.cn/hbrsksw/">https://rst.hubei.gov.cn/hbrsksw/</a></td>
-			</tr>
-	</tbody>
-</table>
-<table>
-	<thead>
-			<tr>
-					<th>省市</th>
-					<th>浙江省</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td>报名时间</td>
-					<td>2025/11/06 09:00-2025/11/11 17:00</td>
-			</tr>
-			<tr>
-					<td>考试时间</td>
-					<td>2025/12/07 09:00- 16:30</td>
-			</tr>
-			<tr>
-					<td>报名地址</td>
-					<td><a href="https://fenbi.com/gwy.zjks.gov.cn">https://fenbi.com/gwy.zjks.gov.cn</a></td>
-			</tr>
-	</tbody>
-</table>
-<table>
-	<thead>
-			<tr>
-					<th>省市</th>
-					<th>江西省</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td>报名时间</td>
-					<td>2026/1/22 09:00-2026/1/29 17:00</td>
-			</tr>
-			<tr>
-					<td>考试时间</td>
-					<td>2026/3/14 09:00-2026/3/15 11:00</td>
-			</tr>
-			<tr>
-					<td>报名地址</td>
-					<td><a href="https://www.jxpta.com">www.jxpta.com</a></td>
-			</tr>
-	</tbody>
-</table>
-<p>**备注：**考试时间和湖北省冲突</p>
-      
-      <p><a href="/my-blog-repo/2026/08/%E8%80%83%E5%85%AC%E6%97%B6%E9%97%B4%E8%A1%A8/">Read more...</a></p>
-      
-    </div>
-    
-  </article>
-  
-  <article class="post">
-    <h2><a class="post-title" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/">Ascend C（Add算子）开发实践</a> <abbr class="small postDate" title="2026-08-27">August 27, 2026</abbr></h2>
-    
-    <div class="summary">
-      <table>
-	<thead>
-			<tr>
-					<th>实验名称</th>
-					<th>Ascend C简单Vector算子开发实践（Add算子）</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td>实验内容</td>
-					<td>Add算子</td>
-			</tr>
-			<tr>
-					<td>实验时间</td>
-					<td>2026-08-27</td>
-			</tr>
-			<tr>
-					<td>实验类型</td>
-					<td></td>
-			</tr>
-			<tr>
-					<td>实验地点</td>
-					<td></td>
-			</tr>
-			<tr>
-					<td>在线地点</td>
-					<td><a href="https://www.hiascend.com/edu/experiment/detail/1d0b0b790fb24947977d6d954112c016?tab=1">https://www.hiascend.com/edu/experiment/detail/1d0b0b790fb24947977d6d954112c016?tab=1</a></td>
-			</tr>
-	</tbody>
-</table>
-<h3 id="环境与器材"  id="环境与器材">
-  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e7%8e%af%e5%a2%83%e4%b8%8e%e5%99%a8%e6%9d%90">环境与器材<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p><strong>环境搭建</strong></p>
-<p>本实验依赖基础NPU环境，包括昇腾NPU驱动、固件、Toolkit（CANN开发套件）、ops（CANN算子包集成一系列库文件 ）、<strong>msprof性能采集工具</strong>（随 CANN Toolkit 一起安装）。</p>
-<p><strong>实验平台</strong></p>
-<p>CANNLAB</p>
-<p><a href="https://gitcode.com/org/cann/cannlab/environment">https://gitcode.com/org/cann/cannlab/environment</a></p>
-<h3 id="实验过程"  id="实验过程">
-  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e5%ae%9e%e9%aa%8c%e8%bf%87%e7%a8%8b">实验过程<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<h4 id="实验环境"  id="实验环境">
-  <a class="heading-link" href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/#%e5%ae%9e%e9%aa%8c%e7%8e%af%e5%a2%83">实验环境<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h4>
-<p>1.启动环境</p>
-<p><a href="https://gitcode.com/org/cann/cannlab/environment/create">https://gitcode.com/org/cann/cannlab/environment/create</a></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>实例名称
-</span></span><span style="display:flex;"><span>cann_dev_env
-</span></span><span style="display:flex;"><span>名称可包含数字、字母、下划线，不能以数字开头，长度不超过15个字符。
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>模板名称
-</span></span><span style="display:flex;"><span>cann_8.5.2-py3.11-A2-arm
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>NPU规格
-</span></span><span style="display:flex;"><span>1*NPU 910B3 16vCPUs 32GiB
-</span></span></code></pre></div><p><strong>notebook</strong></p>
-<p>由于没有上面的npu资源了，换成使用notebook</p>
-<p>cann 版本是8.5.0</p>
-<p><a href="https://gitcode.com/user/qq_4277658311111111111111173q/notebook/lab">https://gitcode.com/user/qq_4277658311111111111111173q/notebook/lab</a></p>
-<p>2.<strong>查看环境版本</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>echo $ASCEND_HOME_PATH
-</span></span><span style="display:flex;"><span>/usr/local/Ascend/cann-8.5.0
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>cd /usr/local/Ascend/cann-8.5.0
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># 可以看到 set_enc.sh</span>
-</span></span><span style="display:flex;"><span>ls
-</span></span><span style="display:flex;"><span>aarch64-linux  cann_uninstall.sh  compiler  fwkacllib  mindstudio-toolkit  pkg_inc  set_env.sh  toolkit
-</span></span><span style="display:flex;"><span>arm64-linux    combo_script       conf      include    opp                 python   share       tools
-</span></span><span style="display:flex;"><span>bin            compat             devlib    lib64      ops_uninstall.sh    runtime  test-ops    var
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># 在当前终端会话中  激活环境变量</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># 每次新开终端都要 source 一次。建议把 source 命令加到 ~/.bashrc 里。</span>
-</span></span><span style="display:flex;"><span>source /usr/local/Ascend/cann-8.5.0/set_env.sh
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># 确认msprof安装成功</span>
-</span></span><span style="display:flex;"><span>ls $ASCEND_HOME_PATH/tools/profiler/bin/msprof
-</span></span><span style="display:flex;"><span>/usr/local/Ascend/cann-8.5.0/tools/profiler/bin/msprof
-</span></span></code></pre></div><p>查看设备状态</p>
-      
-      <p><a href="/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/">Read more...</a></p>
-      
-    </div>
-    
-  </article>
-  
-  <article class="post">
-    <h2><a class="post-title" href="/my-blog-repo/2026/08/cuda/">CUDA学习--1加法</a> <abbr class="small postDate" title="2026-08-27">August 27, 2026</abbr></h2>
-    
-    <div class="summary">
-      <p><strong>文件位置</strong></p>
-<p><a href="https://github.com/Tony-Tan/CUDA_Freshman">https://github.com/Tony-Tan/CUDA_Freshman</a></p>
-<h3 id="加法代码"  id="加法代码">
-  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#%e5%8a%a0%e6%b3%95%e4%bb%a3%e7%a0%81">加法代码<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<h4 id="1代码结构"  id="1代码结构">
-  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#1%e4%bb%a3%e7%a0%81%e7%bb%93%e6%9e%84">1代码结构<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h4>
-<p>这段代码很好地说明了结构</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">/*
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">* https://github.com/Tony-Tan/CUDA_Freshman
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">* 3_sum_arrays
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;freshman.h&#34;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// cpu 流水线 计算向量之和
-</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sumArrays</span>(<span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span> a,<span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span> b,<span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span> res,<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> size)
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span>size;i<span style="color:#f92672">+=</span><span style="color:#ae81ff">4</span>)
-</span></span><span style="display:flex;"><span>    {
-</span></span><span style="display:flex;"><span>        res[i]<span style="color:#f92672">=</span>a[i]<span style="color:#f92672">+</span>b[i];
-</span></span><span style="display:flex;"><span>        res[i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">=</span>a[i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">+</span>b[i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>];
-</span></span><span style="display:flex;"><span>        res[i<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>]<span style="color:#f92672">=</span>a[i<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>]<span style="color:#f92672">+</span>b[i<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>];
-</span></span><span style="display:flex;"><span>        res[i<span style="color:#f92672">+</span><span style="color:#ae81ff">3</span>]<span style="color:#f92672">=</span>a[i<span style="color:#f92672">+</span><span style="color:#ae81ff">3</span>]<span style="color:#f92672">+</span>b[i<span style="color:#f92672">+</span><span style="color:#ae81ff">3</span>];
-</span></span><span style="display:flex;"><span>	}
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// gpu 计算向量之和，每个线程并行执行，根据自己所处的位置（id）执行不同的操作
-</span></span></span><span style="display:flex;"><span>__global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sumArraysGPU</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>a,<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>b,<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>res)
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>threadIdx.x;
-</span></span><span style="display:flex;"><span>    res[i]<span style="color:#f92672">=</span>a[i]<span style="color:#f92672">+</span>b[i];
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// main 函数，程序的入口
-</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc,<span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>argv)
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// cuda 设备
-</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> dev <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>    cudaSetDevice(dev);									
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 尺寸计算
-</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> nElem<span style="color:#f92672">=</span><span style="color:#ae81ff">32</span>;
-</span></span><span style="display:flex;"><span>    printf(<span style="color:#e6db74">&#34;Vector size:%d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,nElem);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> nByte<span style="color:#f92672">=</span><span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">float</span>)<span style="color:#f92672">*</span>nElem;
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// cpu分配内存
-</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>a_h<span style="color:#f92672">=</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>)malloc(nByte);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>b_h<span style="color:#f92672">=</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>)malloc(nByte);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>res_h<span style="color:#f92672">=</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>)malloc(nByte);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>res_from_gpu_h<span style="color:#f92672">=</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>)malloc(nByte);
-</span></span><span style="display:flex;"><span>    memset(res_h,<span style="color:#ae81ff">0</span>,nByte);
-</span></span><span style="display:flex;"><span>    memset(res_from_gpu_h,<span style="color:#ae81ff">0</span>,nByte);
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 检查gpu内存分配
-</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> <span style="color:#f92672">*</span>a_d,<span style="color:#f92672">*</span>b_d,<span style="color:#f92672">*</span>res_d;
-</span></span><span style="display:flex;"><span>    CHECK(cudaMalloc((<span style="color:#66d9ef">float</span><span style="color:#f92672">**</span>)<span style="color:#f92672">&amp;</span>a_d,nByte));
-</span></span><span style="display:flex;"><span>    CHECK(cudaMalloc((<span style="color:#66d9ef">float</span><span style="color:#f92672">**</span>)<span style="color:#f92672">&amp;</span>b_d,nByte));
-</span></span><span style="display:flex;"><span>    CHECK(cudaMalloc((<span style="color:#66d9ef">float</span><span style="color:#f92672">**</span>)<span style="color:#f92672">&amp;</span>res_d,nByte));
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// cpu内存数据：初始化赋值
-</span></span></span><span style="display:flex;"><span>    initialData(a_h,nElem);
-</span></span><span style="display:flex;"><span>    initialData(b_h,nElem);
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 数据从cpu/host拷贝到gpu/device
-</span></span></span><span style="display:flex;"><span>    CHECK(cudaMemcpy(a_d,a_h,nByte,cudaMemcpyHostToDevice));
-</span></span><span style="display:flex;"><span>    CHECK(cudaMemcpy(b_d,b_h,nByte,cudaMemcpyHostToDevice));
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 核函数
-</span></span></span><span style="display:flex;"><span>    dim3 block(nElem);
-</span></span><span style="display:flex;"><span>    dim3 grid(nElem<span style="color:#f92672">/</span>block.x);
-</span></span><span style="display:flex;"><span>    sumArraysGPU<span style="color:#f92672">&lt;&lt;&lt;</span>grid,block<span style="color:#f92672">&gt;&gt;&gt;</span>(a_d,b_d,res_d);
-</span></span><span style="display:flex;"><span>    printf(<span style="color:#e6db74">&#34;Execution configuration&lt;&lt;&lt;%d,%d&gt;&gt;&gt;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,block.x,grid.x);
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 数据从device拷贝到host
-</span></span></span><span style="display:flex;"><span>    CHECK(cudaMemcpy(res_from_gpu_h,res_d,nByte,cudaMemcpyDeviceToHost));
-</span></span><span style="display:flex;"><span>    sumArrays(a_h,b_h,res_h,nElem);
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 核验计算结果
-</span></span></span><span style="display:flex;"><span>    checkResult(res_h,res_from_gpu_h,nElem);
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 释放cuda内存
-</span></span></span><span style="display:flex;"><span>    cudaFree(a_d);
-</span></span><span style="display:flex;"><span>    cudaFree(b_d);
-</span></span><span style="display:flex;"><span>    cudaFree(res_d);
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 释放cpu内存
-</span></span></span><span style="display:flex;"><span>    free(a_h);
-</span></span><span style="display:flex;"><span>    free(b_h);
-</span></span><span style="display:flex;"><span>    free(res_h);
-</span></span><span style="display:flex;"><span>    free(res_from_gpu_h);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h4 id="2线程管理"  id="2线程管理">
-  <a class="heading-link" href="/my-blog-repo/2026/08/cuda/#2%e7%ba%bf%e7%a8%8b%e7%ae%a1%e7%90%86"><strong>2线程管理</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h4>
-<p>上面代码的核函数出现<code>&lt;&lt;&lt;grid,block&gt;&gt;&gt;</code></p>
-      
-      <p><a href="/my-blog-repo/2026/08/cuda/">Read more...</a></p>
-      
-    </div>
-    
-  </article>
-  
-  <article class="post">
-    <h2><a class="post-title" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/">van_den_Ende DDCN 笔记</a> <abbr class="small postDate" title="2026-08-26">August 26, 2026</abbr></h2>
-    
-    <div class="summary">
-      <h3 id="项目地址"  id="项目地址">
-  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e9%a1%b9%e7%9b%ae%e5%9c%b0%e5%9d%80">项目地址<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p><strong>对应论文</strong></p>
-<p>Deep Deconvolution for Traffic Analysis With Distributed Acoustic Sensing Data</p>
-<p><strong>文件地址</strong></p>
-<p>D:\study\graduate\code\python\van-den-Ende-DDCN</p>
-<p><strong>doi地址</strong></p>
-<p><a href="https://ieeexplore.ieee.org/document/9966323/">https://ieeexplore.ieee.org/document/9966323/</a></p>
-<p><a href="https://doi.org/10.1109/TITS.2022.3223084">https://doi.org/10.1109/TITS.2022.3223084</a></p>
-<p><strong>数据与代码仓库地址</strong></p>
-<p><a href="doi.org/10.6084/m9.figshare.16653163.">doi.org/10.6084/m9.figshare.16653163</a>    * 用的这个</p>
-<p><a href="https://github.com/Juanx65/DeepDeconvV2.git">https://github.com/Juanx65/DeepDeconvV2.git</a></p>
-<hr>
-<h3 id="项目结构"  id="项目结构">
-  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e9%a1%b9%e7%9b%ae%e7%bb%93%e6%9e%84">项目结构<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<ul>
-<li>
-<p>绘图jupyter notebook</p>
-</li>
-<li>
-<p>模型</p>
-</li>
-<li>
-<p>数据</p>
-</li>
-<li>
-<p>波束成形和对比算法</p>
-</li>
-</ul>
-<h4 id="原理"  id="原理">
-  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#%e5%8e%9f%e7%90%86">原理<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h4>
-<ol>
-<li>认为车致信号为脉冲信号，与信道产生卷积</li>
-<li>通过UNet恢复稀疏信号X，波束成形 + Music 滤波</li>
-<li>稀疏信号X与固定的冲激函数进行反卷积，恢复车辆信号</li>
-<li>损失函数 = MSE + X的L1正则</li>
-</ol>
-<h4 id="1-这个仓库是什么"  id="1-这个仓库是什么">
-  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#1-%e8%bf%99%e4%b8%aa%e4%bb%93%e5%ba%93%e6%98%af%e4%bb%80%e4%b9%88">1. 这个仓库是什么<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h4>
-<p>这是 van den Ende 等人 DAS 交通监测论文的代码（仓库名 van-den-Ende-DDCN）。DAS = 分布式光纤声学传感：埋在路边的光纤记
-录车辆经过时的应变率信号。论文的核心问题是稀疏反卷积（Deep Deconvolution）：光纤记录到的是“车辆脉冲序列 × 光纤冲激响应</p>
-<ul>
-<li><strong>训练一个 UNet 把观测信号还原成稀疏脉冲，再做波束形成估计车速、恢复车辆轨迹。</strong></li>
-</ul>
-<h4 id="2-项目结构"  id="2-项目结构">
-  <a class="heading-link" href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/#2-%e9%a1%b9%e7%9b%ae%e7%bb%93%e6%9e%84">2. 项目结构<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h4>
-<ul>
-<li>
-<p>models.py — 核心：UNet/ResNet 反卷积模型、DataGenerator 数据增强、CallBacks 回调</p>
-      
-      <p><a href="/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/">Read more...</a></p>
-      
-    </div>
-    
-  </article>
-  
-  <article class="post">
-    <h2><a class="post-title" href="/my-blog-repo/2026/08/2608%E9%9A%8F%E4%BE%BF%E5%86%99/">2608随便写</a> <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr></h2>
-    
-    <div class="summary">
-      <h3 id="2026-08-24"  id="2026-08-24">
-  <a class="heading-link" href="/my-blog-repo/2026/08/2608%E9%9A%8F%E4%BE%BF%E5%86%99/#2026-08-24">2026-08-24<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p>眼睛是心灵的窗户，我的眼睛总是怨恨、痛苦、悲观，现实是这是我自己造成的，自己懒得努力，通过自我欺骗来自我安慰。</p>
-<p>知足吧，现代社会的生活其实很富足，是我自己觉得自己缺少、不公，嫉妒别人，散发恶臭的负能量。</p>
-<p>现代的食物很便宜，鸡蛋、肉类等能负担得起；</p>
-<p>文化体育设施、公园、道路、交通工具等很便利；</p>
-<p>视频、游戏、音乐、软件等资源，互联网上的免费资源都很丰富；</p>
-<p>对比之下，古代简直是地狱难度，现代是天堂；</p>
-<p>都是他人的劳动创造的商品，提供服务，为他人提供，我间接享受到了；</p>
-<p>我不该有什么怨恨，我也没资格怨恨！</p>
-<p>我甚至从没有付出过多少劳动，我应该改变。</p>
-<h3 id="2026-08-26"  id="2026-08-26">
-  <a class="heading-link" href="/my-blog-repo/2026/08/2608%E9%9A%8F%E4%BE%BF%E5%86%99/#2026-08-26">2026-08-26<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<blockquote>
-<p>“不想担惊受怕，那就去战斗。” 								——奎桑提</p>
-</blockquote>
-<p>与其骗自己还不错，不如接受自己是个辣鸡；</p>
-      
-    </div>
-    
-  </article>
-  
-  <article class="post">
-    <h2><a class="post-title" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/">WSL 测试 RoCE</a> <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr></h2>
-    
-    <div class="summary">
-      <h3 id="wsl-架构-debian-环境-soft-roce-rdma-开发环境"  id="wsl-架构-debian-环境-soft-roce-rdma-开发环境">
-  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#wsl-%e6%9e%b6%e6%9e%84-debian-%e7%8e%af%e5%a2%83-soft-roce-rdma-%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83">WSL 架构 Debian 环境 Soft-RoCE RDMA 开发环境<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<h4 id="第零步检测-rxe-是否安装"  id="第零步检测-rxe-是否安装">
-  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#%e7%ac%ac%e9%9b%b6%e6%ad%a5%e6%a3%80%e6%b5%8b-rxe-%e6%98%af%e5%90%a6%e5%ae%89%e8%a3%85">第零步：检测 RXE 是否安装<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h4>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>zcat /proc/config.gz | grep -i RXE
-</span></span></code></pre></div><h4 id="第一步安装-debian-编译依赖"  id="第一步安装-debian-编译依赖">
-  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#%e7%ac%ac%e4%b8%80%e6%ad%a5%e5%ae%89%e8%a3%85-debian-%e7%bc%96%e8%af%91%e4%be%9d%e8%b5%96">第一步：安装 Debian 编译依赖<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h4>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd ~			<span style="color:#75715e"># 先回到 Linux 用户主目录并安装依赖 codeBash  downloadcontent_copy   expand_less</span>
-</span></span><span style="display:flex;"><span>sudo apt update
-</span></span><span style="display:flex;"><span>sudo apt install build-essential flex bison dwarves libssl-dev libelf-dev bc libncurses-dev pkg-config
-</span></span></code></pre></div><p>下载源码</p>
-<p><a href="https://kernel.org/">https://kernel.org/</a>   下载LTS版本</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd ~
-</span></span><span style="display:flex;"><span>truman@pcofcg:~$ pwd
-</span></span><span style="display:flex;"><span>/home/truman
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># 1. 从官方下载 Linux Kernel 6.1 系列源码 (这里以 6.1.84 为例)</span>
-</span></span><span style="display:flex;"><span>wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.6.135.tar.xz
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># 或者手动  https://kernel.org/   下载LTS版本</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>tar -xf linux-6.6.135.tar.xz
-</span></span><span style="display:flex;"><span>cd linux-6.6.135/
-</span></span></code></pre></div><h4 id="第三步下载-wsl-配置文件并启用-soft-roce"  id="第三步下载-wsl-配置文件并启用-soft-roce">
-  <a class="heading-link" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/#%e7%ac%ac%e4%b8%89%e6%ad%a5%e4%b8%8b%e8%bd%bd-wsl-%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e5%b9%b6%e5%90%af%e7%94%a8-soft-roce">第三步：下载 WSL 配置文件并启用 Soft-RoCE<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h4>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 1. 下载微软官方内核配置文件</span>
-</span></span><span style="display:flex;"><span>wget https://raw.githubusercontent.com/microsoft/WSL2-Linux-Kernel/linux-msft-wsl-6.6.y/arch/x86/configs/config-wsl -O arch/x86/configs/config-wsl
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># 2. 打开图形化内核配置菜单</span>
-</span></span><span style="display:flex;"><span>make menuconfig KCONFIG_CONFIG<span style="color:#f92672">=</span>arch/x86/configs/config-wsl
-</span></span></code></pre></div><p>图形化操作说明</p>
-      
-      <p><a href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/">Read more...</a></p>
-      
-    </div>
-    
-  </article>
-  
-  <article class="post">
-    <h2><a class="post-title" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">RDMA 学习笔记</a> <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr></h2>
-    
-    <div class="summary">
-      <h3 id="术语"  id="术语">
-  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e6%9c%af%e8%af%ad">术语<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p><strong>NIC</strong> : Network Interface Card, 网络适配器 / 网卡。 <strong>解释：</strong> 连接计算机与网络的硬件组件。在 AI 数据中心，普通 NIC 已无法满足需求，通常需要支持高吞吐和低延迟协议（如 RoCE）的专用高性能网卡。</p>
-<p><strong>SmartNIC / DPU</strong> : Smart Network Interface Card / Data Processing Unit, 智能网卡 / 数据处理器。 <strong>解释：</strong> 带有独立处理器的网卡。它能卸载原本由 CPU 处理的网络、存储和安全任务，让昂贵的计算资源完全服务于 AI 模型。</p>
-<p><strong>RDMA</strong> : Remote Direct Memory Access, 远程直接内存访问。 <strong>解释：</strong> 允许计算机直接访问远程内存的技术，绕过操作系统内核和 CPU 干扰。它是实现多 GPU 集群超低延迟通信的底层基石。</p>
-<p><strong>RoCE</strong> : RDMA over Converged Ethernet, 基于融合以太网的 RDMA。 <strong>解释：</strong> 在标准以太网上运行 RDMA 的协议。它让数据中心能在不更换昂贵专用网络设备的前提下，获得接近无限带宽技术的传输性能。</p>
-<p><strong>NCCL</strong> : NVIDIA Collective Communications Library, 英伟达集合通信库。 <strong>解释：</strong> 专门优化英伟达 GPU 间数据交换的算法库。它定义了多卡如何高效同步数据，是分布式训练的“通信翻译官”。</p>
-      
-      <p><a href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">Read more...</a></p>
+      <p><a href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/">Read more...</a></p>
       
     </div>
     
@@ -724,8 +162,6 @@ p code, li code {
     
     <span class="previous"><a href="/my-blog-repo/years/2026/">&laquo; Newer Posts</a></span>
     
-    
-    <span class="next"><a href="/my-blog-repo/years/2026/page/3/">Older Posts &raquo;</a></span>
     
   </div>
   

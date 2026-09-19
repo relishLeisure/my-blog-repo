@@ -6,8 +6,6 @@ slug: "CUDA"
 categories: [CUDA,环境]
 ---
 
-
-
 # 目录
 
 # 自建环境
@@ -41,8 +39,4 @@ wsl -d Debian
 nvidia-smi
 # 
 ```
-
-
-
-
 

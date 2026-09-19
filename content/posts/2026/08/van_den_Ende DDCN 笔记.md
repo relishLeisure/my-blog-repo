@@ -126,7 +126,7 @@ y (观测) → UNet → x_hat (稀疏脉冲图)
 # conda 新环境
 conda create -n tf python=3.10 -y
 conda activate tf
-  
+
 # 安装库
 pip list
 pip install tensorflow==2.10.0 numpy==1.25.3 scipy jax h5py matplotlib seaborn numba spectrum notebook ipympl	
@@ -274,26 +274,26 @@ class ResNet(keras.Model):
         super().__init__()
         # 初始化模型，指定参数
         pass
-    
+
     # 前向过程
     def call(self, x):
         x_hat = self.ResNet(x)
         y_hat = tf.nn.conv2d(x_hat, self.impulse_response, padding="SAME", strides=1)
         return x_hat, y_hat
-    
+
     # 重写 compile()
     def compile(self, opt):
         super().compile()
         self.opt = opt						# 指定 optimizer 
         pass
-    
+
     # 计算损失函数
     def compute_loss(self, Y, Y_hat, X):
         l1 = tf.reduce_mean(tf.abs(X))
         l2 = tf.reduce_mean(tf.square(Y - Y_hat))
         total_loss = l2 + self.lam * l1
         return total_loss, l2, l1
-    
+
     # 正向传播：X, Y_hat = self.call(Y) (对应 PyTorch 里的 output = model(data))
 	# 计算损失：total_loss, ... = self.compute_loss(...) (对应 loss = criterion(...))
 	# 反向传播求梯度：grads = tape.gradient(total_loss, RN_vars) (对应 loss.backward())
@@ -301,16 +301,16 @@ class ResNet(keras.Model):
     def train_step(self, Y):
         if isinstance(data, tuple):
             Y = Y[0]
-            
+
         RN = self.ResNet
         RN_vars = RN.trainable_variables
-        
+
         with tf.GradientTape() as tape:
             X, Y_hat = self.call(Y)
             total_loss, l2_loss, l1_loss = self.compute_loss(Y, Y_hat, X)
-            
+
         grads = tape.gradient(total_loss, RN_vars)
-        
+
         self.opt.apply_gradients(zip(grads, RN_vars))
         self.compiled_metrics.update_state(Y, Y_hat)
         return {
@@ -318,11 +318,11 @@ class ResNet(keras.Model):
             "l2": l2_loss,
             "l1": l1_loss,
         }
-    
+
     def test_step(self, Y):
         if isinstance(data, tuple):
             Y = Y[0]
-            
+
         X, Y_hat = self.call(Y)
         total_loss, l2_loss, l1_loss = self.compute_loss(Y, Y_hat, X)
         self.compiled_metrics.update_state(Y, Y_hat)
@@ -338,14 +338,14 @@ class ResNet(keras.Model):
         """
         Convolution layer > batch normalisation > activation > dropout
         """
-        
+
         return x
-    
+
     # 模块
     def residual_block(self, x, f0):
         ...
         return x0 + x
-        
+
 	# 拼接卷积层和
     def construct(self):
         """
@@ -353,7 +353,7 @@ class ResNet(keras.Model):
         """
         self.ResNet = Model(inputs, x)
         return self.ResNet
-    
+
 # 模型
 class UNet(keras.Model):
     # 同上
@@ -423,7 +423,6 @@ R_{xx}(f)=\frac{1}{K}\sum_{k=1}^{K} X_k(f)\,X_k(f)^H
 $$
 
 - Xk(f) 是一个列向量 (M×1)。
-
 
 -   Xk(f)H 是一个行向量 (1×M)。
 -   它们相乘（外积）恰好得到一个 M×M 的复数矩阵。

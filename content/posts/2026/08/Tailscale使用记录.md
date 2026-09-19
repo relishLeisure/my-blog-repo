@@ -6,12 +6,9 @@ slug: ""
 categories: [软件]
 ---
 
-
-
 # 设置流量转发节点
 
-### **Linux下载安装Tailscale**
-
+****Linux下载安装Tailscale****
 ```bash
 sudo mkdir -p /etc/apt/sources.list.d/
 curl -fsSL https://tailscale.com/install.sh | sh
@@ -31,8 +28,7 @@ echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.d/99-tailscale
 sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
 ```
 
-### **设置流量出口节点 Exit Node**
-
+****设置流量出口节点 Exit Node****
 其他机器流量经过这个设备转发
 
 ```c++
@@ -49,8 +45,7 @@ sudo tailscale up --advertise-exit-node
 4. 勾选 **Use as exit node**。
 5. 点击 **Save**。
 
-### **其他设备配置**
-
+****其他设备配置****
 **Windows**
 
 ```

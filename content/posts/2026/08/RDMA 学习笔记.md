@@ -30,8 +30,7 @@ RDMA本身指的是一种技术，具体协议层面，包含[Infiniband](https:
 
 # 某岗位信息
 
-### 岗位关联小结
-
+**岗位关联小结**
 - KVM/QEMU/Xen：**底层虚拟机虚拟化**，DPU 智能网卡需适配虚拟网络、硬件直通；
 - OpenStack：**云集群管控**，对应大规模云环境测试场景；
 - Docker：**容器虚拟化**，云原生业务场景，也是 DPU 当下重点适配的云化场景。
@@ -64,8 +63,7 @@ RDMA本身指的是一种技术，具体协议层面，包含[Infiniband](https:
 
 ## 一 RDMA 概念篇
 
-### 1. RDMA概述
-
+**1. RDMA概述**
 RDMA
 
 DMA，传统网卡发送接收数据需要经过CPU，非常耗时，而且还需要linux切换内核态和用户态
@@ -80,14 +78,12 @@ CPU卸载：指的是可以在远端节点CPU不参与通信的情况下（当�
 
 [Infiniband](https://zhida.zhihu.com/search?content_id=118992942&content_type=Article&match_order=1&q=Infiniband&zhida_source=entity)（IB），RDMA over Converged Ethernet（RoCE）和internet Wide Area RDMA Protocol（iWARP）
 
-### 2. 比较基于传统以太网与RDMA技术的通信
-
+**2. 比较基于传统以太网与RDMA技术的通信**
 RDMA的分层模型分成两部分“控制通路”和“数据通路”，控制通路需要进入内核态准备通信所需的内存资源，而数据通路指的是实际数据交互过程中的流程。
 
 ![img](https://pica.zhimg.com/v2-8ef2b015ba9d111fc2d42983cd5fe152_1440w.jpg)
 
-### 3 RDMA基本元素
-
+**3 RDMA基本元素**
 ![img](https://pic3.zhimg.com/v2-b6723caa5b291ee161d94fd8fd8ce09c_1440w.jpg)
 
 WQ，Work Queue  软件给硬件的任务队列，WQE, Work Queue Element
@@ -106,8 +102,7 @@ WR全称为Work Request，意为工作请求；WC全称Work Completion，意为�
 
 [1]《IB Specification Vol 1-Release-1.3-2015-03-03》
 
-### [4. RDMA操作类型](https://zhuanlan.zhihu.com/p/142175657)
-
+**[4. RDMA操作类型](https://zhuanlan.zhihu.com/p/142175657)**
 #### SEND & RECV
 
 #### READ & WRITE***  
@@ -118,8 +113,7 @@ WR全称为Work Request，意为工作请求；WC全称Work Completion，意为�
 
 **[1] part1-OFA_Training_Sept_2016.pdf** 是**2016 年 9 月发布的 OFA（OpenFabrics Alliance，开放架构联盟）官方培训资料第一部分**，是 RDMA（远程直接内存访问）领域的经典入门 / 培训文档。
 
-### [5. RDMA基本服务类型](https://zhuanlan.zhihu.com/p/144099636)
-
+**[5. RDMA基本服务类型](https://zhuanlan.zhihu.com/p/144099636)**
 [IB协议](https://zhida.zhihu.com/search?content_id=120154436&content_type=Article&match_order=1&q=IB协议&zhida_source=entity)中通过“可靠”和“连接”两个维度来描述一种服务类型。
 
 #### 可靠/不可靠
@@ -130,10 +124,7 @@ WR全称为Work Request，意为工作请求；WC全称Work Completion，意为�
 
 #### 连接与数据报（Datagram）
 
-
-
-### 服务类型
-
+**服务类型**
 |                    | 可靠（Reliable）          | 不可靠 (Unreliable)         |
 | ------------------ | ------------------------- | --------------------------- |
 | 连接（Connection） | RC（Reliable Connection） | UC（Unreliable Connection） |
@@ -141,8 +132,7 @@ WR全称为Work Request，意为工作请求；WC全称Work Completion，意为�
 
 RC和[UD](https://zhida.zhihu.com/search?content_id=120154436&content_type=Article&match_order=1&q=UD&zhida_source=entity)是应用最多的两种，可以类比成TCP和UDP。
 
-### [6. RDMA之Memory Region](https://zhuanlan.zhihu.com/p/156975042)
-
+**[6. RDMA之Memory Region](https://zhuanlan.zhihu.com/p/156975042)**
 ## MR，Memory Region
 
 #### 地址映射
@@ -161,26 +151,22 @@ IB协议中，用户在申请完用于存放数据的内存区域之后，都需
 
 换页：内存为分页存储/读取，操作系统为提高内存使用效率，会将使用频率低的内存搬运。影响VA-PA的映射关系
 
-### [7. RDMA之Protection Domain](https://zhuanlan.zhihu.com/p/159493100)
-
+**[7. RDMA之Protection Domain](https://zhuanlan.zhihu.com/p/159493100)**
 PD, Protection Domain, 包括 QP 和 MR，（工作队列对 和 内存区域），就像分组一样
 
-### [8. RDMA之Address Handle](https://zhuanlan.zhihu.com/p/163552044)
-
+**[8. RDMA之Address Handle](https://zhuanlan.zhihu.com/p/163552044)**
 IB协议中的这个标识被称为GID（Global Identifier，全局ID）**，是一个128 bits的序列。
 
 AH全称为Address Handle，理解为一组定位节点和存储地址的句柄，并且对用户隐藏信息
 
-### [9. RDMA之Queue Pair](https://zhuanlan.zhihu.com/p/195757767)
-
+**[9. RDMA之Queue Pair](https://zhuanlan.zhihu.com/p/195757767)**
 QPC全称是Queue Pair Context，用于存储QP相关属性。如SQ Address, RQ Address, SQ size等
 
 QP Number， QPN， 编号
 
 QP 状态机
 
-### 10 RDMA之Completion Queue
-
+**10 RDMA之Completion Queue**
 WQ和CQ的对应关系——每个WQ都必须关联一个CQ，而每个CQ可以关联多个SQ和RQ。
 
 CQE
@@ -199,8 +185,7 @@ CQN: CQ Number
 
 异步错误指的是“通过中断事件的方式上报给上层用户”。
 
-### [11. RDMA之Shared Receive Queue](https://zhuanlan.zhihu.com/p/279904125)
-
+**[11. RDMA之Shared Receive Queue](https://zhuanlan.zhihu.com/p/279904125)**
 #### 为什么
 
 为什么要用SRQ？SQ中下发任务的数量要远远超过向RQ中下发任务的数量，这是因为
@@ -223,8 +208,7 @@ SRQ Limit：SRQ可以设置一个水线/阈值，当队列中剩余的WQE数量�
 
 #### 用户接口
 
-### [12 RDMA之Memory Window](https://zhuanlan.zhihu.com/p/353590347)***
-
+**[12 RDMA之Memory Window](https://zhuanlan.zhihu.com/p/353590347)*****
 Memory Window 由用户申请的，用于让远端节点访问本端内存区域的RDMA资源。
 
 #### MR/MW的权限配置
@@ -256,18 +240,15 @@ R_Key: 类似，只是本地HCA提供给远端HCA的访问标识，
 
 TODO
 
-### [1 3RDMA之Verbs](https://zhuanlan.zhihu.com/p/329198771)
-
+**[1 3RDMA之Verbs](https://zhuanlan.zhihu.com/p/329198771)**
 [14RDMA之用户态与内核态交互](https://zhuanlan.zhihu.com/p/346708569)
 
-### 15. RDMA之RoCE & Soft-RoCE
-
+**15. RDMA之RoCE & Soft-RoCE**
 #### RoCE
 
 RoCE全称是RDMA over Converged Ethernet，即基于融合以太网的RDMA。用通俗的话讲，就是基于传统以太网的部分下层协议，在其基础上实现Infiniband的部分上层协议。这里的RoCE特指RoCE v2;
 
-### RoCE层次
-
+**RoCE层次**
 ![img](https://pic3.zhimg.com/v2-17e04efb14c550ad0be456b7b71209b4_1440w.jpg)
 
 #### RoCE协议的优势
@@ -278,14 +259,11 @@ RoCE v2协议的出现解决了这一问题，如果用户想要从以太网切�
 
 RXE（Software RDMA over Ethernet, Soft-RoCE）是 RoCEv2 的软件实现，Linux内核模块名 `rdma_rxe`，让普通以太网卡也能跑 RDMA 应用。
 
-### 16 Pyverbs（Python Verbs）
-
-### 17内存地址基础知识
-
+**16 Pyverbs（Python Verbs）**
+**17内存地址基础知识**
 #### 18Queue Buffer
 
-### 19用户态Memory Region Buffer
-
+**19用户态Memory Region Buffer**
 # 相关技术
 
 RMDA/RoCE v2/DPDK
@@ -295,12 +273,4 @@ UVX (UCloud Virtual eXchange)
 KVM 底层虚拟机虚拟化
 
 ## 
-
-
-
-
-
-
-
-
 

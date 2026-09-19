@@ -6,17 +6,11 @@ slug:
 categories: [CUDA,笔记]
 ---
 
-
-
 # 目录
-
-
 
 [Reduction](https://leetgpu.com/challenges/reduction)
 
 [Softmax](https://leetgpu.com/challenges/softmax)
-
-
 
 Reduction
 
@@ -120,17 +114,11 @@ __global__ void reduce_block_kernel(const float* input, float* block_sum, int N)
 }
 ```
 
-
-
 解决bank confilct
 
 什么bank，什么是bank confilct?
 
 首先，为了实现高带宽，共享内存被分为大小相等的内存模块(32个)，称为存储体(bank)，**可以同时访问**。因此，由落入*n 个*不同存储体的*n 个*地址发出的任何存储器读或写请求都可以同时得到服务，从而产生比单个模块的带宽高*n*倍的总带宽。
-
-
-
-
 
 一维Softmax
 
@@ -145,10 +133,10 @@ def softmax(x):
     # 如果输入是一维向量，确保维度对齐
     # 针对二维数组（如包含多个样本的 batch 数据），在最后一个维度上求最大值并保持维度
     x_max = np.max(x, axis=-1, keepdims=True)
-    
+
     # 减去最大值以防止上溢（减去常数不改变 softmax 的输出值）
     exp_x = np.exp(x - x_max)
-    
+
     # 计算概率分布
     return exp_x / np.sum(exp_x, axis=-1, keepdims=True)
 
@@ -166,10 +154,7 @@ print(softmax(x))
 2. 求减去最大值的exp_sum
 3. 除以exp_sum（归一化输出）
 
-
-
-### **一维softmax简单版本**
-
+****一维softmax简单版本****
 ```c++
 #include <cuda_runtime.h>
 #include <float.h>
@@ -193,7 +178,7 @@ __global__ void reduce_max_kernel(const float* input, float* d_max, int N)
 {
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
     int stride = blockDim.x * gridDim.x; // Grid-Stride 步长
-    
+
     // 每个线程处理多个元素（处理 N 大于 线程总数 的情况）
     for (int i = tid; i < N; i += stride) {
         // 直接使用原子操作更新全局最大值（最简单，但效率低于共享内存）
@@ -206,7 +191,7 @@ __global__ void sum_exp_kernel(const float* input, float* output, float* d_max, 
 {
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
     int stride = blockDim.x * gridDim.x;
-    
+
     // 提前把全局最大值读到寄存器，避免在循环里重复读全局内存
     float max_val = *d_max; 
 
@@ -214,7 +199,7 @@ __global__ void sum_exp_kernel(const float* input, float* output, float* d_max, 
         // 注意：host端传入的 input 是 const，不能修改，所以把 exp 结果存入 output
         float exp_val = expf(input[i] - max_val);
         output[i] = exp_val; 
-        
+
         // 多线程同时累加全局变量，必须使用原子操作(atomicAdd)
         atomicAdd(d_sum, exp_val);
     }
@@ -225,7 +210,7 @@ __global__ void div_kernel(float* output, float* d_sum, int N)
 {
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
     int stride = blockDim.x * gridDim.x;
-    
+
     float sum_val = *d_sum;
 
     for (int i = tid; i < N; i += stride) {
@@ -257,7 +242,7 @@ extern "C" void solve(const float* input, float* output, int N) {
     // 3. 依次启动三个 Kernel
     reduce_max_kernel<<<blocks, threads>>>(input, d_max, N);
     sum_exp_kernel<<<blocks, threads>>>(input, output, d_max, d_sum, N);
-    
+
     // 第三步只需 output 和 d_sum
     div_kernel<<<blocks, threads>>>(output, d_sum, N);
 
@@ -315,11 +300,4 @@ __global__ void reduce_max_kernel_2(const float* input, float* d_max, int N)
 kernel<<<blocks, threads>>>(...);
 ```
 
-### 二维softmax简单版本
-
-
-
-
-
-
-
+**二维softmax简单版本**

@@ -172,10 +172,10 @@ p code, li code {
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 如果输入是一维向量，确保维度对齐</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 针对二维数组（如包含多个样本的 batch 数据），在最后一个维度上求最大值并保持维度</span>
 </span></span><span style="display:flex;"><span>    x_max <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>max(x, axis<span style="color:#f92672">=-</span><span style="color:#ae81ff">1</span>, keepdims<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
-</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 减去最大值以防止上溢（减去常数不改变 softmax 的输出值）</span>
 </span></span><span style="display:flex;"><span>    exp_x <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>exp(x <span style="color:#f92672">-</span> x_max)
-</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 计算概率分布</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> exp_x <span style="color:#f92672">/</span> np<span style="color:#f92672">.</span>sum(exp_x, axis<span style="color:#f92672">=-</span><span style="color:#ae81ff">1</span>, keepdims<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
 </span></span><span style="display:flex;"><span>
@@ -190,9 +190,7 @@ p code, li code {
 <li>求减去最大值的exp_sum</li>
 <li>除以exp_sum（归一化输出）</li>
 </ol>
-<h5 id="一维softmax简单版本"  id="一维softmax简单版本">
-  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--3%E8%A7%84%E7%BA%A6%E8%BF%90%E7%AE%97/#%e4%b8%80%e7%bb%b4softmax%e7%ae%80%e5%8d%95%e7%89%88%e6%9c%ac"><strong>一维softmax简单版本</strong><span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
+<p><strong><strong>一维softmax简单版本</strong></strong></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cuda_runtime.h&gt;</span><span style="color:#75715e">
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;float.h&gt;</span><span style="color:#75715e">
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;math.h&gt;</span><span style="color:#75715e">
@@ -215,7 +213,7 @@ p code, li code {
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> stride <span style="color:#f92672">=</span> blockDim.x <span style="color:#f92672">*</span> gridDim.x; <span style="color:#75715e">// Grid-Stride 步长
-</span></span></span><span style="display:flex;"><span>    
+</span></span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 每个线程处理多个元素（处理 N 大于 线程总数 的情况）
 </span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> tid; i <span style="color:#f92672">&lt;</span> N; i <span style="color:#f92672">+=</span> stride) {
 </span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 直接使用原子操作更新全局最大值（最简单，但效率低于共享内存）
@@ -228,7 +226,7 @@ p code, li code {
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> stride <span style="color:#f92672">=</span> blockDim.x <span style="color:#f92672">*</span> gridDim.x;
-</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 提前把全局最大值读到寄存器，避免在循环里重复读全局内存
 </span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> max_val <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>d_max; 
 </span></span><span style="display:flex;"><span>
@@ -236,7 +234,7 @@ p code, li code {
 </span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 注意：host端传入的 input 是 const，不能修改，所以把 exp 结果存入 output
 </span></span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">float</span> exp_val <span style="color:#f92672">=</span> expf(input[i] <span style="color:#f92672">-</span> max_val);
 </span></span><span style="display:flex;"><span>        output[i] <span style="color:#f92672">=</span> exp_val; 
-</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 多线程同时累加全局变量，必须使用原子操作(atomicAdd)
 </span></span></span><span style="display:flex;"><span>        atomicAdd(d_sum, exp_val);
 </span></span><span style="display:flex;"><span>    }
@@ -247,7 +245,7 @@ p code, li code {
 </span></span><span style="display:flex;"><span>{
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> tid <span style="color:#f92672">=</span> blockIdx.x <span style="color:#f92672">*</span> blockDim.x <span style="color:#f92672">+</span> threadIdx.x;
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> stride <span style="color:#f92672">=</span> blockDim.x <span style="color:#f92672">*</span> gridDim.x;
-</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span> sum_val <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>d_sum;
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> tid; i <span style="color:#f92672">&lt;</span> N; i <span style="color:#f92672">+=</span> stride) {
@@ -279,7 +277,7 @@ p code, li code {
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 3. 依次启动三个 Kernel
 </span></span></span><span style="display:flex;"><span>    reduce_max_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocks, threads<span style="color:#f92672">&gt;&gt;&gt;</span>(input, d_max, N);
 </span></span><span style="display:flex;"><span>    sum_exp_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocks, threads<span style="color:#f92672">&gt;&gt;&gt;</span>(input, output, d_max, d_sum, N);
-</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 第三步只需 output 和 d_sum
 </span></span></span><span style="display:flex;"><span>    div_kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocks, threads<span style="color:#f92672">&gt;&gt;&gt;</span>(output, d_sum, N);
 </span></span><span style="display:flex;"><span>
@@ -322,9 +320,7 @@ p code, li code {
 </span></span></code></pre></div><p><strong>参数的形状</strong></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// kernel&lt;&lt;&lt;gridDim, blockDim&gt;&gt;&gt;(...);    指定 grid 和 block 切分的尺寸，至少有一个 block 一个 grid，如果数据量比较多会根据形状计算
 </span></span></span><span style="display:flex;"><span>kernel<span style="color:#f92672">&lt;&lt;&lt;</span>blocks, threads<span style="color:#f92672">&gt;&gt;&gt;</span>(...);
-</span></span></code></pre></div><h5 id="二维softmax简单版本"  id="二维softmax简单版本">
-  <a class="heading-link" href="/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--3%E8%A7%84%E7%BA%A6%E8%BF%90%E7%AE%97/#%e4%ba%8c%e7%bb%b4softmax%e7%ae%80%e5%8d%95%e7%89%88%e6%9c%ac">二维softmax简单版本<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h5>
+</span></span></code></pre></div><p><strong>二维softmax简单版本</strong></p>
 
     <footer>
       

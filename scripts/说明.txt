@@ -1,0 +1,8 @@
+add_front_matter.py		# 给 md 文件添加模板
+python add_front_matter <文件夹名>
+
+convert_h3_to_bold.py		# 把 h3 样式替换为加粗 **
+python convert_h3_to_bold <文件夹名>
+
+remove_blank_lines.py		# 把多个空行替换为单个空行
+python remove_blank_lines <文件夹名>

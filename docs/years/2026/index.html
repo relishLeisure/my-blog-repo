@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="cn-zh">
 
-<head><script src="/my-blog-repo/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=my-blog-repo/livereload" data-no-instant defer></script>
+<head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>2026 : Truman&#39;s blog</title>
@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css?family=Gentium+Book+Basic" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet" type="text/css">
 
-  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="http://localhost:1313/my-blog-repo/feed.xml">
+  <link rel="alternate" type="application/rss+xml" title="Truman&#39;s blog RSS Feed" href="https://relishleisure.github.io/my-blog-repo/feed.xml">
 
 
 <style>
@@ -79,6 +79,127 @@ p code, li code {
 
   
   
+  
+  <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/09/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96%E8%AE%B0%E5%BD%951%E6%B7%BB%E5%8A%A0%E8%84%9A%E6%9C%AC%E5%A4%84%E7%90%86%E7%A9%BA%E8%A1%8C%E7%AD%89%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE/">博客优化记录1——添加脚本处理空行等、音乐播放</a> <abbr class="small postDate" title="2026-09-19">September 19, 2026</abbr></h2>
+    
+    <div class="summary">
+      <h3 id="脚本"  id="脚本">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96%E8%AE%B0%E5%BD%951%E6%B7%BB%E5%8A%A0%E8%84%9A%E6%9C%AC%E5%A4%84%E7%90%86%E7%A9%BA%E8%A1%8C%E7%AD%89%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE/#%e8%84%9a%e6%9c%ac">脚本<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<h3 id="1去掉多行空格"  id="1去掉多行空格">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96%E8%AE%B0%E5%BD%951%E6%B7%BB%E5%8A%A0%E8%84%9A%E6%9C%AC%E5%A4%84%E7%90%86%E7%A9%BA%E8%A1%8C%E7%AD%89%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE/#1%e5%8e%bb%e6%8e%89%e5%a4%9a%e8%a1%8c%e7%a9%ba%e6%a0%bc">1.去掉多行空格<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p>Python 脚本：递归去掉文件夹内所有 <code>.md</code> 文件多个连续空行替换为单个空行</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> re
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> sys
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> pathlib <span style="color:#f92672">import</span> Path
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">compress_blank_lines</span>(directory):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 匹配 2 个或更多连续换行符（即两个或以上的空行，中间允许包含空格或制表符）</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># \n 后面跟着至少 2 个 ([ \t]*\n)</span>
+</span></span><span style="display:flex;"><span>    pattern <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>compile(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;\n([ \t]*\n){1,}&#39;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 获取目录下所有 .md 文件（递归）</span>
+</span></span><span style="display:flex;"><span>    folder_path <span style="color:#f92672">=</span> Path(directory)
+</span></span><span style="display:flex;"><span>    md_files <span style="color:#f92672">=</span> folder_path<span style="color:#f92672">.</span>rglob(<span style="color:#e6db74">&#39;*.md&#39;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    modified_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;开始扫描目录: </span><span style="color:#e6db74">{</span>folder_path<span style="color:#f92672">.</span>resolve()<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> file_path <span style="color:#f92672">in</span> md_files:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># 以 UTF-8 编码读取文件内容</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">with</span> open(file_path, <span style="color:#e6db74">&#39;r&#39;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;utf-8&#39;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>                content <span style="color:#f92672">=</span> f<span style="color:#f92672">.</span>read()
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># 执行正则替换</span>
+</span></span><span style="display:flex;"><span>            new_content <span style="color:#f92672">=</span> pattern<span style="color:#f92672">.</span>sub(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">&#39;</span>, content)
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># 如果内容发生变化，则覆盖写入原文件</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> new_content <span style="color:#f92672">!=</span> content:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">with</span> open(file_path, <span style="color:#e6db74">&#39;w&#39;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;utf-8&#39;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>                    f<span style="color:#f92672">.</span>write(new_content)
+</span></span><span style="display:flex;"><span>                print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;已清理空行: </span><span style="color:#e6db74">{</span>file_path<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>                modified_count <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;读取或写入文件 </span><span style="color:#e6db74">{</span>file_path<span style="color:#e6db74">}</span><span style="color:#e6db74"> 时出错: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">处理完成！共修改了 </span><span style="color:#e6db74">{</span>modified_count<span style="color:#e6db74">}</span><span style="color:#e6db74"> 个 .md 文件。&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> len(sys<span style="color:#f92672">.</span>argv) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>:
+</span></span><span style="display:flex;"><span>        TARGET_DIR <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        TARGET_DIR <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;.&#39;</span>
+</span></span><span style="display:flex;"><span>    compress_blank_lines(TARGET_DIR)
+</span></span></code></pre></div><h3 id="2替换h3"  id="2替换h3">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96%E8%AE%B0%E5%BD%951%E6%B7%BB%E5%8A%A0%E8%84%9A%E6%9C%AC%E5%A4%84%E7%90%86%E7%A9%BA%E8%A1%8C%E7%AD%89%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE/#2%e6%9b%bf%e6%8d%a2h3">2.替换h3<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p>将 h3 标题 替换为 加粗格式</p>
+      
+      <p><a href="/my-blog-repo/2026/09/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96%E8%AE%B0%E5%BD%951%E6%B7%BB%E5%8A%A0%E8%84%9A%E6%9C%AC%E5%A4%84%E7%90%86%E7%A9%BA%E8%A1%8C%E7%AD%89%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE/">Read more...</a></p>
+      
+    </div>
+    
+  </article>
+  
+  <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/09/%E9%9F%B3%E4%B9%90%E9%A1%B5%E9%9D%A2/">音乐页面</a> <abbr class="small postDate" title="2026-09-19">September 19, 2026</abbr></h2>
+    
+    <div class="summary">
+      <h4 id="我的音乐"  id="我的音乐">
+  <a class="heading-link" href="/my-blog-repo/2026/09/%E9%9F%B3%E4%B9%90%E9%A1%B5%E9%9D%A2/#%e6%88%91%e7%9a%84%e9%9f%b3%e4%b9%90">我的音乐<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h4>
+<p>听听这首曲子：</p>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+
+<div id="aplayer-0" class="aplayer-container"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    new APlayer({
+      container: document.getElementById('aplayer-0'),
+      audio: [{
+        name: '不要认输',
+        artist: '坂本泉水',
+        url: '\/my-blog-repo\/audio\/不要认输-坂本泉水.flac',
+        cover: '',
+        lrc: ''
+      }]
+    });
+  });
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+
+<div id="aplayer-1" class="aplayer-container"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    new APlayer({
+      container: document.getElementById('aplayer-1'),
+      audio: [{
+        name: '稻香',
+        artist: '周杰伦',
+        url: '\/my-blog-repo\/audio\/稻香-周杰伦.flac',
+        cover: '',
+        lrc: ''
+      }]
+    });
+  });
+</script>
+      
+    </div>
+    
+  </article>
   
   <article class="post">
     <h2><a class="post-title" href="/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/">Python调试技巧</a> <abbr class="small postDate" title="2026-09-15">September 15, 2026</abbr></h2>
@@ -527,83 +648,14 @@ print(f&#34;{x=}&#34;)		# x
     
   </article>
   
-  <article class="post">
-    <h2><a class="post-title" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/">《后会无期》———— 每个人的平凡之路</a> <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr></h2>
-    
-    <div class="summary">
-      <h3 id="家乡在东极岛"  id="家乡在东极岛">
-  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e5%ae%b6%e4%b9%a1%e5%9c%a8%e4%b8%9c%e6%9e%81%e5%b2%9b">家乡在东极岛<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p>故事从东极岛展开，<a href="https://www.bilibili.com/video/BV1D341127xk/">《东极岛之歌》</a></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>《东极岛之歌》
-</span></span><span style="display:flex;"><span>东极岛啊 你人杰又地灵
-</span></span><span style="display:flex;"><span>太平洋的风儿最先吹到你
-</span></span><span style="display:flex;"><span>东极岛 东极岛
-</span></span><span style="display:flex;"><span>大陆最东的岛屿
-</span></span><span style="display:flex;"><span>海浪都来亲吻你
-</span></span><span style="display:flex;"><span>鱼儿都来拥抱你
-</span></span><span style="display:flex;"><span>东极岛 你是人间的仙境
-</span></span><span style="display:flex;"><span>太平洋的阳光它最先照耀这里
-</span></span><span style="display:flex;"><span>东极岛 东极岛
-</span></span><span style="display:flex;"><span>我们不会离开你
-</span></span><span style="display:flex;"><span>生是你的老百姓
-</span></span><span style="display:flex;"><span>死是你的小精灵
-</span></span><span style="display:flex;"><span>东极岛啊 东极岛啊
-</span></span><span style="display:flex;"><span>除了这里
-</span></span><span style="display:flex;"><span>我们哪儿都不想去
-</span></span></code></pre></div><p>从小受到的教育，家乡是人杰地灵，国家是地大物博，人民是勤劳质朴</p>
-<p>文字描述的是缺乏的东西，稀缺才像看爽文一样，在幻想中在脑海中得到满足</p>
-<p>激昂的歌词配上萧条的画面，起开家乡久了，再回到家乡</p>
-<p>会发现家乡的房子原来这么矮，路这么窄，这么破旧</p>
-<p>原来我的家乡很平凡</p>
-<h3 id="周沫姐"  id="周沫姐">
-  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e5%91%a8%e6%b2%ab%e5%a7%90">周沫姐<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p>见到周沫姐，以为是民国的贵妇人，原来是他人的替身</p>
-<p>没有家庭没有背景，大城市相对小地方公平</p>
-<p>如果有家庭有背景，那么在大城市会更公平</p>
-<p>穿着学生服，理想倒在枪口下</p>
-<h3 id="苏米"  id="苏米">
-  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e8%8b%8f%e7%b1%b3">苏米<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p>苏米和家人被骗了，于是他们也去骗人</p>
-<p>不去借钱，因为借钱就是骗朋友的钱</p>
-<p>仙人跳，骗的是嫖客的钱</p>
-<p>小孩子才论好坏，成年人只看利弊</p>
-<p>他们的确更厚道些</p>
-<h3 id="胡生"  id="胡生">
-  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e8%83%a1%e7%94%9f">胡生<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p>胡生在心目中，很崇拜浩瀚哥和江河，因为只有他们不说他脑子不正常</p>
-<p>胡生被弄丢之后，浩瀚哥和江河其实也认为他不正常</p>
-<p>我也是胡生，自命不凡，在别人眼中十分不正常</p>
-<p>原来我自己很平凡</p>
-<h3 id="刘莺莺"  id="刘莺莺">
-  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e5%88%98%e8%8e%ba%e8%8e%ba">刘莺莺<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p>浩瀚哥要去见刘莺莺，以为是自己迷倒了对方</p>
-<p>其实他们同父异母，有血缘关系</p>
-<p>他们的通信，起因是浩瀚哥的父亲还关心他</p>
-<p>浩瀚哥记忆中，父亲在台风天出海而死，是不惧怕风雨的勇敢者</p>
-<p>现实中，父亲喝醉酒后抽烟，被烧死了</p>
-<p>像社会新闻，死得很平凡</p>
-<p>原来我们的父母很平凡</p>
-<h3 id="旅行者"  id="旅行者">
-  <a class="heading-link" href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/#%e6%97%85%e8%a1%8c%e8%80%85">旅行者<span class="heading-anchor" aria-label="Anchor">¶</span></a>
-</h3>
-<p>来自东莞的旅行者，不说姓名，只说自己叫<code>旅行者2号</code></p>
-<p>他说小学追了女同学七年，后来女生真成了他的妻子，把她的照片印在头盔上</p>
-<p>他骑行想证明自己，除了妻子无人关心</p>
-<p>他说的英文编号，江河也知道，想必确有其事</p>
-<p>他是理想者还是骗子？为什么取得信任之后，盗走了浩瀚哥的车子？</p>
-      
-      <p><a href="/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/">Read more...</a></p>
-      
-    </div>
-    
-  </article>
-  
 
+  
+  <div class="pagination p">
+    
+    
+    <span class="next"><a href="/my-blog-repo/years/2026/page/2/">Older Posts &raquo;</a></span>
+    
+  </div>
   
   
 </section>

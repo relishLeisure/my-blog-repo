@@ -6,8 +6,6 @@ slug:
 categories: [CUDA,笔记]
 ---
 
-
-
 # 目录
 
 [1D Convolution](https://leetgpu.com/challenges/1d-convolution)
@@ -21,8 +19,6 @@ categories: [CUDA,笔记]
 [Swish-Gated Linear Unit](https://leetgpu.com/challenges/swish-gated-linear-unit)
 
 [Matrix Multiplication](https://leetgpu.com/challenges/matrix-multiplication)
-
-
 
 ## 1D Convolution
 
@@ -64,12 +60,10 @@ import torch
 import triton
 import triton.language as tl
 
-
 @triton.jit
 def conv1d_kernel(input, kernel, output, input_size, kernel_size, BLOCK_SIZE: tl.constexpr):
-    
-    pass
 
+    pass
 
 # input, kernel, output are tensors on the GPU
 def solve(
@@ -123,7 +117,6 @@ Triton
 @triton.jit
 def leaky_relu_kernel(input, output, n_elements, BLOCK_SIZE: tl.constexpr):
     pass
-
 
 # input, output are tensors on the GPU
 def solve(input: torch.Tensor, output: torch.Tensor, N: int):
@@ -228,7 +221,7 @@ extern "C" void run_kernel(
     int64_t total_elements = T * H;
     const int block_size = 256;
     int64_t grid_size = (total_elements + block_size - 1) / block_size;
-    
+
     relu_kernel<<<grid_size, block_size>>>(x, y, total_elements);
     // cudaDeviceSynchronize();
 }
@@ -264,8 +257,6 @@ extern "C" void solve(const float* input, float* output, int N) {
     cudaDeviceSynchronize();
 }
 ```
-
-
 
 ## Matrix Multiplication
 
@@ -306,20 +297,4 @@ Triton
 
 ```python
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

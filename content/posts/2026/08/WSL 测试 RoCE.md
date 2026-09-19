@@ -133,8 +133,6 @@ truman@pcofcg:~/linux-6.6.135$ nano .config
 truman@pcofcg:~/linux-6.6.135$ make modules_prepare
 ```
 
-
-
 ## 第七步：配置虚拟网卡和 Soft-RoCE
 
 ```bash
@@ -178,8 +176,6 @@ truman@pcofcg:/mnt/c/Users/72950$ ibv_devices
     rxe1                24ba35fffe072bf8
 
 ```
-
-
 
 ```markdown
 SSGP:    拷贝数据的包，ip地址到ip地址，主机之间拷贝数据
@@ -479,8 +475,4 @@ MPA 夹在 TCP 和 DDP 之间，负责在 TCP 字节流中插入固定间隔的�
 ## iWARP rping
 
 {{< img src="img/2026/08/WSL 测试 RoCE/iwarp_rping 抓包1.png" alt="图片" >}}
-
-
-
-
 

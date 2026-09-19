@@ -285,29 +285,27 @@ p code, li code {
 </span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> triton
 </span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> triton.language <span style="color:#66d9ef">as</span> tl
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">@triton.jit</span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">vector_add_kernel</span>(a, b, c, n_elements, BLOCK_SIZE: tl<span style="color:#f92672">.</span>constexpr):
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 1. 获取当前 Block (Program) 的 ID</span>
 </span></span><span style="display:flex;"><span>    pid <span style="color:#f92672">=</span> tl<span style="color:#f92672">.</span>program_id(axis<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
-</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 2. 计算当前 Block 需要处理的全局索引 (offsets)</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># tl.arange(0, BLOCK_SIZE) 生成 [0, 1, ..., BLOCK_SIZE-1]</span>
 </span></span><span style="display:flex;"><span>    block_start <span style="color:#f92672">=</span> pid <span style="color:#f92672">*</span> BLOCK_SIZE
 </span></span><span style="display:flex;"><span>    offsets <span style="color:#f92672">=</span> block_start <span style="color:#f92672">+</span> tl<span style="color:#f92672">.</span>arange(<span style="color:#ae81ff">0</span>, BLOCK_SIZE)
-</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 3. 边界保护，防止最后一个 Block 越界</span>
 </span></span><span style="display:flex;"><span>    mask <span style="color:#f92672">=</span> offsets <span style="color:#f92672">&lt;</span> n_elements
-</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 4. 加载数据</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 注意：这里的 a 和 b 实际上是显存指针，a + offsets 得到一批地址</span>
 </span></span><span style="display:flex;"><span>    x <span style="color:#f92672">=</span> tl<span style="color:#f92672">.</span>load(a <span style="color:#f92672">+</span> offsets, mask<span style="color:#f92672">=</span>mask)
 </span></span><span style="display:flex;"><span>    y <span style="color:#f92672">=</span> tl<span style="color:#f92672">.</span>load(b <span style="color:#f92672">+</span> offsets, mask<span style="color:#f92672">=</span>mask)
-</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 5. 执行加法并写回显存</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 这里用 x + y，避免覆盖传进来的同名变量 a 和 b</span>
 </span></span><span style="display:flex;"><span>    tl<span style="color:#f92672">.</span>store(c <span style="color:#f92672">+</span> offsets, x <span style="color:#f92672">+</span> y, mask<span style="color:#f92672">=</span>mask)
-</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># a, b, c are tensors on the GPU</span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">solve</span>(a: torch<span style="color:#f92672">.</span>Tensor, b: torch<span style="color:#f92672">.</span>Tensor, c: torch<span style="color:#f92672">.</span>Tensor, N: int):
@@ -361,7 +359,6 @@ p code, li code {
 </span></span><span style="display:flex;"><span>    x <span style="color:#f92672">=</span> tl<span style="color:#f92672">.</span>load(a <span style="color:#f92672">+</span> offsets, mask<span style="color:#f92672">=</span>mask)
 </span></span><span style="display:flex;"><span>    y <span style="color:#f92672">=</span> tl<span style="color:#f92672">.</span>load(b <span style="color:#f92672">+</span> offsets, mask<span style="color:#f92672">=</span>mask)
 </span></span><span style="display:flex;"><span>    tl<span style="color:#f92672">.</span>store(c <span style="color:#f92672">+</span> offsets, x <span style="color:#f92672">+</span> y, mask<span style="color:#f92672">=</span>mask)
-</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># a, b, c are tensors on the GPU</span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">solve</span>(a: torch<span style="color:#f92672">.</span>Tensor, b: torch<span style="color:#f92672">.</span>Tensor, c: torch<span style="color:#f92672">.</span>Tensor, N: int):

@@ -2,136 +2,138 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/my-blog-repo/posts/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/posts/</loc>
+    <lastmod>2026-09-19T20:38:26+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://relishleisure.github.io/my-blog-repo/</loc>
+    <lastmod>2026-09-19T20:38:26+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://relishleisure.github.io/my-blog-repo/2026/09/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96%E8%AE%B0%E5%BD%951%E6%B7%BB%E5%8A%A0%E8%84%9A%E6%9C%AC%E5%A4%84%E7%90%86%E7%A9%BA%E8%A1%8C%E7%AD%89%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE/</loc>
+    <lastmod>2026-09-19T20:38:26+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://relishleisure.github.io/my-blog-repo/2026/09/%E9%9F%B3%E4%B9%90%E9%A1%B5%E9%9D%A2/</loc>
+    <lastmod>2026-09-19T20:26:38+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://relishleisure.github.io/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/</loc>
     <lastmod>2026-09-15T14:51:51+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/2026/09/python%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/</loc>
-    <lastmod>2026-09-15T14:51:51+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>http://localhost:1313/my-blog-repo/</loc>
-    <lastmod>2026-09-15T14:51:51+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>http://localhost:1313/my-blog-repo/2026/09/python%E7%9A%84%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/2026/09/python%E7%9A%84%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/</loc>
     <lastmod>2026-09-15T14:51:38+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/categories/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/</loc>
     <lastmod>2026-09-02T18:36:05+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/categories/cuda/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/cuda/</loc>
     <lastmod>2026-09-02T18:36:05+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/2026/09/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%BB%8F%E5%8E%86/</loc>
     <lastmod>2026-09-02T18:36:05+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/categories/%E8%AE%B0%E5%BD%95/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/%E8%AE%B0%E5%BD%95/</loc>
     <lastmod>2026-09-02T18:36:05+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/2026/08/cuda%E5%AD%A6%E4%B9%A0--2%E7%AE%80%E5%8D%95%E8%BF%90%E7%AE%97/</loc>
     <lastmod>2026-08-28T16:00:05+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/%E7%AC%94%E8%AE%B0/</loc>
     <lastmod>2026-08-28T16:00:05+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/2026/08/ascend-cadd%E7%AE%97%E5%AD%90%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/</loc>
     <lastmod>2026-08-27T20:53:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/categories/cann/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/cann/</loc>
     <lastmod>2026-08-27T20:53:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/categories/%E5%AE%9E%E9%AA%8C/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/%E5%AE%9E%E9%AA%8C/</loc>
     <lastmod>2026-08-27T20:53:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/categories/ai/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/ai/</loc>
     <lastmod>2026-08-26T19:48:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/categories/das/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/das/</loc>
     <lastmod>2026-08-26T19:48:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/2026/08/van_den_ende-ddcn-%E7%AC%94%E8%AE%B0/</loc>
     <lastmod>2026-08-26T19:48:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/categories/rdma/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/rdma/</loc>
     <lastmod>2026-08-24T17:38:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</loc>
     <lastmod>2026-08-24T17:38:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/</loc>
     <lastmod>2026-08-24T17:38:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/2026/08/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F-%E6%AF%8F%E4%B8%AA%E4%BA%BA%E7%9A%84%E5%B9%B3%E5%87%A1%E4%B9%8B%E8%B7%AF/</loc>
     <lastmod>2026-08-24T15:10:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/categories/%E7%94%B5%E5%BD%B1/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/categories/%E7%94%B5%E5%BD%B1/</loc>
     <lastmod>2026-08-24T15:10:02+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/1/01/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/years/2026/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/1/01/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/years/2026/08/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/years/2026/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/archives/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/years/2026/08/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/tags/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/my-blog-repo/archives/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>http://localhost:1313/my-blog-repo/tags/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>http://localhost:1313/my-blog-repo/years/</loc>
+    <loc>https://relishleisure.github.io/my-blog-repo/years/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>

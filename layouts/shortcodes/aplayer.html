@@ -1,0 +1,21 @@
+<!-- 引入 APlayer 静态资源 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+<!-- 播放器容器 -->
+<div id="aplayer-{{ .Ordinal }}" class="aplayer-container"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    new APlayer({
+      container: document.getElementById('aplayer-{{ .Ordinal }}'),
+      audio: [{
+        name: '{{ .Get "title" | default "未知曲目" }}',
+        artist: '{{ .Get "artist" | default "未知歌手" }}',
+        url: '{{ .Get "src" }}',
+        cover: '{{ .Get "cover" | default "" }}',
+        lrc: '{{ .Get "lrc" | default "" }}'
+      }]
+    });
+  });
+</script>

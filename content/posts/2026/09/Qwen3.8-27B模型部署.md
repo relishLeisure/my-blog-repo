@@ -14,8 +14,6 @@ categories: []
 
 `Ollama`、`llama.cpp`、`LM Studio`等引擎 是什么
 
-
-
 2
 
 vLLM方式
@@ -25,8 +23,6 @@ vLLM方式
 - • 显存消耗：启动并运行后共占用20658MiB * 2 (gpu-memory-utilization 0.78 - 最大tokens 311,951)
 
 选择模型
-
-
 
 下载模型
 
@@ -66,7 +62,6 @@ docker images
 docker system prune -f
 docker ps -a
 
-
 ```
 
 ```bash
@@ -75,8 +70,6 @@ sudo systemctl stop docker docker.socket containerd
 sudo apt-get purge docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras
 sudo rm -rf /var/lib/docker
 ```
-
-
 
 ```bash
 # 安装 docker

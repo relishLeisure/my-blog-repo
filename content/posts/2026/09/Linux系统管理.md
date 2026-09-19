@@ -220,5 +220,3 @@ cat /etc/crontab
 systemctl list-timers --all
 ```
 
-
-
