@@ -71,6 +71,25 @@ p code, li code {
   
   
   <article class="post">
+    <h2><a class="post-title" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">RDMA 学习笔记</a> <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr></h2>
+    
+    <div class="summary">
+      <h3 id="术语"  id="术语">
+  <a class="heading-link" href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%e6%9c%af%e8%af%ad">术语<span class="heading-anchor" aria-label="Anchor">¶</span></a>
+</h3>
+<p><strong>NIC</strong> : Network Interface Card, 网络适配器 / 网卡。 <strong>解释：</strong> 连接计算机与网络的硬件组件。在 AI 数据中心，普通 NIC 已无法满足需求，通常需要支持高吞吐和低延迟协议（如 RoCE）的专用高性能网卡。</p>
+<p><strong>SmartNIC / DPU</strong> : Smart Network Interface Card / Data Processing Unit, 智能网卡 / 数据处理器。 <strong>解释：</strong> 带有独立处理器的网卡。它能卸载原本由 CPU 处理的网络、存储和安全任务，让昂贵的计算资源完全服务于 AI 模型。</p>
+<p><strong>RDMA</strong> : Remote Direct Memory Access, 远程直接内存访问。 <strong>解释：</strong> 允许计算机直接访问远程内存的技术，绕过操作系统内核和 CPU 干扰。它是实现多 GPU 集群超低延迟通信的底层基石。</p>
+<p><strong>RoCE</strong> : RDMA over Converged Ethernet, 基于融合以太网的 RDMA。 <strong>解释：</strong> 在标准以太网上运行 RDMA 的协议。它让数据中心能在不更换昂贵专用网络设备的前提下，获得接近无限带宽技术的传输性能。</p>
+<p><strong>NCCL</strong> : NVIDIA Collective Communications Library, 英伟达集合通信库。 <strong>解释：</strong> 专门优化英伟达 GPU 间数据交换的算法库。它定义了多卡如何高效同步数据，是分布式训练的“通信翻译官”。</p>
+      
+      <p><a href="/my-blog-repo/2026/08/rdma-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">Read more...</a></p>
+      
+    </div>
+    
+  </article>
+  
+  <article class="post">
     <h2><a class="post-title" href="/my-blog-repo/2026/08/wsl-%E6%B5%8B%E8%AF%95-roce/">WSL 测试 RoCE</a> <abbr class="small postDate" title="2026-08-24">August 24, 2026</abbr></h2>
     
     <div class="summary">
